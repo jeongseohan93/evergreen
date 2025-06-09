@@ -1,3 +1,101 @@
-11123
-11
-123
+# 🎣 NodeBird Backend (낚시 용품 쇼핑몰)
+
+> **EvergreenFish**와 **당근마켓(웹 버전)**을 참고하여 제작된  
+> **낚시 용품 전문 쇼핑몰의 백엔드 서버**입니다.  
+> React 기반 프론트엔드와 연동되며,  
+> 회원 인증, 상품 검색, JWT 로그인, 추후 WebSocket 기능 등을 제공합니다.
+
+---
+
+## 📁 프로젝트 구조
+
+backend/
+├── config/ # DB 및 환경 설정
+├── controllers/ # 요청 처리 로직
+├── middlewares/ # 인증, 오류 등 공통 미들웨어
+├── models/ # Sequelize 모델 정의
+├── passport/ # Passport 인증 전략 구성 (local, kakao)
+├── routes/ # API 라우터 (auth, search 등)
+├── utils/ # 유틸 함수 (토큰, 응답 포맷 등)
+├── server.js # Express 앱 진입점
+
+
+---
+
+## 🚀 시작하기
+
+### 1. 의존성 설치
+
+```bash
+npm install
+PORT=8002
+DB_HOST=localhost
+DB_USER=root
+DB_PASSWORD=yourpassword
+DB_NAME=evergreenfist
+JWT_SECRET=your_jwt_secret
+NODE_ENV=development
+
+
+서버 실행 (개발용)
+npm start
+
+
+⚙️ 사용된 주요 라이브러리
+패키지	설명
+express	Node.js 웹 프레임워크
+sequelize	MySQL 연동 ORM
+mysql2	MySQL 드라이버
+passport / passport-local / passport-kakao	사용자 인증 처리 (로컬, 카카오)
+jsonwebtoken	JWT 발급 및 인증
+redis	세션/토큰 블랙리스트 등 상태 관리
+bcrypt	비밀번호 해시 암호화
+dotenv	환경변수 로드
+morgan	요청 로그 출력
+cors	CORS 정책 설정
+uuid	고유 식별자 생성
+nodemon	코드 변경 시 자동 재시작 (개발용)
+ws (예정)	실시간 WebSocket 알림 기능 도입 예정
+jest (예정)	단위 테스트 프레임워크 도입 예정
+
+"scripts": {
+  "start": "nodemon server.js",
+  "test": "echo \"Error: no test specified\" && exit 1"
+}
+
+
+📌 주요 API
+메서드	경로	설명
+POST	/auth/join	사용자 회원가입
+POST	/auth/login	사용자 로그인 및 JWT 발급
+GET	/api/search	키워드 검색 API (상품, 낚시 장비 등)
+
+
+🧪 테스트 계획 (예정)
+Jest 기반의 단위 테스트 도입
+
+컨트롤러, 인증 미들웨어, 유틸 함수 단위로 테스트 작성 예정
+
+
+🔐 보안 및 배포 참고사항
+.env는 반드시 .gitignore에 추가하여 Git에 올리지 않도록 합니다.
+
+배포 시 NODE_ENV=production, HTTPS, CORS 도메인 설정 등을 추가 고려해야 합니다.
+
+WebSocket 보안 정책도 별도로 설정 예정입니다.
+
+
+🧭 레퍼런스
+EvergreenFish – 제품 카테고리, 낚시 특화 UX 구조 참고
+
+당근마켓(웹) – 간결한 UI, 로그인 플로우, 지역 기반 접근 등 참고
+
+📄 라이선스
+
+
+---
+
+이제 README만 봐도 “낚시 용품 쇼핑몰 백엔드”라는 정체성과 기술 구성이 확실히 드러나게 되었습니다.  
+더 나아가 **Swagger 기반 API 문서화**, **ERD 시각화**, **기능별 상태 표시**까지 원하시면 언제든지 도와드릴게요!
+
+필요하면 [GPTOnline.ai](https://gptonline.ai/ko/)에서 README 자동 생성 및 Swagger 연동 도구도 확인해보세요. 😊

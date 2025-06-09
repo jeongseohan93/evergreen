@@ -1,64 +1,90 @@
 const Sequelize = require('sequelize');
 
+// ===============================
+// [ User 모델 정의 (Sequelize) ]
+// - users 테이블과 매핑되는 ORM 클래스
+// - UUID 기반 기본키, 이메일 유니크 등 다양한 속성 포함
+// - 소프트 삭제(paranoid) 및 createdAt/updatedAt 관리
+// ===============================
 class User extends Sequelize.Model {
+    // 모델(테이블) 구조 정의 및 초기화 메서드
     static initiate(sequelize) {
-         User.init({
-            user_uuid: {
-                type: Sequelize.CHAR(36),
-                defaultValue: Sequelize.UUIDV4,
-                allowNull: false,
-                primaryKey: true
-            },
-            email: {
-            type: Sequelize.STRING(100),
-            allowNull: true
-            },
-            password: {
-                type: Sequelize.STRING(255),
-                allowNull: false
-            },
-            name: {
-                type: Sequelize.STRING(100),
-                allowNull: true
-            },
-            phone: {
-                type: Sequelize.STRING(20),
-                allowNull: true
-            },
-            address: {
-                type: Sequelize.STRING(255),
-                allowNull: true
-            },
-            role: {
-                type: Sequelize.ENUM('admin','user'),
-                allowNull: false,
-                defaultValue: "user"
-            }
-        }, {
-            sequelize,
-            timestamps: true, // createdAt, updatedAt
-            underscored: false, //created_at, updated_at
-            modelName: 'User',
-            tableName: 'users',
-            paranoid: true, //deletedAt 유저 삭제일 // soft delete
-            charset: 'utf8',
-            collate: 'utf8_general_ci',
+        return super.init(
+            {
+                // [컬럼 정의]
 
-            indexes: [
-                {
-                    name: "PRIMARY",
-                    unique: true,
-                    using: "BTREE",
-                    fields: [{ name: "user_uuid" }]
+                // UUID 기본키 (user_uuid, 자동생성, PK)
+                user_uuid: {
+                    type: Sequelize.CHAR(36),
+                    defaultValue: Sequelize.UUIDV4,  // UUID 자동생성
+                    allowNull: false,
+                    primaryKey: true
                 },
-                {
-                    name: "email",
-                    unique: true,
-                    using: "BTREE",
-                    fields: [{ name: "email" }]
+
+                // 이메일 (유니크 인덱스, 100자 제한)
+                email: {
+                    type: Sequelize.STRING(100),
+                    allowNull: true
+                },
+
+                // 비밀번호 (필수, 255자)
+                password: {
+                    type: Sequelize.STRING(255),
+                    allowNull: false
+                },
+
+                // 이름 (20자)
+                name: {
+                    type: Sequelize.STRING(20),
+                    allowNull: true
+                },
+
+                // 전화번호 (20자)
+                phone: {
+                    type: Sequelize.STRING(20),
+                    allowNull: true
+                },
+
+                // 주소 (255자)
+                address: {
+                    type: Sequelize.STRING(255),
+                    allowNull: true
+                },
+
+                // 역할(권한): 'admin' 또는 'user', 기본값 'user'
+                role: {
+                    type: Sequelize.ENUM('admin', 'user'),
+                    allowNull: false,
+                    defaultValue: "user"
                 }
-            ]
-        });
+            },
+            {
+                sequelize,             // DB 연결 인스턴스
+                timestamps: true,      // createdAt, updatedAt 자동생성
+                underscored: false,    // 필드명 카멜케이스(예: createdAt)
+                modelName: 'User',     // Sequelize 내부 모델명
+                tableName: 'users',    // 실제 DB 테이블명
+                paranoid: true,        // deletedAt 소프트 삭제 컬럼 자동 추가
+                charset: 'utf8',       // 문자셋
+                collate: 'utf8_general_ci', // 정렬 기준
+
+                // 인덱스 정의 (유니크/검색 최적화)
+                indexes: [
+                    {
+                        name: "PRIMARY",
+                        unique: true,
+                        using: "BTREE",
+                        fields: [{ name: "user_uuid" }]
+                    },
+                    {
+                        name: "email",
+                        unique: true,
+                        using: "BTREE",
+                        fields: [{ name: "email" }]
+                    }
+                ]
+            }
+        );
     }
 }
 
