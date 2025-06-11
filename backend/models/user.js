@@ -11,14 +11,13 @@ class User extends Sequelize.Model {
     static initiate(sequelize) {
         return super.init(
             {
-                // [컬럼 정의]
-
                 // UUID 기본키 (user_uuid, 자동생성, PK)
                 user_uuid: {
                     type: Sequelize.CHAR(36),
-                    defaultValue: Sequelize.UUIDV4,  // UUID 자동생성
                     allowNull: false,
-                    primaryKey: true
+                    primaryKey: true,
+                    defaultValue: Sequelize.UUIDV4,  // UUID 자동생성
+                    collate: 'utf8_general_ci',
                 },
 
                 // 이메일 (유니크 인덱스, 100자 제한)
@@ -83,9 +82,24 @@ class User extends Sequelize.Model {
                         fields: [{ name: "email" }]
                     }
                 ]
-            }
-        );
+            });
+        }
+    
+        static associate(db) {
+            //order 관계
+            db.User.hasMany(db.Order, {
+                foreignKey: 'user_uuid',
+                sourceKey: 'user_uuid', //부모테이블 쪽, 관계를 설정하는 출발 모델의 컬럼
+                onDelete: 'CASCADE',
+            });
+
+            //orderItem 관계
+            db.User.hasMany(db.OrderItem, {
+                foreignKey: 'user_uuid',
+                targetKey: 'user_uuid', // User 모델의 UUID PK
+                onDelete: 'CASCADE',
+            });
+        }
     }
-}
 
 module.exports = User;
