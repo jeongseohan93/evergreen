@@ -10,6 +10,7 @@
 // small_photo VARCHAR(255) - List에서 보여줄 이미지
 // large_photo VARCHAR(255) - 상세 이미지
 // stock INT DEFAULT 0 - 재고량
+
 const { Model, DataTypes } = require('sequelize');
 
 class Product extends Model {
@@ -66,6 +67,7 @@ class Product extends Model {
     });
   }
 
+<<<<<<< HEAD
 //   static associate(db) {
 //     // 1. products.category_id → categories.product_id
 //     db.Product.belongsTo(db.Category, {
@@ -82,3 +84,24 @@ class Product extends Model {
 }
 
 module.exports = Product;
+=======
+  static associate(db) {
+    // 1. products.category_id → categories.product_id
+    db.Product.belongsTo(db.Category, {
+      foreignKey: 'category_id',
+      //카테고리의 삭제 => 그 카테고리에 속한 모든 상품 삭제
+      onDelete: 'CASCADE', 
+    });
+
+    // 2. products.lineup_id → lineups.lineup_id
+    db.Product.belongsTo(db.Lineup, {
+      foreignKey: 'lineup_id',
+      //라인업의 삭제 => 그걸 참조하던 상품의 lineup_id를 Null로 설정(상품은 유지)
+      onDelete: 'SET NULL', 
+    });
+  }
+}
+
+//내보내는 방식도 여러가지 있음. 이 방식으로 일단 index.js에서 오류가 없으니 사용.
+module.exports = Product; 
+>>>>>>> 5beaa17b68387e508a129f04062a254a3b17245b
