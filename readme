@@ -93,9 +93,4 @@ EvergreenFish – 제품 카테고리, 낚시 특화 UX 구조 참고
 📄 라이선스
 
 
----
 
-이제 README만 봐도 “낚시 용품 쇼핑몰 백엔드”라는 정체성과 기술 구성이 확실히 드러나게 되었습니다.  
-더 나아가 **Swagger 기반 API 문서화**, **ERD 시각화**, **기능별 상태 표시**까지 원하시면 언제든지 도와드릴게요!
-
-필요하면 [GPTOnline.ai](https://gptonline.ai/ko/)에서 README 자동 생성 및 Swagger 연동 도구도 확인해보세요. 😊
