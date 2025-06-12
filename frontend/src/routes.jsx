@@ -1,6 +1,6 @@
 // 리액트 라우터에서 필요한 컴포넌트들 불러옴
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
-import Main from './features/mainPage/MainPage'
+import Main from './features/mainPage/mainPage'
 
 
 // AppRoutes 컴포넌트: 앱의 모든 페이지 경로(라우팅)를 정의하는 곳
