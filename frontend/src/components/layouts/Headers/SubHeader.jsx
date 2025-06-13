@@ -21,7 +21,7 @@ function SearchBar() {
     useEffect(() => {
         // 임시로 하드코딩된 값 '3'으로 설정하는 예시입니다.
         // 이 액션은 Redux 스토어의 cart.count 값을 3으로 변경합니다.
-        dispatch(setCartItemCount(3));
+        dispatch(setCartItemCount(1));
     }, [dispatch]); // dispatch 함수는 변경되지 않으므로 의존성 배열에 포함해도 안전합니다.
 
     return (

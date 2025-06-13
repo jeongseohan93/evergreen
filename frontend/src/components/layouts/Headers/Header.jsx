@@ -1,7 +1,10 @@
-import React from "react";
+import {useEffect, useState} from "react";
 import { FaFacebook, FaInstagram } from "react-icons/fa";
-
+import { useNavigate    } from "react-router-dom";
 function Header() {
+    const navigate = useNavigate();
+    const [isLoggedIn, setIsLoggedIn ] = useState(null);
+
     
 
     return (
@@ -20,7 +23,7 @@ function Header() {
 
                 <ul className="flex space-x-4">
                     <li>
-                        <p className="text-white">로그인</p>
+                        <p className="text-white" onClick={() => navigate('/login')}>로그인</p>
                     </li>
                     <li>
                         <p className="text-white">회원가입</p>
