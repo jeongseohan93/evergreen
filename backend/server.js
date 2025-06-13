@@ -18,7 +18,7 @@ const { notFound, errorHandler } = require('./middlewares/error'); // 404/500 �
 // ======================
 dotenv.config(); // .env 파일에 작성된 환경 변수들을 process.env에 로드함 (애플리케이션 시작 시 가장 먼저 실행되어야 함)
 const app = express(); // express 애플리케이션 인스턴스를 app에 담음
-app.set('port', process.env.PORT || 8002);// .env 파일에 PORT 값이 있으면 그 값을 사용하고, 없으면 기본값 8002 사용
+app.set('port', process.env.PORT || 3005);// .env 파일에 PORT 값이 있으면 그 값을 사용하고, 없으면 기본값 3005 사용
 passportConfig(); // Passport 설정 함수 실행 (미들웨어 적용 전에 인증 전략을 미리 세팅함)
  
 
