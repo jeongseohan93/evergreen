@@ -6,6 +6,7 @@
 
 // models에서 product 클래스 호출
 const Product = require('../../models/product');
+const Category = require('../../models/category');
 // Sequelize에서 제공하는 연산자
 const {Op} = require('sequelize');
 
@@ -135,3 +136,174 @@ exports.productStock = async (req,res) => {
     }
 };
 //------------------------------재고 변경------------------------------------------------
+
+//------------------------------상품 추가------------------------------------------------
+exports.productAdd = async (req, res) => {
+    const { name, price, category_id, memo, stock, small_photo, large_photo } = req.body;
+    
+    // 필수 필드 검증
+    if (!name || !price || !category_id) {
+        return res.status(400).json({
+            success: false,
+            message: '상품명, 가격, 카테고리는 필수 입력 항목입니다.'
+        });
+    }
+    
+    // 가격이 숫자인지 확인
+    if (isNaN(price) || price <= 0) {
+        return res.status(400).json({
+            success: false,
+            message: '가격은 0보다 큰 숫자여야 합니다.'
+        });
+    }
+    
+    // 재고가 숫자인지 확인 (재고가 제공된 경우)
+    if (stock !== undefined && (isNaN(stock) || stock < 0)) {
+        return res.status(400).json({
+            success: false,
+            message: '재고는 0 이상의 숫자여야 합니다.'
+        });
+    }
+    
+    try {
+        // 새 상품 생성
+        const newProduct = await Product.create({
+            name,
+            price: parseInt(price),
+            category_id: parseInt(category_id),
+            memo: memo || null,
+            stock: stock ? parseInt(stock) : 0,
+            small_photo: small_photo || null,
+            large_photo: large_photo || null
+        });
+        
+        res.status(201).json({
+            success: true,
+            message: '상품이 성공적으로 추가되었습니다.',
+            data: newProduct
+        });
+    } catch (error) {
+        console.error('상품 추가 오류:', error);
+        res.status(500).json({
+            success: false,
+            message: '상품 추가 중 오류가 발생했습니다.'
+        });
+    }
+};
+//------------------------------상품 추가------------------------------------------------
+
+//------------------------------카테고리 조회------------------------------------------------
+exports.getCategories = async (req, res) => {
+    try {
+        const categories = await Category.findAll({
+            order: [['category_id', 'ASC']]
+        });
+        
+        res.status(200).json({
+            success: true,
+            data: categories
+        });
+    } catch (error) {
+        console.error('카테고리 조회 오류:', error);
+        res.status(500).json({
+            success: false,
+            message: '카테고리를 불러오는 도중 오류가 발생했습니다.'
+        });
+    }
+};
+//------------------------------카테고리 조회------------------------------------------------
+
+//------------------------------카테고리 추가------------------------------------------------
+exports.addCategory = async (req, res) => {
+    const { name } = req.body;
+    
+    // 필수 필드 검증
+    if (!name || !name.trim()) {
+        return res.status(400).json({
+            success: false,
+            message: '카테고리명은 필수 입력 항목입니다.'
+        });
+    }
+    
+    try {
+        // 중복 카테고리명 확인
+        const existingCategory = await Category.findOne({
+            where: { name: name.trim() }
+        });
+        
+        if (existingCategory) {
+            return res.status(400).json({
+                success: false,
+                message: '이미 존재하는 카테고리명입니다.'
+            });
+        }
+        
+        // 새 카테고리 생성
+        const newCategory = await Category.create({
+            name: name.trim()
+        });
+        
+        res.status(201).json({
+            success: true,
+            message: '카테고리가 성공적으로 추가되었습니다.',
+            data: newCategory
+        });
+    } catch (error) {
+        console.error('카테고리 추가 오류:', error);
+        res.status(500).json({
+            success: false,
+            message: '카테고리 추가 중 오류가 발생했습니다.'
+        });
+    }
+};
+//------------------------------카테고리 추가------------------------------------------------
+
+//------------------------------카테고리 삭제------------------------------------------------
+exports.deleteCategory = async (req, res) => {
+    const { category_id } = req.params;
+    
+    if (!category_id || isNaN(category_id)) {
+        return res.status(400).json({
+            success: false,
+            message: '유효한 카테고리 ID가 필요합니다.'
+        });
+    }
+    
+    try {
+        // 카테고리 존재 확인
+        const category = await Category.findByPk(category_id);
+        if (!category) {
+            return res.status(404).json({
+                success: false,
+                message: '해당 카테고리를 찾을 수 없습니다.'
+            });
+        }
+        
+        // 해당 카테고리에 속한 상품이 있는지 확인
+        const productsInCategory = await Product.count({
+            where: { category_id: parseInt(category_id) }
+        });
+        
+        if (productsInCategory > 0) {
+            return res.status(400).json({
+                success: false,
+                message: `이 카테고리에 속한 상품이 ${productsInCategory}개 있습니다. 먼저 상품을 삭제하거나 다른 카테고리로 이동시켜주세요.`
+            });
+        }
+        
+        // 카테고리 삭제
+        await category.destroy();
+        
+        res.status(200).json({
+            success: true,
+            message: '카테고리가 성공적으로 삭제되었습니다.'
+        });
+    } catch (error) {
+        console.error('카테고리 삭제 오류:', error);
+        res.status(500).json({
+            success: false,
+            message: '카테고리 삭제 중 오류가 발생했습니다.'
+        });
+    }
+};
+//------------------------------카테고리 삭제------------------------------------------------

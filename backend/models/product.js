@@ -67,24 +67,6 @@ class Product extends Model {
     });
   }
 
-<<<<<<< HEAD
-//   static associate(db) {
-//     // 1. products.category_id → categories.product_id
-//     db.Product.belongsTo(db.Category, {
-//       foreignKey: 'category_id',
-//       onDelete: 'CASCADE',
-//     });
-
-//     // 2. products.lineup_id → lineups.lineup_id
-//     db.Product.belongsTo(db.Lineup, {
-//       foreignKey: 'lineup_id',
-//       onDelete: 'SET NULL',
-//     });
-//   }
-}
-
-module.exports = Product;
-=======
   static associate(db) {
     // 1. products.category_id → categories.product_id
     db.Product.belongsTo(db.Category, {
@@ -103,5 +85,4 @@ module.exports = Product;
 }
 
 //내보내는 방식도 여러가지 있음. 이 방식으로 일단 index.js에서 오류가 없으니 사용.
-module.exports = Product; 
->>>>>>> 5beaa17b68387e508a129f04062a254a3b17245b
+module.exports = Product;
