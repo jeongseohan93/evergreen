@@ -7,8 +7,12 @@ import axios from "axios";
  * @returns {Object} - 서버에서 응답한 데이터
  */
 export async function loginUser({ email, password }) {
-  const res = await axios.post("http://localhost:3005/auth/login", { email, password });
+  const res = await axios.post("http://localhost:3005/auth/login", 
+                                { email, password },
+                                {withCredentials: true},
+                              );
   return res.data; // 응답 데이터 반환 (axios가 JSON 파싱함)
+  
 }
 
 /**

@@ -1,8 +1,11 @@
-import React from "react";
+import {useEffect, useState} from "react";
 import { FaFacebook, FaInstagram } from "react-icons/fa";
 import { useNavigate    } from "react-router-dom";
 function Header() {
     const navigate = useNavigate();
+    const [isLoggedIn, setIsLoggedIn ] = useState(null);
+
+    
 
     return (
         <div className="h-10 bg-black pl-10 pr-10">

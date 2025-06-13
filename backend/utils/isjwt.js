@@ -16,12 +16,11 @@ exports.isjwt = ( req, res, next ) => {
     const payload = {email, nick, role};
 
     // JWT 토큰 생성 (시크릿 키 및 만료 시간 포함)
-    const token = jwt.sign(
+    req.token = jwt.sign(
     payload,
     process.env.JWT_SECRET, // 시크릿 키 (.env 파일에서 관리)
     { expiresIn: '1h'} // 토큰 유효기간: 1시간
     );
-    
-    req.token = token; // 생성한 토큰을 req 객체에 저장
+    req.role = role;
     next(); // 다음 미들웨어로 흐름 이동
 }

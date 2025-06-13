@@ -20,8 +20,7 @@ function LoginPage() {
       } else {
         alert(result.message || "로그인 실패");
       }
-      const decodToken = jwtDecode(result.token);
-      const userRole = decodToken.role;
+      const userRole = result.role;
       if (userRole === "admin") {
         navigate("/admin");
       } else {

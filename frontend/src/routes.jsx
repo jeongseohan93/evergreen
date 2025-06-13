@@ -3,6 +3,7 @@ import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import Main from './features/mainPage/MainPage'
 import Admin from './features/adminPage/DashBoard'
 import Login from './features/mainPage/LoginPage'
+import Register from './features/mainPage/Register';
 // AppRoutes 컴포넌트: 앱의 모든 페이지 경로(라우팅)를 정의하는 곳
 function AppRoutes() {
   return (
@@ -11,6 +12,7 @@ function AppRoutes() {
       <Routes>
         <Route path='/' element={<Main/>}/>
         <Route path='/login' element={<Login/>}/>
+        <Route path='/register' element={<Register/>}/>
         <Route path='/admin' element={<Admin/>}/>
       </Routes>
     </BrowserRouter>
