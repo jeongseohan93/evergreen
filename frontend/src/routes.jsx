@@ -1,7 +1,9 @@
 // 리액트 라우터에서 필요한 컴포넌트들 불러옴
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
-import Main from './features/mainPage/mainPage'
 
+import Admin from './features/adminPage/dashBoard'
+import Login from './features/mainPage/LoginPage'
+import Main from './features/mainPage/mainPage'
 
 // AppRoutes 컴포넌트: 앱의 모든 페이지 경로(라우팅)를 정의하는 곳
 function AppRoutes() {
@@ -10,6 +12,8 @@ function AppRoutes() {
     <BrowserRouter>
       <Routes>
         <Route path='/' element={<Main/>}/>
+        <Route path='/login' element={<Login/>}/>
+        <Route path='/admin' element={<Admin/>}/>
       </Routes>
     </BrowserRouter>
   );
