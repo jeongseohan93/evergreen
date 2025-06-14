@@ -81,8 +81,8 @@ class Product extends Model {
       //라인업의 삭제 => 그걸 참조하던 상품의 lineup_id를 Null로 설정(상품은 유지)
       onDelete: 'SET NULL', 
     });
-  } */
+  }  */
 }
 
 //내보내는 방식도 여러가지 있음. 이 방식으로 일단 index.js에서 오류가 없으니 사용.
-module.exports = Product; 
+module.exports = Product;
