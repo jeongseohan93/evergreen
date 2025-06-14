@@ -2,7 +2,9 @@
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 
 import Admin from './features/adminPage/dashBoard'
-import ReportManage from './features/adminPage/reportManage'
+import ReportManage from './features/adminPage/reportPage/reportManage'
+import ReportDetail from './features/adminPage/reportPage/reportDetail'
+import ReportEdit from './features/adminPage/reportPage/reportEdit'
 import Login from './features/mainPage/LoginPage'
 import Main from './features/mainPage/mainPage'
 
@@ -16,7 +18,9 @@ function AppRoutes() {
         <Route path='/login' element={<Login/>}/>
         <Route path='/admin' element={<Admin/>}/>
         //react 컴포넌트는 무조건 대문자로 시작!
-        <Route path='/admin/report' element={<ReportManage/>}/> 
+        <Route path='/admin/report' element={<ReportManage/>}/>
+        <Route path="/admin/report/:reportId" element={<ReportDetail />} />
+        <Route path="/admin/report/:reportId/edit" element={<ReportEdit />} />
       </Routes>
     </BrowserRouter>
   );

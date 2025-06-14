@@ -6,6 +6,7 @@ const passport = require('passport'); // 로그인 상태 유지, 사용자 인�
 const morgan = require('morgan'); // HTTP 요청 로그를 콘솔에 출력해주는 미들웨어 (개발 중 요청 추적용)
 const auth = require('./routes/auth'); // 사용자 인증 관련 라우터 (로그인, 회원가입 등)
 const admin = require('./routes/admin'); // 관리자 인증 관련 라우터
+const reportRouter = require('./routes/admin/report');
 const passportConfig = require('./passport'); // Passport 설정 파일 불러오기 (전략 등록, 시리얼라이즈/디시리얼라이즈 등 설정 포함)
 const { notFound, errorHandler } = require('./middlewares/error'); // 404/500 에러 처리 미들웨어
 
@@ -68,7 +69,7 @@ app.use(passport.initialize()); // passport 인증 시스템 초기화
 // ======================
 app.use('/auth', auth); // auth → 인증 관련 라우터
 app.use('/admin', admin); //admin -> 관리자 인증 관련 라우터
-
+app.use('/adminReport', reportRouter); 
 
 // ==============================
 // [에러 처리 미들웨어 등록]
