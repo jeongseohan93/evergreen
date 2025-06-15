@@ -1,6 +1,11 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { register, idcheck } from '../../services/userApi'
+import Header from '../../components/layouts/Headers/Header';
+import SearchBar from '../../components/layouts/Headers/SubHeader';
+import MenuBar from '../../components/ui/MenuBar/MenuBar';
+import Footer from '../../components/layouts/Footers/Footer';
+
 
 function Register() {
   const [form, setForm] = useState({
@@ -83,6 +88,10 @@ function Register() {
   };
 
   return (
+    <>
+    <Header />
+    <SearchBar />
+    <MenuBar />
     <div style={{ padding: '20px' }}>
       <h2>회원가입</h2>
 
@@ -151,6 +160,8 @@ function Register() {
         </button>
       </div>
     </div>
+    <Footer />
+    </>
   );
 }
 

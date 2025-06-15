@@ -4,8 +4,8 @@ const express = require('express');
 const { isNotLoggedIn, isLoggedIn } = require('../middlewares/index'); // jwt토근 유무 및 로그인 상태가 아닌지 체크하는 미들웨어
 const { idcheckr, register, login, logout } = require('../controllers/authController'); // 로그인 요청 처리 컨트롤러
 const { isjwt } = require('../utils/isjwt'); // JWT 토큰 생성 및 검증 유틸리티
-const { sendToken } = require('../controllers/sendController'); // 프론트엔드로 최종 토큰 응답을 보내는 컨트롤러
-
+const { sendToken } = require('../controllers/sendController');
+const jwt  =require('jsonwebtoken');
 const router = express.Router(); // 라우터 인스턴스 생성 (각 요청 경로를 모듈화하여 관리하기 위함)
 
 
@@ -40,12 +40,35 @@ router.post('/register', register);
 router.post('/login', isNotLoggedIn, login, isjwt, sendToken);
 
 
+router.post('/logincheck', (req, res) => {
+    try {
+        
+      const token = req.cookies.access_token; // ✅ 수정된 부분
+      console.log(token);
+      if (!token) {
+        return res.status(401).json({ success: false, message: "No token" });
+      }
+  
+      const decoded = jwt.verify(token, process.env.JWT_SECRET);
+  
+      return res.json({
+        success: true,
+        role: decoded.role,
+      });
+    } catch (err) {
+      console.error("JWT 검증 실패:", err.message);
+      return res.status(401).json({ success: false, message: "Invalid token" });
+    }
+  });
+  
+
+
 // ===============================
 // [로그아웃 API 라우팅]
 // - isLoggedIn: JWT 인증된 사용자만 로그아웃 허용(미인증 시 차단)
 // - logout: 로그아웃 로직(토큰 무효화 등) 처리 컨트롤러
 // ===============================
-router.post('/logout', isLoggedIn, logout);
+router.post('/logout', logout);
 
 
 module.exports = router; // 라우터 객체를 외부 모듈에서 사용할 수 있도록 내보냄 
