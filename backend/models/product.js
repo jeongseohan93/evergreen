@@ -1,3 +1,4 @@
+
 // Product models를 위한 준비
 
 // Product에는 category_id, lineup_id를 외래키로 둘 예정이나 
@@ -86,3 +87,4 @@ class Product extends Model {
 
 //내보내는 방식도 여러가지 있음. 이 방식으로 일단 index.js에서 오류가 없으니 사용.
 module.exports = Product;
+

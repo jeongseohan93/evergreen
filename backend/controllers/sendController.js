@@ -6,8 +6,18 @@
 // - 200 OK 상태와 함께 { message, token } 형태로 반환
 // ===============================
 exports.sendToken = (req, res) => {
+  const role = req.role
+  console.log(role);
+  res.cookie("access_token", req.token, {
+    httpOnly: true, //JS에서 접근불가 (XSS 방지)
+    secure: process.env.NODE_ENV === "production", //HTTPS 환경에서만 사용
+    sameSite: "Lax", //CSRF 방지
+    maxAge : 60 * 60 * 1000 // 1시간
+  });
+  
   res.status(200).json({
+    success : true,
+    role : role,
     message: '로그인 성공',
-    token: req.token, // 이전 미들웨어에서 생성된 JWT 토큰
   });
 };

@@ -1,6 +1,7 @@
 import { useEffect } from "react"; // `useState`는 더 이상 필요 없습니다.
 import { FaUser, FaShoppingCart, FaSearch } from "react-icons/fa";
 import PopularSearch from "../../ui/PopularSearch/PopularSearch";
+import { useNavigate } from "react-router-dom";
 
 // Redux 훅들을 임포트합니다. 경로에 주의하세요!
 import { useAppSelector, useAppDispatch } from '../../../stores/hooks';
@@ -8,6 +9,7 @@ import { useAppSelector, useAppDispatch } from '../../../stores/hooks';
 import { setCartItemCount } from '../../../stores/slices/CartSlice';
 
 function SearchBar() {
+    const navigate = useNavigate();
     // useAppSelector를 사용하여 Redux 스토어의 'cart' 슬라이스에서 'count' 값을 가져옵니다.
     // 'state.cart'는 store/index.js에서 'cart'라는 이름으로 cartReducer를 연결했기 때문입니다.
     const cartItemCount = useAppSelector((state) => state.cart.count);
@@ -27,7 +29,7 @@ function SearchBar() {
     return (
         <div className="grid grid-cols-3 h-40 border-b border-gray-200 pl-12 pr-14 bg-white">
             <div className="flex items-center">
-                <p className="text-black text-4xl font-aggro font-bold ">에버그린</p>
+                <p className="text-black text-4xl font-aggro font-bold hover:text-blue-500" onClick={() => navigate("/")}>에버그린</p>
             </div>
 
             {/* 두 번째 칸: 검색창 및 인기검색어 탭 */}

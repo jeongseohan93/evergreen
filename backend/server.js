@@ -4,6 +4,7 @@ const cors = require('cors'); // CORS(Cross-Origin Resource Sharing) 설정을 �
 const { sequelize } = require('./models'); // Sequelize ORM 인스턴스 불러오기 (DB 연동용)
 const passport = require('passport'); // 로그인 상태 유지, 사용자 인증을 도와주는 미들웨어 (세션/토큰 인증 등)
 const morgan = require('morgan'); // HTTP 요청 로그를 콘솔에 출력해주는 미들웨어 (개발 중 요청 추적용)
+const cookieParser = require('cookie-parser'); // HTTP 요청의 쿠키를 파싱(분석)하여 `req.cookies` 객체에 넣어주는 미들웨어 임포트
 const auth = require('./routes/auth'); // 사용자 인증 관련 라우터 (로그인, 회원가입 등)
 const admin = require('./routes/admin'); // 관리자 인증 관련 라우터
 const reportRouter = require('./routes/admin/report');
@@ -51,6 +52,8 @@ sequelize.sync() // 모델 정의와 실제 DB 테이블을 동기화 (필요시
 // ======================    
 app.use(morgan('dev')); // http 요청 로그를 콘솔에 출력해주는 미들웨어 (개발 중 요청/응답 정보 확인용), 'dev' 모드는 간단하게 로그로 출력
 app.use(express.json()); // 클라이언트에서 보내는 JSON 형식의 요청(body)을 파싱하여 req.body로 사용할 수 있게 함
+app.use(cookieParser()); // Express 앱에 cookie-parser 미들웨어를 적용합니다. 이로써 모든 요청에서 자동으로 쿠키를 파싱할 수 있게 됩니다.
+
 
 // JWT 토큰만 사용하는 경우 credentials: false
 // 쿠키(세션) 기반 인증을 쓰면 credentials: true, 그리고 origin은 반드시 정확히 매칭해야 함
@@ -58,7 +61,7 @@ app.use(cors({
   origin: 'http://localhost:3000',  // 허용할 프론트엔드 주소 (React 개발 서버 도메인)
   methods: ['GET','POST','PUT','DELETE','OPTIONS'], // 허용할 HTTP 메서드 목록
   allowedHeaders: ['Content-Type','Authorization'], // 클라이언트에서 사용할 수 있는 요청 헤더
-  credentials: false // 인증 정보(쿠키, 헤더 등) 포함 여부 - false일 경우 쿠키 전송 안 됨
+  credentials: true // 인증 정보(쿠키, 헤더 등) 포함 여부 - false일 경우 쿠키 전송 안 됨
 }));
 app.use(passport.initialize()); // passport 인증 시스템 초기화
 
