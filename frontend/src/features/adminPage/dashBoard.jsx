@@ -5,8 +5,10 @@ import './dashBoard.css';
 const DashBoard = () => {
     // 상태 관리
     const [products, setProducts] = useState([]);
-    const [searchKeyword, setSearchKeyword] = useState('');
     const [searchResults, setSearchResults] = useState([]);
+    const [searchKeyword, setSearchKeyword] = useState('');
+    const [isSearching, setIsSearching] = useState(false);
+    const [categories, setCategories] = useState([]);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState('');
     const [editingStock, setEditingStock] = useState({});
@@ -24,7 +26,6 @@ const DashBoard = () => {
     });
     
     // 카테고리 관련 상태
-    const [categories, setCategories] = useState([]);
     const [showCategoryForm, setShowCategoryForm] = useState(false);
     const [newCategoryName, setNewCategoryName] = useState('');
     const [showDeleteCategoryForm, setShowDeleteCategoryForm] = useState(false);
@@ -69,6 +70,14 @@ const DashBoard = () => {
         }
     };
 
+    // 검색 초기화
+    const clearSearch = () => {
+        setSearchKeyword('');
+        setSearchResults([]);
+        setIsSearching(false);
+        setError('');
+    };
+
     // 상품 검색
     const handleSearch = async () => {
         if (!searchKeyword.trim()) {
@@ -78,16 +87,19 @@ const DashBoard = () => {
 
         setLoading(true);
         setError('');
+        setIsSearching(true);
         try {
             const response = await productApi.searchProducts(searchKeyword);
             if (response.success) {
                 setSearchResults(response.data);
             } else {
                 setError(response.message || '검색에 실패했습니다.');
+                setSearchResults([]);
             }
         } catch (error) {
-            console.error('상품 검색 오류:', error);
-            setError('상품 검색 중 오류가 발생했습니다.');
+            console.error('검색 오류:', error);
+            setError('검색 중 오류가 발생했습니다.');
+            setSearchResults([]);
         } finally {
             setLoading(false);
         }
@@ -552,21 +564,35 @@ const DashBoard = () => {
             {/* 검색 섹션 */}
             <div className="search-section">
                 <h2>상품 검색</h2>
-                <div className="search-input">
+                {isSearching && (
+                    <div className="search-results-header">
+                        <p className="search-info">"{searchKeyword}" 검색 결과</p>
+                        <button onClick={clearSearch} className="clear-search-btn">
+                            전체 목록으로 돌아가기
+                        </button>
+                    </div>
+                )}
+                <div className={`search-input ${isSearching ? 'search-input-compact' : ''}`}>
                     <input
                         type="text"
                         value={searchKeyword}
                         onChange={(e) => setSearchKeyword(e.target.value)}
-                        placeholder="상품명을 입력하세요"
+                        placeholder={isSearching ? "새로운 검색어를 입력하세요" : "상품명을 입력하세요"}
                         onKeyPress={(e) => {
                             if (e.key === 'Enter') {
                                 handleSearch();
                             }
                         }}
                     />
-                    <button onClick={handleSearch} disabled={loading}>
-                        {loading ? '검색 중...' : '검색'}
-                    </button>
+                    {isSearching ? (
+                        <button onClick={handleSearch} disabled={loading} className="new-search-btn">
+                            {loading ? '검색 중...' : '새 검색'}
+                        </button>
+                    ) : (
+                        <button onClick={handleSearch} disabled={loading}>
+                            {loading ? '검색 중...' : '검색'}
+                        </button>
+                    )}
                 </div>
             </div>
 
@@ -584,13 +610,12 @@ const DashBoard = () => {
                 </div>
             )}
 
-            {/* 검색 결과 */}
-            {searchResults.length > 0 && (
+            {/* 검색 결과 또는 전체 상품 목록 */}
+            {isSearching ? (
                 renderProductList(searchResults, '검색 결과')
+            ) : (
+                renderProductList(products, '전체 상품 목록')
             )}
-
-            {/* 전체 상품 목록 */}
-            {renderProductList(products, '전체 상품 목록')}
         </div>
     );
 };
