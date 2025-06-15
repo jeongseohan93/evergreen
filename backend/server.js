@@ -7,6 +7,7 @@ const morgan = require('morgan'); // HTTP 요청 로그를 콘솔에 출력해�
 const cookieParser = require('cookie-parser'); // HTTP 요청의 쿠키를 파싱(분석)하여 `req.cookies` 객체에 넣어주는 미들웨어 임포트
 const auth = require('./routes/auth'); // 사용자 인증 관련 라우터 (로그인, 회원가입 등)
 const admin = require('./routes/admin'); // 관리자 인증 관련 라우터
+const reportRouter = require('./routes/admin/report');
 const passportConfig = require('./passport'); // Passport 설정 파일 불러오기 (전략 등록, 시리얼라이즈/디시리얼라이즈 등 설정 포함)
 const { notFound, errorHandler } = require('./middlewares/error'); // 404/500 에러 처리 미들웨어
 
@@ -18,7 +19,7 @@ const { notFound, errorHandler } = require('./middlewares/error'); // 404/500 �
 // ======================
 dotenv.config(); // .env 파일에 작성된 환경 변수들을 process.env에 로드함 (애플리케이션 시작 시 가장 먼저 실행되어야 함)
 const app = express(); // express 애플리케이션 인스턴스를 app에 담음
-app.set('port', process.env.PORT || 8002);// .env 파일에 PORT 값이 있으면 그 값을 사용하고, 없으면 기본값 8002 사용
+app.set('port', process.env.PORT || 3005);// .env 파일에 PORT 값이 있으면 그 값을 사용하고, 없으면 기본값 3005 사용
 passportConfig(); // Passport 설정 함수 실행 (미들웨어 적용 전에 인증 전략을 미리 세팅함)
  
 
@@ -71,7 +72,7 @@ app.use(passport.initialize()); // passport 인증 시스템 초기화
 // ======================
 app.use('/auth', auth); // auth → 인증 관련 라우터
 app.use('/admin', admin); //admin -> 관리자 인증 관련 라우터
-
+app.use('/adminReport', reportRouter); 
 
 // ==============================
 // [에러 처리 미들웨어 등록]

@@ -50,6 +50,13 @@ Object.keys(db).forEach(modelName => {
     }
 });
 
+//디버깅용
+//기존에 존재하는 테이블을 모두 삭제(DROP) 한 후,
+//모델 정의대로 새롭게 테이블을 생성(CREATE) 합니다.
+/* sequelize.sync({ force: true }) 
+ .then(() => console.log('모든 테이블 재생성 완료'))
+.catch(console.error); */
+
 // db 객체 내보내기 (모든 모델 및 sequelize 인스턴스 포함)
 // - db.User, db.Post, db.sequelize 등으로 접근 가능
 module.exports = db;
