@@ -5,7 +5,7 @@ const bcrypt = require('bcrypt');
 const passport = require('passport');
 const { v4: uuidv4} = require('uuid');
 const { setToken, deleteToken } = require('../utils/redis');
-
+const jwt = require('jsonwebtoken');
 // ===============================
 // [ idcheckr 컨트롤러 ]
 // - 회원가입 시 이메일 중복 여부를 검사하는 API
@@ -131,20 +131,25 @@ exports.login = (req, res, next) => {
 exports.logout = async (req, res, next) => {
   try {
     // 1. Authorization 헤더에서 Bearer 토큰 추출
-    const token = req.headers.authorization?.split('Bearer ')[1];
+    const token = req.cookies.access_token;
+  
     if (!token) {
       // 토큰이 없으면 401 Unauthorized 응답
       return res.status(401).json({ message: '토큰이 없습니다.' });
     }
-
+    console.log(token);
     // 2. 토큰 디코딩 → 만료 시간 확인
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    
     const now = Math.floor(Date.now() / 1000);        // 현재 시각 (초 단위)
     const ttl = decoded.exp - now;                    // 남은 만료 시간 계산
 
-    // 3. 블랙리스트 등록: 해당 토큰을 blacklist:<token> 형식으로 저장
-    //    TTL 설정을 통해 일정 시간 후 자동 만료되도록 설정
-    await setToken(`blacklist:${token}`, true, ttl);
+  
+    res.clearCookie('access_token', {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: 'Lax'
+  });
 
     // 4. 성공 응답 반환
     return res.status(200).json({ message: '로그아웃 성공' });
