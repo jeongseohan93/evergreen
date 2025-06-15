@@ -5,6 +5,7 @@ import Admin from './features/adminPage/dashBoard'
 import ReportManage from './features/adminPage/reportPage/reportManage'
 import ReportDetail from './features/adminPage/reportPage/reportDetail'
 import ReportEdit from './features/adminPage/reportPage/reportEdit'
+import ReportWrite from './features/adminPage/reportPage/reportWrite'
 import Login from './features/mainPage/LoginPage'
 import Main from './features/mainPage/mainPage'
 
@@ -21,6 +22,7 @@ function AppRoutes() {
         <Route path='/admin/report' element={<ReportManage/>}/>
         <Route path="/admin/report/:reportId" element={<ReportDetail />} />
         <Route path="/admin/report/:reportId/edit" element={<ReportEdit />} />
+        <Route path="/admin/report/write" element={<ReportWrite />} />
       </Routes>
     </BrowserRouter>
   );

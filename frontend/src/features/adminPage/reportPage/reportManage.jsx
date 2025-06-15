@@ -8,19 +8,34 @@ const ReportManage = () => {
   const [reports, setReports] = useState([]);
   const [loading, setLoading] = useState(true);
 
+  const fetchReports = async () => {
+    try {
+      const data = await reportApi.getAllReports();
+      setReports(data);
+    } catch (e) {
+      alert("조행기 목록을 불러오지 못했습니다.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
   useEffect(() => {
-    const load = async () => {
-      try {
-        const data = await reportApi.getAllReports();
-        setReports(data);
-      } catch (e) {
-        alert("조행기 목록을 불러오지 못했습니다.");
-      } finally {
-        setLoading(false);
-      }
-    };
-    load();
+    fetchReports();
   }, []);
+
+  const handleDelete = async (reportId) => {
+    if (window.confirm('정말로 이 조행기를 삭제하시겠습니까?')) {
+      try {
+        await reportApi.deleteReport(reportId);
+        alert('조행기가 성공적으로 삭제되었습니다.');
+        // 삭제 후 목록 새로고침
+        fetchReports();
+      } catch (error) {
+        console.error('조행기 삭제 중 오류 발생:', error);
+        alert('조행기 삭제 중 오류가 발생했습니다.');
+      }
+    }
+  };
 
   return (
     <div style={{ padding: '20px', maxWidth: '1200px', margin: '0 auto' }}>
@@ -32,7 +47,20 @@ const ReportManage = () => {
       }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: '20px' }}>
           <h2 style={{ margin: 0 }}>조행기 관리</h2>
-          <button style={{ padding: '8px 16px', cursor: 'pointer' }}>조행기 작성</button>
+          <button 
+            onClick={() => navigate('/admin/report/write')}
+            style={{ 
+              padding: '8px 16px', 
+              cursor: 'pointer',
+              backgroundColor: '#4CAF50',
+              color: 'white',
+              border: 'none',
+              borderRadius: '4px',
+              fontWeight: 'bold'
+            }}
+          >
+            조행기 작성
+          </button>
         </div>
         <button 
           onClick={() => navigate('/admin')}
@@ -127,6 +155,7 @@ const ReportManage = () => {
                           border: 'none',
                           borderRadius: '4px'
                         }}
+                        onClick={() => handleDelete(report.report_id)}
                       >
                         삭제
                       </button>

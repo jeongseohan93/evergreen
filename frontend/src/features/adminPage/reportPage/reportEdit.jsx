@@ -67,11 +67,24 @@ const ReportEdit = () => {
   }
 
   return (
-    <div style={{ padding: '20px', maxWidth: '800px', margin: '0 auto' }}>
-      <div style={{ marginBottom: '20px' }}>
+    <div style={{ padding: '20px', maxWidth: '1200px', margin: '0 auto' }}>
+      <div style={{ 
+        display: 'flex', 
+        justifyContent: 'space-between', 
+        alignItems: 'center', 
+        marginBottom: '20px' 
+      }}>
+        <h2 style={{ margin: 0 }}>조행기 수정</h2>
         <button 
-          onClick={() => navigate("/admin/report")}
-          style={{ padding: '8px 16px', cursor: 'pointer', marginBottom: '20px' }}
+          onClick={() => navigate('/admin/report')}
+          style={{ 
+            padding: '8px 16px', 
+            cursor: 'pointer',
+            backgroundColor: '#2196F3',
+            color: 'white',
+            border: 'none',
+            borderRadius: '4px'
+          }}
         >
           목록으로 돌아가기
         </button>

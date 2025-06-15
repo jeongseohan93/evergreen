@@ -11,4 +11,7 @@ router.get('/admin/report/:reportId', reportControllers.getReportById);
 //조행기 수정
 router.put('/admin/report/:reportId', reportControllers.updateReport);
 
+//조행기 삭제
+router.delete('/admin/report/:reportId', reportControllers.deleteReport);
+
 module.exports = router;

@@ -1,4 +1,4 @@
-// 조행기 작성, 조행기 수정, 조행기-상품 연결(?)
+// 조행기 작성, 조행기 수정, 조행기-상품 연결
 const Report = require('../../models/report');
 
 // 조행기 목록 조회
@@ -56,6 +56,23 @@ exports.updateReport = async (req, res) => {
     });
   } catch (err) {
     console.error("조행기 수정 오류:", err);
+    res.status(500).json({ message: "서버 오류" });
+  }
+};
+
+// 조행기 삭제
+exports.deleteReport = async (req, res) => {
+  try {
+    const report = await Report.findByPk(req.params.reportId);
+    
+    if (!report) {
+      return res.status(404).json({ message: "조행기를 찾을 수 없습니다." });
+    }
+
+    await report.destroy();
+    res.status(200).json({ message: "조행기가 삭제되었습니다." });
+  } catch (err) {
+    console.error("조행기 삭제 오류:", err);
     res.status(500).json({ message: "서버 오류" });
   }
 };
