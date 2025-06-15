@@ -6,8 +6,8 @@ import ReportDetail from './features/adminPage/reportPage/reportDetail'
 import ReportEdit from './features/adminPage/reportPage/reportEdit'
 import ReportWrite from './features/adminPage/reportPage/reportWrite'
 
-import Main from './features/mainPage/MainPage'
-import Admin from './features/adminPage/DashBoard'
+import Main from './features/mainPage/mainPage'
+import Admin from './features/adminPage/dashBoard'
 import Login from './features/mainPage/LoginPage'
 import Register from './features/mainPage/Register';
 import Search from './features/searchPage/SearchPage';
