@@ -30,12 +30,12 @@ class Lineup extends Model {
     );
   }
 
-  static associate(db) {
+  /* static associate(db) {
     Lineup.hasMany(db.Product, { //하나의 라인업 안에 많은 상품들이 속해있다.
       foreignKey: 'lineup_id',
       onDelete: 'SET NULL',
     });
-  }
+  } */
 }
 
 module.exports = Lineup;

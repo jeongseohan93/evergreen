@@ -31,13 +31,13 @@ class Category extends Model {
     );
   }
 
-  static associate(db) { //테이블 관계성 설정
+  /* static associate(db) { //테이블 관계성 설정
     //belongsTo와 hasMany는 쌍방향 관계를 완성하기 위해 둘 다 필요하다.(product.js / category.js)
     Category.hasMany(db.Product, { //하나의 카테고리 안에 많은 상품들이 속해있다.
       foreignKey: 'category_id',
       onDelete: 'CASCADE',
     });
-  }
+  } */
 }
 
 module.exports = Category;
