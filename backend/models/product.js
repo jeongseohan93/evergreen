@@ -69,4 +69,4 @@ class Product extends Model {
 
 //내보내는 방식도 여러가지 있음. 이 방식으로 일단 index.js에서 오류가 없으니 사용.
 module.exports = Product; 
->>>>>>> 5beaa17b68387e508a129f04062a254a3b17245b
+
