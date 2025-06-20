@@ -110,14 +110,29 @@ exports.login = (req, res, next) => {
       return res.status(401).json({ message: info?.message || '로그인 실패' });
     }
 
-    // 인증 성공! user 객체에서 필요한 정보만 추출해서 req.authData에 저장
-    req.authData = {
-      email: user.email,
-      nick: user.nick,
+    // 여기서 JWT 생성
+    const token = jwt.sign(
+      { user_uuid: user.user_uuid, email: user.email, role: user.role },
+      process.env.JWT_SECRET,
+      { expiresIn: '1h' }
+    );
+    
+    // 쿠키 설정 및 응답
+    res.cookie('access_token', token, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: 'lax', // 'lax'로 설정하여 cross-site 요청에서도 일부 허용
+    });
+    
+    return res.status(200).json({ 
+      message: '로그인 성공',
+      user: {
+        email: user.email,
+        name: user.name,
+      },
       role: user.role,
-    }; // 다음 미들웨어(JWT 생성, 토큰 저장 등)에서 활용 가능
-    next(); // 다음 미들웨어로 이동
-  })(req, res, next); // passport.authenticate는 미들웨어가 아닌 함수이므로 즉시 실행(괄호 위치 매우 중요)
+    });
+  })(req, res, next);
 };
 
 

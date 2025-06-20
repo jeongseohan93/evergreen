@@ -4,7 +4,7 @@ const express = require('express');
 const { isNotLoggedIn, isLoggedIn } = require('../middlewares/index'); // jwt토근 유무 및 로그인 상태가 아닌지 체크하는 미들웨어
 const { idcheckr, register, login, logout } = require('../controllers/authController'); // 로그인 요청 처리 컨트롤러
 const { isjwt } = require('../utils/isjwt'); // JWT 토큰 생성 및 검증 유틸리티
-const { sendToken } = require('../controllers/sendController');
+const { sendToken, meToken } = require('../controllers/sendController');
 const jwt  =require('jsonwebtoken');
 const router = express.Router(); // 라우터 인스턴스 생성 (각 요청 경로를 모듈화하여 관리하기 위함)
 
@@ -40,10 +40,10 @@ router.post('/register', register);
 router.post('/login', isNotLoggedIn, login, isjwt, sendToken);
 
 
-router.post('/logincheck', (req, res) => {
+router.get('/me', (req, res) => {
     try {
         
-      const token = req.cookies.access_token; // ✅ 수정된 부분
+      const token = req.cookies.access_token; 
       console.log(token);
       if (!token) {
         return res.status(401).json({ success: false, message: "No token" });
@@ -53,8 +53,16 @@ router.post('/logincheck', (req, res) => {
   
       return res.json({
         success: true,
-        role: decoded.role,
-      });
+        isLoggedIn: true,
+        user: { // 사용자 정보를 객체로 묶어서 반환
+          id: decoded.id, // ID가 있다면 포함 (보통 JWT 페이로드에 들어있음)
+          email: decoded.email, // 토큰에서 email 값 가져오기
+          name: decoded.name,   // 토큰에서 name 값 가져오기
+          role: decoded.role,   // 토큰에서 role 값 가져오기
+          // 필요한 다른 정보가 있다면 decoded에서 추가
+        },
+        message: "인증되었습니다."
+    });
     } catch (err) {
       console.error("JWT 검증 실패:", err.message);
       return res.status(401).json({ success: false, message: "Invalid token" });
@@ -69,6 +77,9 @@ router.post('/logincheck', (req, res) => {
 // - logout: 로그아웃 로직(토큰 무효화 등) 처리 컨트롤러
 // ===============================
 router.post('/logout', logout);
+
+
+router.get('/me', meToken);
 
 
 module.exports = router; // 라우터 객체를 외부 모듈에서 사용할 수 있도록 내보냄 

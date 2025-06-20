@@ -21,3 +21,11 @@ exports.sendToken = (req, res) => {
     message: '로그인 성공',
   });
 };
+
+exports.meToken = (req, res) => {
+  res.status(200).json({
+    id: 'test-user-id',
+    name: '테스트유저',
+    role: 'admin' // 또는 'user'
+  });
+}
