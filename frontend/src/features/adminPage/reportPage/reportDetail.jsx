@@ -26,7 +26,7 @@ const ReportDetail = () => {
 
   if (loading) {
     return (
-      <div style={{ padding: '20px', textAlign: 'center' }}>
+      <div className="p-5 text-center">
         로딩 중...
       </div>
     );
@@ -34,19 +34,11 @@ const ReportDetail = () => {
 
   if (!report) {
     return (
-      <div style={{ padding: '20px', textAlign: 'center' }}>
+      <div className="p-5 text-center">
         조행기를 찾을 수 없습니다.
         <button 
           onClick={() => navigate('/admin/report')}
-          style={{ 
-            padding: '8px 16px', 
-            cursor: 'pointer',
-            backgroundColor: '#2196F3',
-            color: 'white',
-            border: 'none',
-            borderRadius: '4px',
-            marginTop: '10px'
-          }}
+          className="block mx-auto mt-4 px-4 py-2 cursor-pointer bg-blue-500 text-white border-none rounded hover:bg-blue-600 transition-colors"
         >
           목록으로 돌아가기
         </button>
@@ -55,64 +47,55 @@ const ReportDetail = () => {
   }
 
   return (
-    <div style={{ padding: '20px', maxWidth: '1200px', margin: '0 auto' }}>
-      <div style={{ 
-        display: 'flex', 
-        justifyContent: 'space-between', 
-        alignItems: 'center', 
-        marginBottom: '20px' 
-      }}>
-        <h2 style={{ margin: 0 }}>조행기 상세</h2>
+    <div className="p-5 max-w-7xl mx-auto">
+      <div className="flex justify-between items-center mb-5">
+        <h2 className="m-0">조행기 상세</h2>
         <button 
           onClick={() => navigate('/admin/report')}
-          style={{ 
-            padding: '8px 16px', 
-            cursor: 'pointer',
-            backgroundColor: '#2196F3',
-            color: 'white',
-            border: 'none',
-            borderRadius: '4px'
-          }}
+          className="px-4 py-2 cursor-pointer bg-blue-500 text-white border-none rounded hover:bg-blue-600 transition-colors"
         >
           목록으로 돌아가기
         </button>
       </div>
-      
-      <div style={{ 
-        backgroundColor: '#fff',
-        padding: '24px',
-        borderRadius: '8px',
-        boxShadow: '0 1px 3px rgba(0,0,0,0.1)'
-      }}>
-        <h1 style={{ 
-          marginBottom: '24px',
-          fontSize: '28px',
-          fontWeight: '700',
-          color: '#333'
-        }}>
-          {report.title}
-        </h1>
-        
-        <div style={{ 
-          display: 'flex', 
-          justifyContent: 'space-between',
-          color: '#666',
-          marginBottom: '32px',
-          paddingBottom: '16px',
-          borderBottom: '1px solid #eee',
-          fontSize: '15px'
-        }}>
-          <div style={{ fontWeight: '500' }}>작성자: {report.admin_uuid}</div>
-          <div>작성일: {new Date(report.created_at).toLocaleString()}</div>
+      <div className="bg-white p-5 rounded-lg shadow">
+        <h3 className="text-xl font-bold mb-4">{report.title}</h3>
+        <div className="text-gray-600 mb-4">
+          <p>작성자: {report.admin_uuid}</p>
+          <p>작성일: {new Date(report.created_at).toLocaleDateString()}</p>
         </div>
-
-        <div style={{ 
-          whiteSpace: 'pre-wrap',
-          lineHeight: '1.8',
-          fontSize: '16px',
-          color: '#444'
-        }}>
-          {report.content}
+        {report.photo && (
+          <div className="mt-4">
+            <h3 className="text-lg font-semibold mb-2">이미지</h3>
+            <div className="max-w-2xl mx-auto">
+              <img
+                src={`http://localhost:3005/adminImages/${report.photo.split('/').pop()}`}
+                alt="조행기 이미지"
+                className="w-full h-auto object-contain rounded-lg"
+              />
+            </div>
+          </div>
+        )}
+        <div className="prose max-w-none mt-6">
+          {/* 글/사진 배열(contents) 순서대로 렌더링 */}
+          {Array.isArray(report.contents) && report.contents.length > 0 ? (
+            report.contents.map((item, idx) =>
+              item.type === 'text' ? (
+                <p key={idx} className="my-4 whitespace-pre-line">{item.value}</p>
+              ) : item.type === 'image' ? (
+                <div key={idx} className="my-4 flex justify-center">
+                  <img
+                    src={item.value.startsWith('/adminImages/')
+                      ? `http://localhost:3005${item.value}`
+                      : item.value}
+                    alt={`조행기 이미지${idx+1}`}
+                    className="max-w-xl rounded-lg"
+                  />
+                </div>
+              ) : null
+            )
+          ) : (
+            <div className="text-gray-400">내용이 없습니다.</div>
+          )}
         </div>
       </div>
     </div>

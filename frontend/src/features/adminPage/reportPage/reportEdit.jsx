@@ -1,169 +1,199 @@
-import React, { useEffect, useState } from "react";
-import { useParams, useNavigate } from "react-router-dom";
-import { reportApi } from "../../../services/admin/adminReportApi";
+import React, { useState, useEffect } from 'react';
+import { useParams, useNavigate } from 'react-router-dom';
+import { reportApi } from '../../../services/admin/adminReportApi';
 
 const ReportEdit = () => {
   const { reportId } = useParams();
   const navigate = useNavigate();
-  const [report, setReport] = useState(null);
   const [loading, setLoading] = useState(true);
-  const [editedTitle, setEditedTitle] = useState("");
-  const [editedContent, setEditedContent] = useState("");
+  const [error, setError] = useState(null);
+  const [title, setTitle] = useState('');
+  const [contents, setContents] = useState([]); // 글/사진 배열
+  const [inputText, setInputText] = useState('');
+  const [inputImage, setInputImage] = useState(null);
+  const [previewUrl, setPreviewUrl] = useState(null);
 
   useEffect(() => {
-    const loadReport = async () => {
+    const fetchReport = async () => {
       try {
         const data = await reportApi.getReportById(reportId);
-        setReport(data);
-        setEditedTitle(data.title);
-        setEditedContent(data.content);
-      } catch (e) {
-        alert("조행기 내용을 불러오지 못했습니다.");
-        navigate("/admin/report");
-      } finally {
+        setTitle(data.title || '');
+        setContents(Array.isArray(data.contents) ? data.contents : []);
+        setLoading(false);
+      } catch (err) {
+        setError('조행기 정보를 불러오는데 실패했습니다.');
         setLoading(false);
       }
     };
-    loadReport();
-  }, [reportId, navigate]);
+    if (reportId) {
+      fetchReport();
+    } else {
+      setError('조행기 ID가 없습니다.');
+      setLoading(false);
+    }
+  }, [reportId]);
 
+  // 글 추가
+  const handleAddText = () => {
+    if (inputText.trim()) {
+      setContents([...contents, { type: 'text', value: inputText }]);
+      setInputText('');
+    }
+  };
+
+  // 이미지 추가
+  const handleImageChange = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      const url = URL.createObjectURL(file);
+      setContents([...contents, { type: 'image', value: url }]);
+      setInputImage(null);
+      setPreviewUrl(null);
+    }
+  };
+
+  // 글/사진/이미지 삭제
+  const handleRemoveContent = (idx) => {
+    setContents(contents.filter((_, i) => i !== idx));
+  };
+
+  // 조행기 수정(저장)
   const handleSubmit = async (e) => {
     e.preventDefault();
-    
-    //조행기 수정 유효성 체크
-    if (!editedTitle.trim() || !editedContent.trim()) {
-      alert("제목과 내용을 모두 입력해주세요.");
+    setLoading(true);
+    setError(null);
+    if (!title.trim() || contents.length === 0) {
+      setError('제목과 글/사진을 하나 이상 추가해주세요.');
+      setLoading(false);
       return;
     }
-
     try {
-      await reportApi.updateReport(reportId, {
-        title: editedTitle,
-        content: editedContent
-      });
-      
-      alert("조행기가 수정되었습니다.");
-      navigate("/admin/report");
-    } catch (error) {
-      console.error("조행기 수정 오류:", error);
-      alert(error.response?.data?.message || "조행기 수정 중 오류가 발생했습니다.");
+      await reportApi.updateReport(reportId, { title, contents });
+      navigate('/admin/report');
+    } catch (err) {
+      setError('조행기 수정에 실패했습니다.');
+      setLoading(false);
     }
   };
 
   if (loading) {
-    return (
-      <div style={{ padding: '20px', textAlign: 'center' }}>
-        로딩 중...
-      </div>
-    );
-  }
-
-  if (!report) {
-    return (
-      <div style={{ padding: '20px', textAlign: 'center' }}>
-        조행기를 찾을 수 없습니다.
-      </div>
-    );
+    return <div className="p-5 text-center">로딩 중...</div>;
   }
 
   return (
-    <div style={{ padding: '20px', maxWidth: '1200px', margin: '0 auto' }}>
-      <div style={{ 
-        display: 'flex', 
-        justifyContent: 'space-between', 
-        alignItems: 'center', 
-        marginBottom: '20px' 
-      }}>
-        <h2 style={{ margin: 0 }}>조행기 수정</h2>
-        <button 
+    <div className="p-5 max-w-7xl mx-auto">
+      <div className="flex justify-between items-center mb-6">
+        <h1 className="text-2xl font-bold">조행기 수정</h1>
+        <button
           onClick={() => navigate('/admin/report')}
-          style={{ 
-            padding: '8px 16px', 
-            cursor: 'pointer',
-            backgroundColor: '#2196F3',
-            color: 'white',
-            border: 'none',
-            borderRadius: '4px'
-          }}
+          className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-500 transition-colors"
         >
           목록으로 돌아가기
         </button>
       </div>
       
-      <div style={{ 
-        backgroundColor: '#fff',
-        padding: '24px',
-        borderRadius: '8px',
-        boxShadow: '0 1px 3px rgba(0,0,0,0.1)'
-      }}>
-        <form onSubmit={handleSubmit}>
-          <div style={{ marginBottom: '24px' }}>
-            <textarea
-              value={editedTitle}
-              onChange={(e) => setEditedTitle(e.target.value)}
-              style={{
-                width: '100%',
-                padding: '12px',
-                fontSize: '28px',
-                fontWeight: '700',
-                color: '#333',
-                border: '1px solid #ddd',
-                borderRadius: '4px',
-                resize: 'none',
-                minHeight: '50px'
-              }}
-            />
-          </div>
-          
-          <div style={{ 
-            display: 'flex', 
-            justifyContent: 'space-between',
-            color: '#666',
-            marginBottom: '32px',
-            paddingBottom: '16px',
-            borderBottom: '1px solid #eee',
-            fontSize: '15px'
-          }}>
-            <div style={{ fontWeight: '500' }}>작성자: {report.admin_uuid}</div>
-            <div>작성일: {new Date(report.created_at).toLocaleString()}</div>
-          </div>
+      {error && (
+        <div className="mb-4 p-4 bg-red-100 text-red-700 rounded">
+          {error}
+        </div>
+      )}
 
-          <div style={{ marginBottom: '24px' }}>
-            <textarea
-              value={editedContent}
-              onChange={(e) => setEditedContent(e.target.value)}
-              style={{
-                width: '100%',
-                padding: '16px',
-                fontSize: '16px',
-                lineHeight: '1.8',
-                color: '#444',
-                border: '1px solid #ddd',
-                borderRadius: '4px',
-                resize: 'vertical',
-                minHeight: '300px'
-              }}
-            />
-          </div>
+      <form onSubmit={handleSubmit} className="space-y-6">
+        <div>
+          <label htmlFor="title" className="block text-sm font-medium text-gray-700 mb-1">
+            제목
+          </label>
+          <input
+            type="text"
+            id="title"
+            value={title}
+            onChange={e => setTitle(e.target.value)}
+            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+            required
+          />
+        </div>
 
-          <div style={{ textAlign: 'right' }}>
-            <button
-              type="submit"
-              style={{
-                padding: '10px 24px',
-                backgroundColor: '#4CAF50',
-                color: 'white',
-                border: 'none',
-                borderRadius: '4px',
-                cursor: 'pointer',
-                fontSize: '16px'
-              }}
-            >
-              수정하기
-            </button>
+        {/* 글 입력 및 추가 */}
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-1">글 입력</label>
+          <textarea
+            value={inputText}
+            onChange={e => setInputText(e.target.value)}
+            className="w-full h-32 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+            placeholder="글을 입력하고 '글 추가' 버튼을 누르세요."
+            disabled={loading}
+          />
+          <button
+            type="button"
+            onClick={handleAddText}
+            className="mt-2 px-4 py-2 bg-blue-400 text-white rounded hover:bg-blue-500"
+            disabled={loading || !inputText.trim()}
+          >
+            글 추가
+          </button>
+        </div>
+
+        {/* 이미지 입력 및 추가 */}
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-1">이미지 추가</label>
+          <input
+            type="file"
+            accept="image/*"
+            onChange={handleImageChange}
+            className="w-full p-2 border border-gray-300 rounded focus:outline-none focus:border-blue-500"
+            disabled={loading}
+          />
+        </div>
+
+        {/* 추가된 글/사진 미리보기 */}
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-1">미리보기</label>
+          <div className="bg-gray-50 p-3 rounded min-h-[60px]">
+            {contents.length === 0 && <div className="text-gray-400">아직 추가된 글/사진이 없습니다.</div>}
+            {contents.map((item, idx) =>
+              item.type === 'text' ? (
+                <div key={idx} className="flex items-center my-2">
+                  <p className="flex-1 whitespace-pre-line">{item.value}</p>
+                  <button
+                    type="button"
+                    onClick={() => handleRemoveContent(idx)}
+                    className="ml-2 px-2 py-1 text-xs bg-red-400 text-white rounded hover:bg-red-600"
+                  >
+                    삭제
+                  </button>
+                </div>
+              ) : (
+                <div key={idx} className="flex items-center my-2">
+                  <img
+                    src={item.value.startsWith('/adminImages/')
+                      ? `http://localhost:3005${item.value}`
+                      : item.value}
+                    alt={`첨부 이미지${idx+1}`}
+                    className="max-w-xs rounded"
+                  />
+                  <button
+                    type="button"
+                    onClick={() => handleRemoveContent(idx)}
+                    className="ml-2 px-2 py-1 text-xs bg-red-400 text-white rounded hover:bg-red-600"
+                  >
+                    삭제
+                  </button>
+                </div>
+              )
+            )}
           </div>
-        </form>
-      </div>
+        </div>
+
+        <div className="flex justify-end">
+          <button
+            type="submit"
+            className="px-6 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 transition-colors"
+            disabled={loading}
+          >
+            {loading ? '수정 중...' : '수정하기'}
+          </button>
+        </div>
+      </form>
     </div>
   );
 };

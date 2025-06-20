@@ -6,6 +6,9 @@ import ReportDetail from './features/adminPage/reportPage/reportDetail'
 import ReportEdit from './features/adminPage/reportPage/reportEdit'
 import ReportWrite from './features/adminPage/reportPage/reportWrite'
 
+import UserManage from './features/adminPage/userPage/userManage'
+import UserEdit from './features/adminPage/userPage/userEdit'
+
 import Main from './features/mainPage/mainPage'
 import Admin from './features/adminPage/dashBoard'
 import Login from './features/mainPage/LoginPage'
@@ -28,6 +31,8 @@ function AppRoutes() {
         <Route path="/admin/report/:reportId" element={<ReportDetail />} />
         <Route path="/admin/report/:reportId/edit" element={<ReportEdit />} />
         <Route path="/admin/report/write" element={<ReportWrite />} />
+        <Route path="/admin/user" element={<UserManage />} />
+        <Route path="/admin/user/edit/:userUuid" element={<UserEdit />} />
         <Route path='/' element={<Main />} />
         <Route path='/login' element={<Login />} />
         <Route path='/register' element={<Register />} />
