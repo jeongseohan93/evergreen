@@ -72,7 +72,7 @@ app.use(passport.initialize()); // passport 인증 시스템 초기화
 // ======================
 app.use('/auth', auth); // auth → 인증 관련 라우터
 app.use('/admin', admin); //admin -> 관리자 인증 관련 라우터
-app.use('/adminReport', reportRouter); 
+app.use('/adminReport', reportRouter);
 
 // ==============================
 // [에러 처리 미들웨어 등록]

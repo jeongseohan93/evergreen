@@ -1,7 +1,7 @@
-// sale_date - DATE타입. 2024-01 형식으로 월까지만 저장. (중복 허용 X)
+// sale_date - DATE타입. 2024-01-01 형식으로 일별로 저장. (중복 허용 X)
 // 나중에 admin페이지에서 연/월/일 별로 옵션 선택해서 조회할 수 있도록 추가.
 
-// online_amount - 온라인 매출.(해당 월 기준)
+// online_amount - 온라인 매출.(해당 일 기준)
 // offline_amount - 오프라인 매출.
 // cancel_amount - 취소된 매출.
 // total_amount - 총 매출.
@@ -15,10 +15,14 @@ const { Model, DataTypes } = require('sequelize');
 class Sale extends Model {
   static initiate(sequelize) {
     return super.init({
-      sale_date: {
-        type: DataTypes.CHAR(7), // 또는 DataTypes.STRING(7)
-        allowNull: false,
+      sale_id: {
+        type: DataTypes.INTEGER,
         primaryKey: true,
+        autoIncrement: true,
+      },
+      sale_date: {
+        type: DataTypes.CHAR(10), // YYYY-MM-DD 형식
+        allowNull: false,
       },
       online_amount: {
         type: DataTypes.INTEGER,
