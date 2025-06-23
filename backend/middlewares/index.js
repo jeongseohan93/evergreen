@@ -53,7 +53,7 @@ exports.isNotLoggedIn = (req, res, next) => {
 
   try {
     // 토큰이 유효하면 이미 로그인 상태이므로 403 Forbidden 응답
-    jwt.verify(token, process.env.JWT_SECRET);
+    jwt.verify(token, process.env.JWT_SECRET); 
     return res.status(403).json({ message: '이미 로그인한 상태입니다.' });
   } catch {
     // 토큰이 만료되었거나 변조되었으면 "비로그인 상태"로 간주하고 통과
