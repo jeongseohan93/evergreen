@@ -27,9 +27,15 @@ const publicRoutes = [
   { path: '/findpassword', element: <FindPasswordPage /> },
 
   {
-    path: '/aboutus',
+    path: '/about',
     children: [
       { path: 'company', element: <AboutPage /> },
+    ],
+  },
+
+  {
+    path: '/shopinfo',
+    children: [
       { path: 'privacy', element: <PrivacyPolicyPage /> },
       { path: 'guide', element: <HelpPage /> },
       { path: 'terms', element: <TermsPage /> },

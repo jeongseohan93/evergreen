@@ -1,21 +1,22 @@
 import React from 'react';
 import { Header, Footer, SubHeader} from '@/app';
 import EvergreenLogo from '../../../assets/image/everlogo.png';
+import { PageHeader } from '@/shared';
 
 const AboutPage = () => {
     return (
         <>
             <Header />
             <SubHeader />
-            <section className="py-16 px-4">
-                <div className="max-w-3xl mx-auto bg-white shadow-lg rounded-xl p-10 border border-gray-300">
-                    <h1 className="text-3xl font-extrabold text-center text-black mb-8 border-b pb-4">회사소개</h1>
+            <PageHeader title = '회사소개' />
+            <section className="py-12 px-4">
+                <div className="max-w-6xl mx-auto bg-white rounded-xl p-10 border border-gray-300">
           
                 <div className="flex justify-center mb-8">
                     <img
                         src={EvergreenLogo}
                         alt="에버그린 로고"
-                        className="w-48 h-auto"
+                        className="w-60 h-auto"
                     />
                 </div>
 

@@ -1,8 +1,8 @@
 export const footerLinks = [
-    { name: '회사소개', path: '/aboutus/company' },
-    { name: '이용약관', path: '/aboutus/terms' },
-    { name: '이용안내', path: '/aboutus/guide' },
-    { name: '개인정보처리방침', path: '/aboutus/privacy' }
+    { name: '회사소개', path: '/about/company' },
+    { name: '이용약관', path: '/shopinfo/terms' },
+    { name: '이용안내', path: '/shopinfo/guide' },
+    { name: '개인정보처리방침', path: '/shopinfo/privacy' }
 ];
 
 export const footerCommunity = [
