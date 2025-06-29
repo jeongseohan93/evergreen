@@ -1,4 +1,6 @@
 // src/app/routes/adminRoutes.js
+import { Outlet } from 'react-router-dom';
+import AdminOutlet from './AdminOutlet';
 import DashboardPage from '@/features/admin/pages/DashBoardPage';
 import { PrivateRoute } from '@/shared';
 import UserManage from '@/features/admin/pages/userPage/userManage';
@@ -10,47 +12,33 @@ import ReportEdit from '@/features/admin/pages/reportPage/reportEdit';
 
 
 const adminRoutes = [
-  
-      { path: '/admin', element: (  <PrivateRoute role={['admin']} isLoggedIn={true}>
-                                          <DashboardPage />
-                                    </PrivateRoute>),},
-      { path: '/admin/user', element: (
-          <PrivateRoute role={['admin']} isLoggedIn={true}>
-            <UserManage />
-          </PrivateRoute>
-        ),
+  {
+    path: '/admin',
+    element: ( //element의 공통조건: 관리자 로그인
+      <PrivateRoute role={['admin']} isLoggedIn={true}>
+        <AdminOutlet />
+      </PrivateRoute>
+    ),
+    children: [
+      { path: '', element: <DashboardPage /> },
+      {
+        path: 'user',
+        children: [
+          { path: '', element: <UserManage /> },
+          { path: 'edit/:userUuid', element: <UserEdit /> },
+        ]
       },
-      { path: '/admin/user/edit/:userUuid', element: (
-          <PrivateRoute role={['admin']} isLoggedIn={true}>
-            <UserEdit />
-          </PrivateRoute>
-        ),
-      },
-      { path: '/admin/report', element: (
-          <PrivateRoute role={['admin']} isLoggedIn={true}>
-            <ReportManage />
-          </PrivateRoute>
-        ),
-      },
-      { path: '/admin/report/write', element: (
-          <PrivateRoute role={['admin']} isLoggedIn={true}>
-            <ReportWrite />
-          </PrivateRoute>
-        ),
-      },
-      { path: '/admin/report/:reportId', element: (
-          <PrivateRoute role={['admin']} isLoggedIn={true}>
-            <ReportDetail />
-          </PrivateRoute>
-        ),
-      },
-      { path: '/admin/report/:reportId/edit', element: (
-          <PrivateRoute role={['admin']} isLoggedIn={true}>
-            <ReportEdit />
-          </PrivateRoute>
-        ),
-      },
-  
+      {
+        path: 'report',
+        children: [
+          { path: '', element: <ReportManage /> },
+          { path: 'write', element: <ReportWrite /> },
+          { path: ':reportId', element: <ReportDetail /> },
+          { path: ':reportId/edit', element: <ReportEdit /> },
+        ]
+      }
+    ]
+  }
 ];
 
 export default adminRoutes;
