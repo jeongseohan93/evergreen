@@ -1,13 +1,14 @@
 import React from 'react';
 import { Header, Footer, SubHeader} from '@/app';
+import { PageHeader } from '@/shared';
 
 const ReviewListPage = () => {
     return (
         <>
             <Header />
             <SubHeader />
-
-            <h1>리뷰 페이지</h1>
+            <PageHeader title = '리뷰' />
+            
             
             <Footer />
         </>

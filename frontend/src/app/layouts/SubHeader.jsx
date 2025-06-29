@@ -1,9 +1,10 @@
 import React from 'react';
 import { EvergreenLogo, SearchBar, CartIcon, UserActionIcons } from '@/shared'
 
+
 function SubHeader() {
    return (
-        <div className="grid grid-cols-3 h-40 border-b border-gray-200 pl-12 pr-14 bg-white">
+        <div className="grid grid-cols-3 h-40 border-b border-gray-200 pl-32 pr-36 bg-white">
             <div className="flex items-center">
                 <EvergreenLogo />
             </div>

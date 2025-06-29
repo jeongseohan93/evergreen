@@ -1,7 +1,9 @@
 export { default as Button } from './components/common/Button';
 export { default as Input } from './components/Forms/Input';
 export { default as ErrorMessage } from './components/ui/ErrorMessage/ErrorMessage';
-export { default as Spinner } from './components/ui/loading/Spinner';
+export { default as Spinner } from './components/ui/Loading/Spinner';
+export { default as PageHeader } from './components/ui/PageHeader/PageHeader';
+export { default as ProductCard } from './components/ui/ProductCard/ProductCard';
 
 export { default as PrivateRoute } from './components/PrivateRoute';
 export { default as AccessDeniedPage } from './pages/error/AccessDeniedPage';

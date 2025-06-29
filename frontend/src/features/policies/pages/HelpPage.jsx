@@ -1,5 +1,8 @@
 import React from 'react';
 import { Header, Footer, SubHeader} from '@/app';
+import { PageHeader } from '@/shared';
+import GuidelinePage from '../components/ui/GuildLine';
+
 
 const HelpPage = () => {
     return (
@@ -7,7 +10,8 @@ const HelpPage = () => {
             <Header />
             <SubHeader />
 
-            <h1>이용안내 페이지</h1>
+            <PageHeader title='이용안내' />
+            <GuidelinePage />
             
             <Footer />
         </>

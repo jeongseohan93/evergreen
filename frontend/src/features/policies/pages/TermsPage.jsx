@@ -1,5 +1,7 @@
 import React from 'react';
 import { Header, Footer, SubHeader} from '@/app';
+import {  PageHeader } from '@/shared';
+import TermsOfService from '../components/TermsOfService/TermsOfService';
 
 const TermsPage = () => {
     return (
@@ -7,8 +9,8 @@ const TermsPage = () => {
             <Header />
             <SubHeader />
 
-            <h1>이용약관 페이지</h1>
-            
+            <PageHeader title='이용약관' />
+            <TermsOfService size="h-[680px]" filePath="/aggreement/aggreement.txt" />
             <Footer />
         </>
     );
