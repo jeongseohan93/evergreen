@@ -5,7 +5,7 @@ const router = express.Router();
 const main = require('./main');
 const parcel = require('./parcel');
 const product = require('./product');
-const user = require('./user');
+const userRouter = require('./user');
 const sale = require('./sale');
 
 const { isLoggedIn, isAdmin } = require('../../middlewares/index');
@@ -17,7 +17,7 @@ const { isLoggedIn, isAdmin } = require('../../middlewares/index');
 router.use('/main', main);
 router.use('/parcel', parcel);
 router.use('/product', product);
-router.use('/user', user);
+router.use('/user', userRouter);
 router.use('/sale', sale);
 
 module.exports = router;

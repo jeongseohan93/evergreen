@@ -18,7 +18,7 @@ const PrivateRoute = ({ children, role: allowedRoles = [] }) => {
     return null; // 또는 <Spinner />
   }
 
-  // 2. 로그인 안 돼 있음 → /login
+  /* // 2. 로그인 안 돼 있음 → /login
   if (!isLoggedIn) {
     return <Navigate to="/login" state={{ from: location }} replace />;
   }
@@ -33,7 +33,7 @@ const PrivateRoute = ({ children, role: allowedRoles = [] }) => {
   ) {
     return <Navigate to="/403" replace />;
   }
-
+ */
   return children;
 };
 
