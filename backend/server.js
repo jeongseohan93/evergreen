@@ -10,6 +10,7 @@ const admin = require('./routes/admin'); // 관리자 인증 관련 라우터
 const reportRouter = require('./routes/admin/report');
 const passportConfig = require('./passport'); // Passport 설정 파일 불러오기 (전략 등록, 시리얼라이즈/디시리얼라이즈 등 설정 포함)
 const { notFound, errorHandler } = require('./middlewares/error'); // 404/500 에러 처리 미들웨어
+const path = require('path');
 
 // ======================
 // [ Express 앱 기본 설정 ]
@@ -73,6 +74,8 @@ app.use(passport.initialize()); // passport 인증 시스템 초기화
 app.use('/auth', auth); // auth → 인증 관련 라우터
 app.use('/admin', admin); //admin -> 관리자 인증 관련 라우터
 app.use('/adminReport', reportRouter);
+//정적 파일 서빙: 이미지 미리보기를 위해 작성
+app.use('/adminImages', express.static(path.join(__dirname, 'public/adminImages')));
 
 // ==============================
 // [에러 처리 미들웨어 등록]

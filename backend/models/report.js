@@ -18,9 +18,9 @@ class Report extends Model {
         type: DataTypes.STRING(200),
         allowNull: false
       },
-      content: {
-        type: DataTypes.TEXT,
-        allowNull: false
+      contents: {
+        type: DataTypes.JSON, //JSON 형식: 사진과 글을 번갈아가면서 순서대로 저장
+        allowNull: false,
       },
       photo: {
         type: DataTypes.STRING(255),
