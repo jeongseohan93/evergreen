@@ -1,8 +1,8 @@
 import React from "react";
 import { useNavigate } from "react-router-dom";
-import useReport from '../../hooks/useReport';
+import useReport from '../../components/report/hooks/UseReport';
 
-const ReportManage = () => {
+const ReportManage = ({ onView, onEdit, onWrite, onGoDashboard }) => {
   const navigate = useNavigate();
   const {
     reports,
@@ -39,14 +39,14 @@ const ReportManage = () => {
           <div className="flex items-center gap-5">
             <h2 className="m-0 text-black text-4xl font-aggro font-bold">조행기 관리</h2>
             <button 
-              onClick={() => navigate('/admin/report/write')}
+              onClick={onWrite}
               className="px-4 py-2 cursor-pointer text-white border-none rounded transition-colors bg-[#58bcb5]"
             >
               조행기 작성
             </button>
           </div>
           <button 
-            onClick={() => navigate('/admin')}
+            onClick={onGoDashboard}
             className="px-4 py-2 cursor-pointer text-white border-transparent rounded transition-colors bg-[#306f65] hover:bg-white hover:text-[#306f65] hover:border-[#306f65] border"
           >
             대시보드로 이동
@@ -102,7 +102,7 @@ const ReportManage = () => {
                     <td className="p-3 whitespace-nowrap">{report.report_id}</td>
                     <td className="p-3 whitespace-nowrap">
                       <span 
-                        onClick={() => navigate(`/admin/report/${report.report_id}`)}
+                        onClick={() => onView && onView(report.report_id)}
                         className="cursor-pointer text-[#306f65] underline hover:text-[#58bcb5]"
                       >
                         {report.title}
@@ -113,7 +113,7 @@ const ReportManage = () => {
                     <td className="p-3 whitespace-nowrap">
                       <div className="flex gap-2 justify-center">
                         <button 
-                          onClick={() => navigate(`/admin/report/${report.report_id}/edit`)}
+                          onClick={() => onEdit && onEdit(report.report_id)}
                           className="px-3 py-1.5 cursor-pointer text-white border-none rounded transition-colors bg-[#58bcb5]"
                         >
                           수정

@@ -1,8 +1,8 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
-import useReport from '../../hooks/useReport';
+import useReport from '../../components/report/hooks/UseReport';
 
-const ReportWrite = () => {
+const ReportWrite = ({ onCancel }) => {
   const navigate = useNavigate();
   const {
     title,
@@ -38,13 +38,13 @@ const ReportWrite = () => {
         <div className="flex justify-between items-center mb-5">
           <h2 className="m-0 text-black text-4xl font-aggro font-bold">조행기 작성</h2>
           <button 
-            onClick={() => navigate('/admin/report')}
+            onClick={onCancel}
             className="px-4 py-2 cursor-pointer text-white border-transparent rounded transition-colors bg-[#306f65] hover:bg-white hover:text-[#306f65] hover:border-[#306f65] border"
           >
             목록으로 돌아가기
           </button>
         </div>
-        <form onSubmit={e => { e.preventDefault(); handleCreate(navigate); }} className="bg-white p-5 rounded-lg shadow">
+        <form onSubmit={e => { e.preventDefault(); handleCreate(null, onCancel); }} className="bg-white p-5 rounded-lg shadow">
           <div className="mb-5">
             <label className="block mb-2 font-bold text-base text-[#306f65]">제목</label>
             <input

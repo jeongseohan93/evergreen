@@ -17,7 +17,9 @@ const PrivateRoute = ({ children, role: allowedRoles = [] }) => {
     // 로딩 스피너를 보여주거나 null 반환
     return null; // 또는 <Spinner />
   }
- // 2. 로그인 안 돼 있음 → /login
+
+  // 2. 로그인 안 돼 있음 → /login
+
   if (!isLoggedIn) {
     return <Navigate to="/login" state={{ from: location }} replace />;
   }
@@ -32,7 +34,9 @@ const PrivateRoute = ({ children, role: allowedRoles = [] }) => {
   ) {
     return <Navigate to="/403" replace />;
   }
+
   return children;  
+
 };
 
 export default PrivateRoute;

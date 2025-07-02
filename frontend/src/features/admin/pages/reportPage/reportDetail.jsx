@@ -1,10 +1,7 @@
 import React from "react";
-import { useParams, useNavigate } from "react-router-dom";
-import useReport from '../../hooks/useReport';
+import useReport from '../../components/report/hooks/UseReport';
 
-const ReportDetail = () => {
-  const { reportId } = useParams();
-  const navigate = useNavigate();
+const ReportDetail = ({ reportId, onCancel }) => {
   const { report, loading, fetchReportById } = useReport();
 
   React.useEffect(() => {
@@ -34,7 +31,7 @@ const ReportDetail = () => {
       <div className="p-5 text-center">
         조행기를 찾을 수 없습니다.
         <button 
-          onClick={() => navigate('/admin/report')}
+          onClick={onCancel}
           className="block mx-auto mt-4 px-4 py-2 cursor-pointer bg-blue-500 text-white border-none rounded hover:bg-blue-600 transition-colors"
         >
           목록으로 돌아가기
@@ -49,7 +46,7 @@ const ReportDetail = () => {
         <div className="flex justify-between items-center mb-5">
           <h2 className="m-0 text-black text-4xl font-aggro font-bold">조행기 상세</h2>
           <button 
-            onClick={() => navigate('/admin/report')}
+            onClick={onCancel}
             className="px-4 py-2 cursor-pointer cursor-pointer text-white border-transparent rounded transition-colors bg-[#306f65] hover:bg-white hover:text-[#306f65] hover:border-[#306f65] border"
           >
             목록으로 돌아가기
