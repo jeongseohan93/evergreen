@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import  ConfirmationModal  from '../../ui/ConfirmationModal';
+import  ConfirmationModal  from '../../components/ui/ConfirmationModal';
 
 
 

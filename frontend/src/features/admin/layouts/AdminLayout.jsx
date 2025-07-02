@@ -1,7 +1,9 @@
 import React, { useState } from 'react'; // useState 훅 추가
 import { HomeIcon, ShoppingBagIcon, UsersIcon, ChartBarIcon, CogIcon, FoldersIcon } from 'lucide-react';
-import  CategoryManager  from '../components/category/CategoryManager';
-
+import  CategoryManager  from '../pages/categoryPage/CategoryManager';
+import ProductManagePage from '../pages/productPage/ProductManagePage';
+import SaleManagerPage from '../pages/salePage/SaleManagerPage';
+import OrderManagementPage from '../pages/orderPage/OrderManagementPage';
 
 // === 임시 페이지 컴포넌트들 (실제로는 별도 파일에서 임포트됩니다) ===
 // 이 컴포넌트들은 AdminLayout 내에서 조건부로 렌더링될 대상입니다.
@@ -48,7 +50,21 @@ const AdminCategoriesPage = () => (
 const AdminProductsPage = () => (
   <div className="bg-white p-6 rounded-lg shadow-md min-h-[400px]">
     <h2 className="text-2xl font-bold mb-4 text-gray-800">상품 관리</h2>
-    <p className="text-gray-700">여기에 상품 목록, 추가, 수정, 삭제 기능이 구현될 것입니다.</p>
+   <ProductManagePage />
+  </div>
+);
+
+const SalePage = () => (
+  <div className="bg-white p-6 rounded-lg shadow-md min-h-[400px]">
+    <h2 className="text-2xl font-bold mb-4 text-gray-800">상품 관리</h2>
+   <SaleManagerPage />
+  </div>
+);
+
+const OrderPage = () => (
+  <div className="bg-white p-6 rounded-lg shadow-md min-h-[400px]">
+    <h2 className="text-2xl font-bold mb-4 text-gray-800">상품 관리</h2>
+   <OrderManagementPage />
   </div>
 );
 
@@ -78,7 +94,7 @@ const AdminSidebar = ({ activeKey, setActiveKey }) => { // activeKey와 setActiv
     { name: '주문 관리', icon: ChartBarIcon, key: 'orders' },
     { name: '카테고리', icon: FoldersIcon, key: 'categories' },
     { name: '회원 관리', icon: UsersIcon, key: 'users' },
-    { name: '통계/리포트', icon: ChartBarIcon, key: 'reports' },
+    { name: '매출 관리', icon: ChartBarIcon, key: 'sale' },
     { name: '설정', icon: CogIcon, key: 'settings' },
   ];
 
@@ -135,9 +151,9 @@ const AdminLayout = () => { // children prop 제거
     'categories': <AdminCategoriesPage />,
     'products': <AdminProductsPage />,
     // TODO: 다른 메뉴 항목에 대한 컴포넌트도 여기에 추가
-    'orders': <div className="bg-white p-6 rounded-lg shadow-md min-h-[400px]"><h2>주문 관리 페이지</h2></div>,
+    'orders': <OrderPage />,
     'users': <div className="bg-white p-6 rounded-lg shadow-md min-h-[400px]"><h2>회원 관리 페이지</h2></div>,
-    'reports': <div className="bg-white p-6 rounded-lg shadow-md min-h-[400px]"><h2>통계/리포트 페이지</h2></div>,
+    'sale': <SalePage/>,
     'settings': <div className="bg-white p-6 rounded-lg shadow-md min-h-[400px]"><h2>설정 페이지</h2></div>,
   };
 

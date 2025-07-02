@@ -1,6 +1,6 @@
 import React from 'react';
 // import { Header, Footer, SubHeader} from '@/app';
-import  CategoryManager  from '../components/category/CategoryManager';
+import  CategoryManager  from './categoryPage/CategoryManager';
 import AdminLayout from '../layouts/AdminLayout';
 
 const DashBoardPage = () => {
