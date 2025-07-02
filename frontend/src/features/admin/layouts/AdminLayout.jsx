@@ -113,6 +113,7 @@ const AdminSidebar = ({ activeKey, setActiveKey }) => { // activeKey와 setActiv
     { name: '카테고리', icon: FoldersIcon, key: 'categories' },
     { name: '회원 관리', icon: UsersIcon, key: 'users' },
     { name: '매출 관리', icon: ChartBarIcon, key: 'sale' },
+    { name: '리포트 관리', icon: ChartBarIcon, key: 'reports' },
     { name: '설정', icon: CogIcon, key: 'settings' },
   ];
 
