@@ -1,10 +1,7 @@
 import React from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
-import useReport from '../../hooks/useReport';
+import useReport from '../../components/report/hooks/UseReport';
 
-const ReportEdit = () => {
-  const { reportId } = useParams();
-  const navigate = useNavigate();
+const ReportEdit = ({ reportId, onCancel }) => {
   const {
     title,
     setTitle,
@@ -60,7 +57,7 @@ const ReportEdit = () => {
         <div className="flex justify-between items-center mb-6">
           <h1 className="text-black text-4xl font-aggro font-bold">조행기 수정</h1>
           <button
-            onClick={() => navigate('/admin/report')}
+            onClick={onCancel}
             className="px-4 py-2 cursor-pointer text-white border-transparent rounded transition-colors bg-[#306f65] hover:bg-white hover:text-[#306f65] hover:border-[#306f65] border"
           >
             목록으로 돌아가기
@@ -81,7 +78,7 @@ const ReportEdit = () => {
               alert('수정된 내용이 없습니다.');
               return;
             }
-            handleUpdate(reportId, navigate);
+            handleUpdate(reportId, null, onCancel);
           }} className="space-y-6">
             <div>
               <label htmlFor="title" className="block mb-2 font-bold text-base text-[#306f65]">

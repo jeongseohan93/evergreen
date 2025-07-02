@@ -1,10 +1,7 @@
 import React, { useState, useEffect } from "react";
-import { useNavigate, useParams } from "react-router-dom";
-import { useUsers } from "../../hooks/useUser";
+import { useUsers } from '../../components/user/hooks/UseUser';
 
-const UserEdit = () => {
-  const navigate = useNavigate();
-  const { userUuid } = useParams();
+const UserEdit = ({ userUuid, onCancel }) => {
   const {
     selectedUser,
     userDetailLoading,
@@ -45,20 +42,11 @@ const UserEdit = () => {
     const result = await updateUserInfo(userUuid, form);
     if (result.success) {
       alert("회원 정보가 수정되었습니다.");
-      navigate("/admin/user");
+      if (onCancel) onCancel();
     } else {
       alert(result.error);
     }
   };
-
-  //배경색 임시 설정
-  React.useEffect(() => {
-    const originalBg = document.body.style.backgroundColor;
-    document.body.style.backgroundColor = '#f2f2e8';
-    return () => {
-      document.body.style.backgroundColor = originalBg;
-    };
-  }, []);
 
   if (userDetailLoading) return <div className="p-5">로딩 중...</div>;
   if (userDetailError) return <div className="p-5 text-red-500">{userDetailError}</div>;
@@ -113,7 +101,7 @@ const UserEdit = () => {
               <button
                 type="button"
                 className="px-4 py-2 cursor-pointer text-[#306f65] border-transparent rounded transition-colors bg-white border-[#306f65] border"
-                onClick={() => navigate("/admin/user")}
+                onClick={onCancel}
               >
                 취소
               </button>

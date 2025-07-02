@@ -1,6 +1,16 @@
 import React, { useState } from 'react'; // useState 훅 추가
 import { HomeIcon, ShoppingBagIcon, UsersIcon, ChartBarIcon, CogIcon, FoldersIcon } from 'lucide-react';
 import  CategoryManager  from '../components/category/CategoryManager';
+import UserManage from '../pages/userPage/UserManage.jsx';
+import UserEdit from '../pages/userPage/UserEdit.jsx';
+import ReportManage from '../pages/reportPage/ReportManage.jsx';
+import ReportDetail from '../pages/reportPage/ReportDetail.jsx';
+import ReportEdit from '../pages/reportPage/ReportEdit.jsx';
+import ReportWrite from '../pages/reportPage/ReportWrite.jsx';
+import { logoutAsync } from '@/features/authentication/authSlice';
+import { useNavigate } from 'react-router-dom';
+import { useDispatch } from 'react-redux';
+
 
 
 // === 임시 페이지 컴포넌트들 (실제로는 별도 파일에서 임포트됩니다) ===
@@ -54,15 +64,23 @@ const AdminProductsPage = () => (
 
 // === Header 컴포넌트 ===
 const AdminHeader = () => {
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
+
+  const handleLogout = async () => {
+    await dispatch(logoutAsync());
+    navigate('/login');
+  };
+
   return (
     <header className="bg-white p-4 shadow-md flex items-center justify-between z-20 sticky top-0">
       <div className="flex items-center">
-        <div className="text-xl font-semibold text-gray-800">
+        <div className="text-2xl font-aggro text-gray-800 font-bold">
           관리자 페이지
         </div>
       </div>
       <div className="flex items-center space-x-4">
-        <button className="text-sm bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-md transition duration-200 ease-in-out">
+        <button onClick={handleLogout} className="text-sm bg-[#58bcb5] text-white border border-[#58bcb5] hover:bg-white hover:text-[#58bcb5] px-4 py-2 rounded-md transition duration-200 ease-in-out">
           로그아웃
         </button>
       </div>
@@ -83,16 +101,16 @@ const AdminSidebar = ({ activeKey, setActiveKey }) => { // activeKey와 setActiv
   ];
 
   const handleClick = (key) => {
-    setActiveKey(key); // 클릭 시 부모의 상태를 업데이트
+    setActiveKey(key);
   };
 
   return (
     <aside
-      className="flex-col bg-gray-800 text-white w-64 p-5 z-30"
+      className="flex-col bg-[#306f65] text-white w-64 p-5 z-30"
     >
       {/* Sidebar Header / Logo */}
-      <div className="flex items-center justify-between pb-6 border-b border-gray-700 mb-6">
-        <h2 className="text-2xl font-bold text-blue-300">Admin Panel</h2>
+      <div className="flex items-center justify-between pb-6 border-b border-white mb-6">
+        <h2 className="text-2xl text-[#f2f2e8] font-aggro font-bold">Admin Panel</h2>
       </div>
 
       {/* Navigation Links */}
@@ -104,8 +122,8 @@ const AdminSidebar = ({ activeKey, setActiveKey }) => { // activeKey와 setActiv
                 onClick={() => handleClick(item.key)}
                 className={`flex items-center p-3 rounded-md transition duration-200 ease-in-out w-full text-left
                   ${activeKey === item.key // activeKey와 일치하면 활성화 스타일
-                    ? 'bg-blue-600 text-white shadow-inner'
-                    : 'text-gray-300 hover:bg-gray-700 hover:text-white'
+                    ? 'bg-[#f2f2e8] text-black text-xl font-aggro font-bold'
+                    : 'text-gray-300 hover:bg-[#58bcb5] hover:text-white'
                   }`
                 }
               >
@@ -118,7 +136,7 @@ const AdminSidebar = ({ activeKey, setActiveKey }) => { // activeKey와 setActiv
       </nav>
 
       {/* Sidebar Footer (Optional) */}
-      <div className="pt-6 border-t border-gray-700 mt-6 text-sm text-gray-500">
+      <div className="pt-6 border-t border-white mt-6 text-sm text-white">
         <p>&copy; 2023 Your Admin. All rights reserved.</p>
       </div>
     </aside>
@@ -127,17 +145,56 @@ const AdminSidebar = ({ activeKey, setActiveKey }) => { // activeKey와 setActiv
 
 // === AdminLayout 컴포넌트 (내부에서 콘텐츠 전환 관리) ===
 const AdminLayout = () => { // children prop 제거
-  const [activeComponentKey, setActiveComponentKey] = useState('dashboard'); // 현재 활성화된 컴포넌트 키
+  const [activeComponentKey, setActiveComponentKey] = useState('dashboard');
+  const [userEditId, setUserEditId] = useState(null);
+  const [reportDetailId, setReportDetailId] = useState(null);
+  const [reportEditId, setReportEditId] = useState(null);
+
+  // UserManage에 넘길 수정 핸들러
+  const handleEditUser = (userUuid) => {
+    setUserEditId(userUuid);
+    setActiveComponentKey('userEdit');
+  };
+  // UserEdit에서 돌아가기 핸들러
+  const handleCancelEdit = () => {
+    setUserEditId(null);
+    setActiveComponentKey('users');
+  };
+  // UserManage에서 대시보드로 이동 핸들러
+  const handleGoDashboard = () => {
+    setActiveComponentKey('dashboard');
+  };
+
+  // ReportManage 관련 핸들러
+  const handleViewReport = (reportId) => {
+    setReportDetailId(reportId);
+    setActiveComponentKey('reportDetail');
+  };
+  const handleEditReport = (reportId) => {
+    setReportEditId(reportId);
+    setActiveComponentKey('reportEdit');
+  };
+  const handleWriteReport = () => {
+    setActiveComponentKey('reportWrite');
+  };
+  const handleCancelReport = () => {
+    setReportDetailId(null);
+    setReportEditId(null);
+    setActiveComponentKey('reports');
+  };
 
   // 키에 따라 렌더링할 컴포넌트 맵
   const ComponentMap = {
     'dashboard': <AdminDashboardPage />,
     'categories': <AdminCategoriesPage />,
     'products': <AdminProductsPage />,
-    // TODO: 다른 메뉴 항목에 대한 컴포넌트도 여기에 추가
     'orders': <div className="bg-white p-6 rounded-lg shadow-md min-h-[400px]"><h2>주문 관리 페이지</h2></div>,
-    'users': <div className="bg-white p-6 rounded-lg shadow-md min-h-[400px]"><h2>회원 관리 페이지</h2></div>,
-    'reports': <div className="bg-white p-6 rounded-lg shadow-md min-h-[400px]"><h2>통계/리포트 페이지</h2></div>,
+    'users': <UserManage onEditUser={handleEditUser} onGoDashboard={handleGoDashboard} />,
+    'userEdit': <UserEdit userUuid={userEditId} onCancel={handleCancelEdit} />,
+    'reports': <ReportManage onView={handleViewReport} onEdit={handleEditReport} onWrite={handleWriteReport} onGoDashboard={handleGoDashboard} />,
+    'reportDetail': <ReportDetail reportId={reportDetailId} onCancel={handleCancelReport} />,
+    'reportEdit': <ReportEdit reportId={reportEditId} onCancel={handleCancelReport} />,
+    'reportWrite': <ReportWrite onCancel={handleCancelReport} />,
     'settings': <div className="bg-white p-6 rounded-lg shadow-md min-h-[400px]"><h2>설정 페이지</h2></div>,
   };
 
@@ -148,10 +205,10 @@ const AdminLayout = () => { // children prop 제거
       <AdminHeader />
 
       <div className="flex flex-1">
-        <AdminSidebar activeKey={activeComponentKey} setActiveKey={setActiveComponentKey} />
+        <AdminSidebar activeKey={activeComponentKey === 'userEdit' ? 'users' : activeComponentKey} setActiveKey={setActiveComponentKey} />
         
         {/* Main Content Area */}
-        <main className="flex-1 p-6 overflow-y-auto">
+        <main className="flex-1 p-6 overflow-y-auto bg-[#f2f2e8]">
           {CurrentComponent} {/* 선택된 컴포넌트 렌더링 */}
         </main>
       </div>

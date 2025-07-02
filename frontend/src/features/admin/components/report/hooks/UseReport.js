@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { getAllReports, getReportById, createReport, updateReport, deleteReport, uploadImage } from '../api/reportApi';
+import { getAllReports, getReportById, createReport, updateReport, deleteReport, uploadImage } from '../../../api/reportApi';
 
 const useReport = (options = {}) => {
   // 목록 관리
