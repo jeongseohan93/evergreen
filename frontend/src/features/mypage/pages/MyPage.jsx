@@ -1,15 +1,62 @@
-// feature/userProfile/pages/Mypage.jsx (MyPageDashboard.jsx 등으로 이름 변경도 고려)
-import React from "react";
-// Header, Footer, SubHeader는 MypageLayout에서 관리하므로 여기서는 필요 없음
+// src/features/mypage/pages/MyPage.jsx
+import React from 'react';
+import { Header, SubHeader, Footer } from '@/app'; // Header, Footer는 이미 있다고 가정
+
+import MyPageHeader from '../components/MyPageHeader';
+import MyPointSummary from '../components/MyPointSummary';
+import MyOrderProgress from '../components/MyOrderProgress';
+import MyPageNavGrid from '../components/MypageNavGrid';
 
 const MyPage = () => {
+    // 실제로는 사용자 데이터 (적립금, 주문 현황 등)를 API로 받아와야 합니다.
+    // 여기서는 UI 구현을 위해 임시 데이터를 하드코딩합니다.
+    const userData = {
+        availablePoints: 1000,
+        totalPoints: 1000,
+        usedPoints: 0,
+        totalOrders: { count: 0, times: 0 }, // 0(0회)
+
+        orderStatus: {
+            beforeDeposit: 0,
+            preparingDelivery: 0,
+            shipping: 0,
+            delivered: 0,
+            canceled: 0,
+            exchanged: 0,
+            returned: 0,
+        },
+    };
+
     return (
-    <>
-        <h2>환영합니다!</h2>
-        <p>마이페이지에 오신 것을 환영합니다. 왼쪽 메뉴를 이용하여 원하시는 정보를 확인하고 관리하실 수 있습니다.</p>
-        {/* 추가적인 요약 정보 등 */}
-    </>
-  );
+        <>
+            <Header />
+            {/* SubHeader가 있다면 여기에 추가 */}
+            <SubHeader />
+
+            <div className="container mx-auto p-4 md:p-8 max-w-6xl">
+                {/* MY PAGE 헤더 및 타이틀 */}
+                <MyPageHeader />
+
+                {/* 포인트/주문 요약 섹션 */}
+                <MyPointSummary
+                    availablePoints={userData.availablePoints}
+                    totalPoints={userData.totalPoints}
+                    usedPoints={userData.usedPoints}
+                    totalOrders={userData.totalOrders}
+                />
+
+                {/* 나의 주문처리 현황 섹션 */}
+                <MyOrderProgress
+                    orderStatus={userData.orderStatus}
+                />
+
+                {/* 하단 내비게이션 그리드 */}
+                <MyPageNavGrid />
+            </div>
+
+            <Footer />
+        </>
+    );
 };
 
 export default MyPage;

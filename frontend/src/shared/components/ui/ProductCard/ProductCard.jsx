@@ -1,11 +1,18 @@
 import React from 'react';
+import { useNavigate } from 'react-router-dom';
 
-const ProductCard = ({ imageUrl, name, price, hashtags, likes }) => { // likes prop 추가
+const ProductCard = ({ imageUrl, name, price, hashtags, likes }) => {
+    const navigate = useNavigate();
+
+    const ProductDetail = () => {
+        navigate(`/productdetail?imageUrl=${imageUrl}`);
+    }
+
     return (
-        // 카드 전체 컨테이너
-        <div className="max-w-xs bg-white rounded-lg overflow-hidden shadow-lg font-sans">
-            {/* 상품 이미지 컨테이너 - 상대적 위치 지정을 위해 relative 추가 */}
-            <div className="relative group"> {/* 'group' 클래스를 추가하여 하위 요소의 호버 상태를 제어합니다. */}
+        // 🚨 카드 전체 컨테이너에 'group'만 유지 (hover 감지용) 🚨
+        <div className="max-w-xs bg-white rounded-lg overflow-hidden font-sans group" onClick={ProductDetail}> {/* 'group'만 남기고 'relative'는 제거 */}
+            {/* 상품 이미지와 아이콘 오버레이를 감싸는 컨테이너 - 이 div가 absolute의 기준이 됩니다. */}
+            <div className="relative"> {/* 이 div에 'relative' 추가 */}
                 {/* 상품 이미지 */}
                 <img
                     className="w-full h-auto object-cover"
@@ -13,10 +20,11 @@ const ProductCard = ({ imageUrl, name, price, hashtags, likes }) => { // likes p
                     alt={name}
                 />
 
-                {/* 호버 시 나타날 아이콘들 (오버레이 없음, 하단 오른쪽에 가로로 배치) */}
-                <div className="absolute bottom-4 right-4 flex flex-row-reverse space-x-2 space-x-reverse opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                {/* 🚨 호버 시 나타날 아이콘들 (이미지 위, 하단 오른쪽에 가로로 배치) 🚨 */}
+                {/* 이 div는 이제 바로 위 '.relative' 컨테이너(이미지 영역)를 기준으로 위치합니다. */}
+                {/* opacity는 여전히 가장 바깥쪽 '.group'에 의해 제어됩니다. */}
+                <div className="absolute bottom-4 right-4 flex flex-row-reverse space-x-2 space-x-reverse opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-10">
                     {/* 좋아요 (엄지) 아이콘 및 갯수 */}
-                    {/* flex를 사용하여 아이콘과 텍스트를 한 줄에 정렬 */}
                     <div className="bg-white p-2 rounded-full shadow-md hover:bg-gray-100 transition-colors flex items-center space-x-1">
                         <svg className="w-5 h-5 text-red-500" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path d="M2 10.5a1.5 1.5 0 113 0v6a1.5 1.5 0 01-3 0v-6zM6 10.333v5.432a2.5 2.5 0 00.584 1.637l1.378 1.488c.399.429.618.665 1.13.665h4.135c.783 0 1.5-.421 1.766-1.125l.898-3.05a1.5 1.5 0 00.287-.803V8.5c0-.966-.784-1.75-1.75-1.75h-5.5a1.5 1.5 0 01-1.5-1.5v-2.25C11.5 2.112 10.888 1.5 10.135 1.5H8.75c-.743 0-1.35.612-1.25 1.353l-.934 7.028z"></path></svg>
                         <span className="text-sm font-bold text-gray-700">{likes}</span>
@@ -39,8 +47,8 @@ const ProductCard = ({ imageUrl, name, price, hashtags, likes }) => { // likes p
                 </div>
             </div>
 
-            {/* 상품 정보 영역 */}
-            <div className="p-4">
+            {/* 상품 정보 영역 (이전과 동일) */}
+            <div className='pt-2'>
                 {/* 상품명 */}
                 <h3 className="text-lg font-bold text-gray-900 mb-2">
                     {name}

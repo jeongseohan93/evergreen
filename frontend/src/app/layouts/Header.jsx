@@ -2,13 +2,14 @@ import React from 'react';
 import { Link, useNavigate } from 'react-router-dom'
 import { FaInstagram } from 'react-icons/fa';
 import { useSelector, useDispatch } from 'react-redux';
-import { selectIsLoggedIn, logoutAsync } from '@/features/authentication/authSlice';
+import { selectIsLoggedIn, logoutAsync, selectRole } from '@/features/authentication/authSlice';
 
 
 function Header() {
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const isLoggedIn = useSelector(selectIsLoggedIn);
+  const userRole = useSelector(selectRole);
 
   const handleLogout = async () => {
     await dispatch(logoutAsync());
@@ -50,17 +51,20 @@ function Header() {
       <button onClick={handleLogout} className="text-white hover:text-blue-400 transition-colors duration-200">로그아웃</button>
     </li>
   )}
+  {userRole === 'admin' && (
+    <li>
+      <Link to='/admin' className="text-white hover:text-blue-400 transition-colors duration-200">
+        관리자 페이지
+      </Link>
+    </li>
+  )}
   {/* 이 아래 <li> 태그들은 조건부 렌더링과 무관하게 항상 렌더링됩니다. */}
   <li>
     <Link to='/mypage/orders' className="text-white hover:text-blue-400 transition-colors duration-200">
       주문/배송조회
     </Link>
   </li>
-  <li>
-    <Link to='/admin' className="text-white hover:text-blue-400 transition-colors duration-200">
-      관리자 페이지
-    </Link>
-  </li>
+
   <li>
     <Link to='/community/support' className="text-white hover:text-blue-400 transition-colors duration-200">
       고객센터

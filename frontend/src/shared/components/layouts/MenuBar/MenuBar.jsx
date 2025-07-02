@@ -133,7 +133,7 @@ function MenuBar() {
               {/* ✅ 이 버튼 클릭 시 `/search?name=xxx` 이동 */}
               <button
                 onClick={() => {
-                  const url = `/search?name=${encodeURIComponent(item.name)}`;
+                  const url = `/categorysearch?name=${encodeURIComponent(item.name)}`;
                   navigate(url);
                 }}
                 className="text-black text-sm font-aggro font-light hover:text-blue-600 transition-colors duration-200 whitespace-nowrap px-2 py-1"
@@ -153,7 +153,7 @@ function MenuBar() {
                       <li key={subIndex} className="mb-1 last:mb-0">
                         <button
                           onClick={() => {
-                            const url = `/search?name=${encodeURIComponent(item.name)}&sub=${encodeURIComponent(subItem)}`;
+                            const url = `/categorysearch?name=${encodeURIComponent(item.name)}&sub=${encodeURIComponent(subItem)}`;
                             navigate(url);
                           }}
                           className="block text-gray-700 hover:text-blue-500 text-xs whitespace-nowrap px-2 py-1"
