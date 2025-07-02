@@ -1,6 +1,6 @@
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
-import { loginAsync, selectIsLoggedIn, selectUser, selectRole, selectStatus, selectError, logoutAsync } from "../authSlice";
+import { loginAsync, selectIsLoggedIn, selectUser, selectRole, selectStatus, selectError } from "../authSlice";
 
 export const useAuth = () => {
     const dispatch = useDispatch();

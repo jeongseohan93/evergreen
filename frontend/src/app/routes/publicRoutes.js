@@ -17,6 +17,10 @@ import ReviewListPage from '@/features/community/pages/review/ReviewListPage';
 
 import SearchPage from '@/features/product/pages/SearchPage';
 
+import ProductDetailPage from '@/features/product/pages/ProductDetailPage';
+
+import CategorySearchPage from '@/features/product/pages/CategorySearchPage';
+
 
 
 
@@ -43,6 +47,7 @@ const publicRoutes = [
   },
   
   { path: '/search', element: <SearchPage /> },
+  { path: '/productdetail', element: <ProductDetailPage /> },
 
   {
     path: '/community',
@@ -53,6 +58,8 @@ const publicRoutes = [
       { path: 'event', element: <EventPage />},
     ],
   },
+
+  {path: '/categorysearch', element: <CategorySearchPage />},
 
 ];
 
