@@ -51,7 +51,7 @@ const SaleManagerPage = () => {
                     onClick={toggleSaleForm}
                     className="px-6 py-3 bg-indigo-600 text-white rounded-md hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 mb-4"
                 >
-                    {showSaleForm ? '매출 입력 취소' : '새 매출 입력'}
+                    {showSaleForm ? '매출 입력 취소' : '오프라인 매출 입력'}
                 </button>
                 {showSaleForm && (
                     <SaleAddForm

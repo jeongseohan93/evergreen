@@ -307,3 +307,75 @@ exports.deleteCategory = async (req, res) => {
     }
 };
 //------------------------------카테고리 삭제------------------------------------------------
+
+
+//------------------------------카테고리 수정 (새로 추가)------------------------------------------------
+exports.updateCategory = async (req, res) => {
+    const { category_id } = req.params; // URL 파라미터에서 category_id 가져오기
+    const { name } = req.body;          // 요청 본문에서 새로운 이름 가져오기
+
+    // 필수 필드 검증
+    if (!category_id || isNaN(category_id)) {
+        return res.status(400).json({
+            success: false,
+            message: '유효한 카테고리 ID가 필요합니다.'
+        });
+    }
+    if (!name || !name.trim()) {
+        return res.status(400).json({
+            success: false,
+            message: '새 카테고리명은 필수 입력 항목입니다.'
+        });
+    }
+
+    try {
+        // 카테고리 존재 확인 및 업데이트
+        // Category.update는 [영향을 받은 행의 수, 업데이트된 인스턴스 배열]을 반환합니다.
+        const [updatedRowsCount] = await Category.update(
+            { name: name.trim() }, // 업데이트할 필드와 값
+            { where: { category_id: parseInt(category_id) } } // 업데이트할 조건
+        );
+
+        if (updatedRowsCount === 0) {
+            // 업데이트된 행이 없으면 해당 카테고리를 찾을 수 없거나 변경 사항이 없는 경우
+            const existingCategory = await Category.findByPk(category_id);
+            if (!existingCategory) {
+                return res.status(404).json({
+                    success: false,
+                    message: '해당 카테고리를 찾을 수 없습니다.'
+                });
+            } else {
+                // 카테고리는 찾았지만, 이름이 같아서 업데이트된 행이 없는 경우
+                return res.status(200).json({
+                    success: true,
+                    message: '카테고리 이름이 변경되지 않았습니다 (기존과 동일).',
+                    data: existingCategory // 변경되지 않았지만 현재 카테고리 정보 반환
+                });
+            }
+        }
+        
+        // 업데이트 성공 후, 업데이트된 카테고리 정보를 다시 조회하여 반환 (선택 사항)
+        const updatedCategory = await Category.findByPk(category_id);
+
+        res.status(200).json({
+            success: true,
+            message: '카테고리 이름이 성공적으로 수정되었습니다.',
+            data: updatedCategory
+        });
+
+    } catch (error) {
+        console.error('카테고리 수정 오류:', error);
+        // 중복 이름 에러 등 특정 에러 처리 추가 가능
+        if (error.name === 'SequelizeUniqueConstraintError') {
+            return res.status(400).json({
+                success: false,
+                message: '이미 존재하는 카테고리명입니다.'
+            });
+        }
+        res.status(500).json({
+            success: false,
+            message: '카테고리 수정 중 오류가 발생했습니다.'
+        });
+    }
+};
+//------------------------------카테고리 수정------------------------------------------------

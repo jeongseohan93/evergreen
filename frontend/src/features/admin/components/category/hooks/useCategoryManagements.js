@@ -1,6 +1,7 @@
 // features/admin/components/category/hooks/useCategoryManagements.js
 import { useState, useEffect, useCallback } from 'react';
-import { addCategory, deleteCategory, fetchCategories as fetchCategoriesApi } from '../../../api/categoryApi';
+// updateCategory API 함수를 임포트합니다.
+import { addCategory, deleteCategory, fetchCategories as fetchCategoriesApi, updateCategory } from '../../../api/categoryApi';
 
 const useCategoryManagement = () => {
     const [categories, setCategories] = useState([]);
@@ -10,6 +11,9 @@ const useCategoryManagement = () => {
     const [showCategoryForm, setShowCategoryForm] = useState(false);
     const [selectedCategoryToDelete, setSelectedCategoryToDelete] = useState(null);
     const [showDeleteCategoryForm, setShowDeleteCategoryForm] = useState(false);
+
+    // 카테고리 수정 관련 상태 추가: 현재 수정 중인 카테고리 객체 또는 null
+    const [editingCategory, setEditingCategory] = useState(null); 
 
     const fetchCategories = useCallback(async () => {
         setLoading(true);
@@ -80,9 +84,35 @@ const useCategoryManagement = () => {
         }
     };
 
+    // 카테고리 수정 처리 함수 추가
+    const handleUpdateCategory = async (categoryId, newName) => {
+        if (!newName.trim()) {
+            setError('새 카테고리 이름을 입력해주세요.');
+            return;
+        }
+        setLoading(true);
+        setError('');
+        try {
+            const response = await updateCategory(categoryId, newName); // updateCategory API 호출
+            if (response.success) {
+                await fetchCategories(); // 수정 성공 시 목록 새로고침
+                setEditingCategory(null); // 수정 폼 닫기
+            } else {
+                setError(response.message || '카테고리 수정에 실패했습니다.');
+            }
+        } catch (err) {
+            console.error('카테고리 수정 오류:', err);
+            setError(err.response?.data?.message || '카테고리 수정 중 오류가 발생했습니다.');
+        } finally {
+            setLoading(false);
+        }
+    };
+
     const openAddForm = () => {
         setShowCategoryForm(true);
         setError('');
+        setEditingCategory(null); // 추가 폼 열 때 수정 폼 닫기
+        setShowDeleteCategoryForm(false); // 추가 폼 열 때 삭제 폼 닫기
     };
 
     const closeAddForm = () => {
@@ -95,11 +125,27 @@ const useCategoryManagement = () => {
         setSelectedCategoryToDelete(category); // 여기에서 전체 카테고리 객체를 설정하고 있음
         setShowDeleteCategoryForm(true);
         setError('');
+        setEditingCategory(null); // 삭제 폼 열 때 수정 폼 닫기
+        setShowCategoryForm(false); // 삭제 폼 열 때 추가 폼 닫기
     };
 
     const closeDeleteForm = () => {
         setShowDeleteCategoryForm(false);
         setSelectedCategoryToDelete(null);
+        setError('');
+    };
+
+    // 수정 폼 열기 함수 추가
+    const openUpdateForm = (category) => {
+        setEditingCategory(category); // 수정할 카테고리 정보 설정
+        setShowCategoryForm(false); // 수정 폼 열 때 추가 폼 닫기
+        setShowDeleteCategoryForm(false); // 수정 폼 열 때 삭제 폼 닫기
+        setError('');
+    };
+
+    // 수정 폼 닫기 함수 추가
+    const closeUpdateForm = () => {
+        setEditingCategory(null); // 수정 폼 닫기
         setError('');
     };
 
@@ -111,15 +157,20 @@ const useCategoryManagement = () => {
         setNewCategoryName,
         showCategoryForm,
         selectedCategoryToDelete,
-        setSelectedCategoryToDelete, // 👈👈👈 이 줄을 추가해야 해!
+        setSelectedCategoryToDelete, 
         showDeleteCategoryForm,
+        editingCategory, // 새로 추가된 상태
+        setEditingCategory, // 새로 추가된 상태 변경 함수
         fetchCategories,
         handleAddCategory,
         handleDeleteCategory,
+        handleUpdateCategory, // 새로 추가된 함수
         openAddForm,
         closeAddForm,
         openDeleteForm,
         closeDeleteForm,
+        openUpdateForm, // 새로 추가된 함수
+        closeUpdateForm, // 새로 추가된 함수
     };
 };
 

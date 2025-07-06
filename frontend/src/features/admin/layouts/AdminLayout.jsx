@@ -4,12 +4,15 @@ import  CategoryManager  from '../pages/categoryPage/CategoryManager';
 import ProductManagePage from '../pages/productPage/ProductManagePage';
 import SaleManagerPage from '../pages/salePage/SaleManagerPage';
 import OrderManagementPage from '../pages/orderPage/OrderManagementPage';
-import UserManage from '../pages/userPage/UserManage';
-import UserEdit from '../pages/userPage/UserEdit';
-import ReportManage from '../pages/reportPage/ReportManage';
-import ReportDetail from '../pages/reportPage/ReportDetail';
-import ReportEdit from '../pages/reportPage/ReportEdit';
-import ReportWrite from '../pages/reportPage/ReportWrite';
+
+import UserManage from '../pages/userPage/UserManage.jsx';
+import UserEdit from '../pages/userPage/UserEdit.jsx';
+import ReportManage from '../pages/reportPage/ReportManage.jsx';
+import ReportDetail from '../pages/reportPage/ReportDetail.jsx';
+import ReportEdit from '../pages/reportPage/ReportEdit.jsx';
+import ReportWrite from '../pages/reportPage/ReportWrite.jsx';
+import DashBoardPage from '../pages/dashboardPage/DashBoardPage';
+
 import { logoutAsync } from '@/features/authentication/authSlice';
 import { useNavigate } from 'react-router-dom';
 import { useDispatch } from 'react-redux';
@@ -20,31 +23,18 @@ import { useDispatch } from 'react-redux';
 
 // AdminDashboardPage.jsx의 내용
 const AdminDashboardPage = () => (
+
+ 
   <div className="bg-white p-6 rounded-lg shadow-md min-h-[400px]">
-    <h2 className="text-2xl font-bold mb-4 text-gray-800">대시보드</h2>
-    <p className="text-gray-700">여기에 대시보드 콘텐츠가 표시됩니다. 예를 들어, 카테고리 관리 테이블이나 통계 그래프 등을 추가할 수 있습니다.</p>
-    <div className="mt-8 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-      <div className="bg-blue-50 p-4 rounded-md shadow-sm">
-        <h3 className="font-semibold text-lg text-blue-700">총 상품 수</h3>
-        <p className="text-3xl font-bold text-blue-900">1,234</p>
-      </div>
-      <div className="bg-green-50 p-4 rounded-md shadow-sm">
-        <h3 className="font-semibold text-lg text-green-700">오늘의 주문</h3>
-        <p className="text-3xl font-bold text-green-900">56</p>
-      </div>
-      <div className="bg-yellow-50 p-4 rounded-md shadow-sm">
-        <h3 className="font-semibold text-lg text-yellow-700">신규 회원</h3>
-        <p className="text-3xl font-bold text-yellow-900">12</p>
-      </div>
+  
 
-     <h1>산타할아버지 프론트 해주세요</h1>
-
-    </div>
+     <h1> 2026년에는 3대 700을 도전한다.</h1>
+     <h1> 나는 존나 쎄다. </h1>
+ <DashBoardPage />
+  
   </div>
 );
 
-// AdminCategoriesPage.jsx의 내용 (CategoryManager 포함)
-// 실제 CategoryManager 컴포넌트가 임포트되어야 합니다.
 
 
 

@@ -1,9 +1,10 @@
-// CategoryManager.js
+// src/features/admin/components/category/CategoryManager.js
 import React from 'react';
 import useCategoryManagement from '../../components/category/hooks/useCategoryManagements';
 
 import CategoryAddForm from './CategoryAddForm';
 import CategoryDeleteForm from './CategoryDeleteForm';
+import CategoryUpdateForm from './CategoryUpdateForm'; // 카테고리 수정 폼 컴포넌트 임포트
 
 
 const CategoryManager = () => {
@@ -12,20 +13,21 @@ const CategoryManager = () => {
     newCategoryName,
     setNewCategoryName,
     selectedCategoryToDelete, // 현재는 객체 또는 null
-    // setSelectedCategoryToDelete, // 이 함수를 직접 사용하면 타입 불일치 발생!
     showCategoryForm,
     showDeleteCategoryForm,
     loading,
     error,
     handleAddCategory,
     handleDeleteCategory,
+    // 수정 기능을 위해 useCategoryManagement 훅에서 다음 값들을 가져옵니다.
+    handleUpdateCategory, // 카테고리 수정 처리 함수
     openAddForm,
     closeAddForm,
     openDeleteForm,
     closeDeleteForm,
-    // useCategoryManagement 훅의 setSelectedCategoryToDelete 함수도 가져와야 함 (이전 대화에서 추가했었지?)
-    // 만약 훅에서 직접 반환하지 않는다면 이 부분은 불가능함.
-    // 훅에서 반환하는 setSelectedCategoryToDelete 함수를 가져왔다고 가정하고 진행.
+    openUpdateForm,       // 수정 폼을 열기 위한 함수
+    closeUpdateForm,      // 수정 폼을 닫기 위한 함수
+    editingCategory,      // 현재 수정 중인 카테고리 객체 (null이면 수정 폼 숨김)
     setSelectedCategoryToDelete: setHookSelectedCategoryToDelete // 이름 충돌 방지를 위해 별칭 부여
   } = useCategoryManagement();
 
@@ -91,8 +93,22 @@ const CategoryManager = () => {
         </div>
       )}
 
-      {/* 현재 카테고리 목록 표시 (간단 예시) */}
-      <div className="border border-[#306f65] p-4 rounded-lg bg-gray-50">
+      {/* 카테고리 수정 폼 (editingCategory가 null이 아닐 때만 표시) */}
+      {editingCategory && (
+        <div className="border p-4 rounded-lg shadow-sm bg-gray-50">
+          <h3 className="text-lg font-semibold mb-3">카테고리 수정</h3>
+          <CategoryUpdateForm
+            category={editingCategory} // 수정할 카테고리 객체 전달
+            handleUpdateCategory={handleUpdateCategory}
+            closeUpdateForm={closeUpdateForm}
+            loading={loading}
+            error={error}
+          />
+        </div>
+      )}
+
+      {/* 현재 카테고리 목록 표시 */}
+      <div className="border p-4 rounded-lg shadow-sm bg-white">
         <h3 className="text-lg font-semibold mb-3">현재 카테고리 목록 ({categories.length}개)</h3>
         {loading && <p>카테고리 불러오는 중...</p>}
         {error && !loading && <p className="text-red-500">목록 에러: {error}</p>}
@@ -101,13 +117,23 @@ const CategoryManager = () => {
           {categories.map((category) => (
             <li key={category.category_id} className="py-1 flex items-center justify-between">
               <span>{category.name} (ID: {category.category_id})</span>
-              {/* 목록에서 개별 삭제 버튼을 추가하는 것도 고려해볼 수 있어 */}
-              <button
-                onClick={() => openDeleteForm(category)} // 해당 카테고리 객체를 넘겨주며 삭제 폼 열기
-                className="ml-4 px-2 py-1 text-xs bg-red-500 text-white rounded hover:bg-red-600"
-              >
-                삭제
-              </button>
+              <div className="flex space-x-2">
+                <button
+                  onClick={() => openUpdateForm(category)} // 수정 버튼 클릭 시 수정 폼 열기
+                  className="px-2 py-1 text-xs bg-blue-500 text-white rounded hover:bg-blue-600"
+                >
+                  수정
+                </button>
+                {/* 개별 삭제 버튼을 제거합니다. */}
+                {/*
+                <button
+                  onClick={() => openDeleteForm(category)} // 삭제 버튼 클릭 시 삭제 폼 열기
+                  className="px-2 py-1 text-xs bg-red-500 text-white rounded hover:bg-red-600"
+                >
+                  삭제
+                </button>
+                */}
+              </div>
             </li>
           ))}
         </ul>

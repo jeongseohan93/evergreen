@@ -33,3 +33,14 @@ export const fetchCategories = async () => {
     throw error;
   }
 };
+
+export const updateCategory = async (categoryId, newName) => {
+  try {
+    // 백엔드 경로: PUT /admin/product/categories/:id
+    const response = await apiService.put(`/admin/product/categories/${categoryId}`, { name: newName }); 
+    return { success: response.status === 200, message: response.data.message };
+  } catch (error) {
+    console.error('API Error: updateCategory', error);
+    throw error;
+  }
+};

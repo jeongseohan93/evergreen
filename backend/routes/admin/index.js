@@ -6,6 +6,7 @@ const main = require('./main');
 const parcel = require('./parcel');
 const product = require('./product');
 const userRouter = require('./user');
+const dashboard = require('./dashboard');
 const sale = require('./sale');
 
 const { isLoggedIn, isAdmin } = require('../../middlewares/index');
@@ -19,5 +20,6 @@ router.use('/parcel', parcel);
 router.use('/product', product);
 router.use('/user', userRouter);
 router.use('/sale', sale);
+router.use('/dashboard' , dashboard);
 
 module.exports = router;
