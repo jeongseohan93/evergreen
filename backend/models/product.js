@@ -51,6 +51,13 @@ class Product extends Model {
         type: DataTypes.INTEGER,
         defaultValue: 0,
       },
+      brand: {
+        type: DataTypes.STRING(100),
+      },
+      pick: {
+        type: DataTypes.ENUM('best', 'recommend', 'nothing'), // 필요 시 수정
+        defaultValue: 'nothing',
+      },
       created_at: {
         type: DataTypes.DATE,
         defaultValue: DataTypes.NOW,

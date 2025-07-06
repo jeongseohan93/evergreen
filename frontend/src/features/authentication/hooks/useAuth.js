@@ -24,16 +24,18 @@ export const useAuth = () => {
                 navigate("/");
             }
         } else if (loginAsync.rejected.match(resultAction)) {
+            const errorMsg = resultAction?.payload?.message || "로그인 실패";
+            alert(errorMsg);
             console.error("로그인 실패");
+        }
     }
 
-}
-return {
-    isLoggedIn,
-    user,
-    role,
-    status,
-    error,
-    login: handleLogin,
-};
+    return {
+        isLoggedIn,
+        user,
+        role,
+        status,
+        error,
+        login: handleLogin,
+    };
 }

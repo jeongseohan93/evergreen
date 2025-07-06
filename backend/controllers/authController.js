@@ -110,6 +110,11 @@ exports.login = (req, res, next) => {
       return res.status(401).json({ message: info?.message || '로그인 실패' });
     }
 
+    // 제명된 회원 체크
+    if (user.deletedAt !== null) {
+      return res.status(403).json({ message: '제명된 회원입니다. 로그인할 수 없습니다.' });
+    }
+
     // 인증 성공! user 객체에서 필요한 정보만 추출해서 req.authData에 저장
     req.authData = {
       email: user.email,

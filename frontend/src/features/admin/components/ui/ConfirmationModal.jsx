@@ -10,13 +10,13 @@ const ConfirmationModal = ({ title, message, onConfirm, onCancel, confirmButtonT
         <div className="flex justify-end space-x-3">
           <button
             onClick={onCancel}
-            className="px-5 py-2 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+            className="px-5 py-2 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-indigo-500"
           >
             {cancelButtonText || '취소'}
           </button>
           <button
             onClick={onConfirm}
-            className="px-5 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+            className="px-5 py-2 bg-red-600 text-white rounded-md hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
           >
             {confirmButtonText || '확인'}
           </button>

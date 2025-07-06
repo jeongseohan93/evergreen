@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useUsers } from '../../components/user/hooks/UseUser';
 
-const UserManage = ({ onEditUser, onGoDashboard }) => {
+const UserManage = ({ onEditUser }) => {
   const navigate = useNavigate();
   const {
     users,
@@ -43,12 +43,6 @@ const UserManage = ({ onEditUser, onGoDashboard }) => {
     <div className="p-5 max-w-7xl mx-auto font-light text-sm text-gray-800">
       <div className="flex justify-between items-center mb-5">
         <h2 className="m-0 text-black text-4xl font-aggro font-bold">회원 관리</h2>
-        <button
-          onClick={onGoDashboard}
-          className="px-4 py-2 cursor-pointer text-white border-transparent rounded transition-colors bg-[#306f65] hover:bg-white hover:text-[#306f65] hover:border-[#306f65] border"
-        >
-          대시보드로 이동
-        </button>
       </div>
 
       {/* 검색 영역 추가 */}

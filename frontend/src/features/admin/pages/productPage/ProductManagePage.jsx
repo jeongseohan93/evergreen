@@ -39,7 +39,7 @@ const ProductManagePage = () => {
 
     return (
         <div style={{ padding: '20px', maxWidth: '1200px', margin: '0 auto' }}>
-            <h1>상품 관리</h1>
+            <h1 className="text-4xl font-aggro font-bold mb-4 text-black">상품 관리</h1>
 
             {/* 에러 메시지 표시 컴포넌트 */}
             <ProductErrorDisplay error={error} />
@@ -54,7 +54,7 @@ const ProductManagePage = () => {
                 handleInputChange={handleInputChange}
                 handleAddProduct={handleAddProduct}
                 categories={categories} // 카테고리 드롭다운에 필요
-            />
+                />
 
             {/* 상품 검색 섹션 컴포넌트 */}
             <ProductSearch
@@ -68,19 +68,19 @@ const ProductManagePage = () => {
                 toggleStockEdit={toggleStockEdit}
                 handleStockUpdate={handleStockUpdate}
                 categories={categories} // 검색 결과 리스트에도 카테고리 정보 전달
-            />
+                />
 
             {/* 상품 목록 섹션 (검색 중이 아니거나 검색 결과가 없을 때만 전체 목록 표시) */}
             {!isSearching && (
-                <div style={{ marginTop: '30px' }}>
-                    <h2>전체 상품 목록</h2>
+                <div className="mt-30 mb-6 p-6 bg-white rounded-lg border border-[#306f65]">
+                    <h2 className="text-2xl font-aggro font-bold mb-4 text-black">전체 상품 목록</h2>
                     <ProductList
                         products={products}
                         editingStock={editingStock}
                         toggleStockEdit={toggleStockEdit}
                         handleStockUpdate={handleStockUpdate}
                         categories={categories} // 상품 목록에도 카테고리 정보 전달
-                    />
+                        />
                 </div>
             )}
         </div>

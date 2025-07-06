@@ -1,5 +1,5 @@
 import React, { useState } from 'react'; // useState 훅 추가
-import { HomeIcon, ShoppingBagIcon, UsersIcon, ChartBarIcon, CogIcon, FoldersIcon } from 'lucide-react';
+import { HomeIcon, ShoppingBagIcon, UsersIcon, ChartBarIcon, CogIcon, FoldersIcon, FileTextIcon, PackageIcon } from 'lucide-react';
 import  CategoryManager  from '../pages/categoryPage/CategoryManager';
 import ProductManagePage from '../pages/productPage/ProductManagePage';
 import SaleManagerPage from '../pages/salePage/SaleManagerPage';
@@ -50,7 +50,6 @@ const AdminDashboardPage = () => (
 
 const AdminCategoriesPage = () => (
   <div className="min-h-[400px]">
-    <h1 className="text-3xl font-bold text-gray-800 mb-6">카테고리 관리</h1>
     <CategoryManager />
   </div>
 );
@@ -58,28 +57,27 @@ const AdminCategoriesPage = () => (
 
 // AdminProductsPage.jsx의 내용
 const AdminProductsPage = () => (
-  <div className="bg-white p-6 rounded-lg shadow-md min-h-[400px]">
-    <h2 className="text-2xl font-bold mb-4 text-gray-800">상품 관리</h2>
-   <ProductManagePage />
+  <div className="min-h-[400px]">
+    <ProductManagePage />
   </div>
 );
 
 const SalePage = () => (
   <div className="bg-white p-6 rounded-lg shadow-md min-h-[400px]">
-    <h2 className="text-2xl font-bold mb-4 text-gray-800">상품 관리</h2>
+    <h2 className="text-2xl font-bold mb-4 text-gray-800">매출 관리</h2>
    <SaleManagerPage />
   </div>
 );
 
 const OrderPage = () => (
   <div className="bg-white p-6 rounded-lg shadow-md min-h-[400px]">
-    <h2 className="text-2xl font-bold mb-4 text-gray-800">상품 관리</h2>
+    <h2 className="text-2xl font-bold mb-4 text-gray-800">주문 관리</h2>
    <OrderManagementPage />
   </div>
 );
 
 // === Header 컴포넌트 ===
-const AdminHeader = () => {
+const AdminHeader = ({ onGoDashboard }) => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
@@ -96,6 +94,12 @@ const AdminHeader = () => {
         </div>
       </div>
       <div className="flex items-center space-x-4">
+        <button
+          onClick={onGoDashboard}
+          className="px-4 py-2 cursor-pointer text-white rounded transition-colors bg-[#306f65] hover:bg-white hover:text-[#306f65] hover:border-[#306f65] border text-sm rounded-md"
+        >
+          대시보드로 이동
+        </button>
         <button onClick={handleLogout} className="text-sm bg-[#58bcb5] text-white border border-[#58bcb5] hover:bg-white hover:text-[#58bcb5] px-4 py-2 rounded-md transition duration-200 ease-in-out">
           로그아웃
         </button>
@@ -109,11 +113,11 @@ const AdminSidebar = ({ activeKey, setActiveKey }) => { // activeKey와 setActiv
   const menuItems = [
     { name: '대시보드', icon: HomeIcon, key: 'dashboard' }, // key로 변경
     { name: '상품 관리', icon: ShoppingBagIcon, key: 'products' },
-    { name: '주문 관리', icon: ChartBarIcon, key: 'orders' },
+    { name: '주문 관리', icon: PackageIcon, key: 'orders' },
     { name: '카테고리', icon: FoldersIcon, key: 'categories' },
     { name: '회원 관리', icon: UsersIcon, key: 'users' },
     { name: '매출 관리', icon: ChartBarIcon, key: 'sale' },
-    { name: '리포트 관리', icon: ChartBarIcon, key: 'reports' },
+    { name: '리포트 관리', icon: FileTextIcon, key: 'reports' },
     { name: '설정', icon: CogIcon, key: 'settings' },
   ];
 
@@ -220,7 +224,7 @@ const AdminLayout = () => { // children prop 제거
 
   return (
     <div className="min-h-screen flex flex-col bg-gray-100 font-sans">
-      <AdminHeader />
+      <AdminHeader onGoDashboard={handleGoDashboard} />
 
       <div className="flex flex-1">
         <AdminSidebar activeKey={activeComponentKey === 'userEdit' ? 'users' : activeComponentKey} setActiveKey={setActiveComponentKey} />

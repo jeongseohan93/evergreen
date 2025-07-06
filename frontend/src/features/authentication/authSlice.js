@@ -19,7 +19,10 @@ export const loginAsync = createAsyncThunk(
     const { user, role } = response;
     return { user, role };
     } catch (error) {
-      return rejectWithValue(error.message || '로그인에 실패했습니다.');
+      if (error.response && error.response.data && error.response.data.message) {
+        return rejectWithValue({ message: error.response.data.message });
+      }
+      return rejectWithValue({ message: error.message || '로그인에 실패했습니다.' });
     }
   } 
 )

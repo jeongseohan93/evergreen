@@ -32,17 +32,17 @@ const CategoryDeleteForm = ({ // export 제거
   };
 
   return (
-    <div className="p-4 border rounded-md shadow-sm bg-white">
-      <h3 className="text-lg font-semibold mb-3">카테고리 삭제</h3>
+    <>
+      <h3 className="text-2xl mb-3 font-aggro font-bold">카테고리 삭제</h3>
       {error && <p className="text-red-500 mb-2">{error}</p>}
       <form className="space-y-3">
         <div>
-          <label htmlFor="selectCategoryToDelete" className="block text-sm font-medium text-gray-700">
+          <label htmlFor="selectCategoryToDelete" className="block text-base font-bold text-gray-700 text-[#58bcb5]">
             삭제할 카테고리:
           </label>
           <select
             id="selectCategoryToDelete"
-            className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2 focus:ring-indigo-500 focus:border-indigo-500"
+            className="mt-1 block w-full border border-gray-300 rounded-md p-2 focus:border-[#58bcb5] focus:outline-none"
             value={selectedCategoryToDelete}
             onChange={(e) => setSelectedCategoryToDelete(e.target.value)}
             disabled={loading}
@@ -59,7 +59,7 @@ const CategoryDeleteForm = ({ // export 제거
           <button
             type="button"
             onClick={toggleDeleteCategoryForm}
-            className="px-4 py-2 bg-gray-200 text-gray-800 rounded-md hover:bg-gray-300 disabled:opacity-50"
+            className="px-4 py-2 bg-[#58bcb5] border text-white rounded-md hover:bg-white hover:text-[#58bcb5] hover:border-[#58bcb5]"
             disabled={loading}
           >
             취소
@@ -86,7 +86,7 @@ const CategoryDeleteForm = ({ // export 제거
           cancelButtonText="취소"
         />
       )}
-    </div>
+    </>
   );
 };
 

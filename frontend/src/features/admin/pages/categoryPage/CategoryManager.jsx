@@ -43,17 +43,28 @@ const CategoryManager = () => {
 
   return (
     <div className="space-y-6 p-6">
-      <h2 className="text-2xl font-bold mb-4">카테고리 관리</h2>
+      {/* 상단: 카테고리 관리 제목 + 버튼 2개 (오른쪽 정렬) */}
+      <div className="flex items-center justify-between mb-6">
+        <h2 className="text-4xl font-bold font-aggro text-gray-800">카테고리 관리</h2>
+        <div className="flex gap-2 bg-transparent items-center h-12">
+          <button
+            className="h-12 flex items-center px-4 py-2 bg-[#306f65] text-white rounded-md hover:bg-[#306f65] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#306f65]"
+            onClick={showCategoryForm ? closeAddForm : openAddForm}
+          >
+            {showCategoryForm ? '카테고리 추가 폼 닫기' : '새 카테고리 추가'}
+          </button>
+          <button
+            className="h-12 flex items-center px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500"
+            onClick={showDeleteCategoryForm ? closeDeleteForm : () => openDeleteForm(null)}
+          >
+            {showDeleteCategoryForm ? '카테고리 삭제 폼 닫기' : '카테고리 삭제'}
+          </button>
+        </div>
+      </div>
 
-      {/* 카테고리 추가 버튼 및 폼 */}
-      <div className="border p-4 rounded-lg shadow-sm bg-gray-50">
-        <button
-          onClick={showCategoryForm ? closeAddForm : openAddForm}
-          className="px-6 py-3 bg-indigo-600 text-white rounded-md hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 mb-4"
-        >
-          {showCategoryForm ? '카테고리 추가 폼 닫기' : '새 카테고리 추가'}
-        </button>
-        {showCategoryForm && (
+      {/* 카테고리 추가 폼 */}
+      {showCategoryForm && (
+        <div className="border border-[#306f65] p-4 rounded-lg bg-gray-50">
           <CategoryAddForm
             newCategoryName={newCategoryName}
             setNewCategoryName={setNewCategoryName}
@@ -62,34 +73,26 @@ const CategoryManager = () => {
             error={error}
             toggleCategoryForm={closeAddForm}
           />
-        )}
-      </div>
+        </div>
+      )}
 
-      {/* 카테고리 삭제 버튼 및 폼 */}
-      <div className="border p-4 rounded-lg shadow-sm bg-gray-50">
-        <button
-          onClick={showDeleteCategoryForm ? closeDeleteForm : () => openDeleteForm(null)}
-          className="px-6 py-3 bg-red-600 text-white rounded-md hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 mb-4"
-        >
-          {showDeleteCategoryForm ? '카테고리 삭제 폼 닫기' : '카테고리 삭제'}
-        </button>
-        {showDeleteCategoryForm && (
+      {/* 카테고리 삭제 폼 */}
+      {showDeleteCategoryForm && (
+        <div className="border border-[#306f65] p-4 rounded-lg bg-gray-50">
           <CategoryDeleteForm
             categories={categories}
-            // 🚨🚨🚨 이 부분 수정: 객체에서 ID(문자열)를 추출하여 전달
             selectedCategoryToDelete={categoryIdToDelete}
-            // 🚨🚨🚨 이 부분 수정: 폼에서 받은 ID(문자열)를 객체로 변환하여 훅에 전달하는 함수
             setSelectedCategoryToDelete={handleSelectCategoryToDeleteInForm}
             handleDeleteCategory={handleDeleteCategory}
             loading={loading}
             error={error}
             toggleDeleteCategoryForm={closeDeleteForm}
           />
-        )}
-      </div>
+        </div>
+      )}
 
       {/* 현재 카테고리 목록 표시 (간단 예시) */}
-      <div className="border p-4 rounded-lg shadow-sm bg-white">
+      <div className="border border-[#306f65] p-4 rounded-lg bg-gray-50">
         <h3 className="text-lg font-semibold mb-3">현재 카테고리 목록 ({categories.length}개)</h3>
         {loading && <p>카테고리 불러오는 중...</p>}
         {error && !loading && <p className="text-red-500">목록 에러: {error}</p>}

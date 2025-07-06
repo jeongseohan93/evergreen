@@ -9,33 +9,33 @@ const ProductList = ({ products, editingStock, toggleStockEdit, handleStockUpdat
     };
 
     return (
-        <table style={{ width: '100%', borderCollapse: 'collapse', marginTop: '20px' }}>
+        <table className="w-full border-collapse mt-5">
             <thead>
-                <tr style={{ backgroundColor: '#f2f2f2' }}>
-                    <th style={{ border: '1px solid #ddd', padding: '8px' }}>ID</th>
-                    <th style={{ border: '1px solid #ddd', padding: '8px' }}>상품명</th>
-                    <th style={{ border: '1px solid #ddd', padding: '8px' }}>가격</th>
-                    <th style={{ border: '1px solid #ddd', padding: '8px' }}>카테고리</th>
-                    <th style={{ border: '1px solid #ddd', padding: '8px' }}>재고</th>
-                    <th style={{ border: '1px solid #ddd', padding: '8px' }}>메모</th>
-                    <th style={{ border: '1px solid #ddd', padding: '8px' }}>액션</th>
+                <tr className="bg-gray-100">
+                    <th className="border border-gray-300 px-3 py-2 text-left text-sm font-semibold text-gray-700">ID</th>
+                    <th className="border border-gray-300 px-3 py-2 text-left text-sm font-semibold text-gray-700">상품명</th>
+                    <th className="border border-gray-300 px-3 py-2 text-left text-sm font-semibold text-gray-700">가격</th>
+                    <th className="border border-gray-300 px-3 py-2 text-left text-sm font-semibold text-gray-700">카테고리</th>
+                    <th className="border border-gray-300 px-3 py-2 text-left text-sm font-semibold text-gray-700">재고</th>
+                    <th className="border border-gray-300 px-3 py-2 text-left text-sm font-semibold text-gray-700">메모</th>
+                    <th className="border border-gray-300 px-3 py-2 text-left text-sm font-semibold text-gray-700">액션</th>
                 </tr>
             </thead>
             <tbody>
                 {products.length === 0 ? (
                     <tr>
-                        <td colSpan="7" style={{ textAlign: 'center', padding: '10px' }}>상품이 없습니다.</td>
+                        <td colSpan="7" className="text-center py-3 text-gray-500">상품이 없습니다.</td>
                     </tr>
                 ) : (
                     products.map(product => (
-                        <tr key={product.product_id}>
-                            <td style={{ border: '1px solid #ddd', padding: '8px' }}>{product.product_id}</td>
-                            <td style={{ border: '1px solid #ddd', padding: '8px' }}>{product.name}</td>
-                            <td style={{ border: '1px solid #ddd', padding: '8px' }}>{product.price.toLocaleString()}원</td>
-                            <td style={{ border: '1px solid #ddd', padding: '8px' }}>{getCategoryName(product.category_id)}</td>
-                            <td style={{ border: '1px solid #ddd', padding: '8px' }}>
+                        <tr key={product.product_id} className="hover:bg-gray-50">
+                            <td className="border border-gray-300 px-2 py-2 text-sm w-16">{product.product_id}</td>
+                            <td className="border border-gray-300 px-3 py-2 text-sm font-medium min-w-[200px]">{product.name}</td>
+                            <td className="border border-gray-300 px-3 py-2 text-sm w-24">{product.price.toLocaleString()}원</td>
+                            <td className="border border-gray-300 px-3 py-2 text-sm w-28">{getCategoryName(product.category_id)}</td>
+                            <td className="border border-gray-300 px-2 py-2 text-sm w-32">
                                 {editingStock[product.product_id] ? (
-                                    <>
+                                    <div className="flex items-center justify-between">
                                         <input
                                             type="number"
                                             defaultValue={product.stock}
@@ -45,19 +45,29 @@ const ProductList = ({ products, editingStock, toggleStockEdit, handleStockUpdat
                                                     handleStockUpdate(product.product_id, parseInt(e.target.value));
                                                 }
                                             }}
-                                            style={{ width: '60px', padding: '5px' }}
+                                            className="w-16 px-2 py-1 border border-gray-300 rounded text-sm focus:outline-none focus:ring-2 focus:ring-[#306f65] focus:border-transparent"
                                         />
-                                        <button onClick={() => toggleStockEdit(product.product_id)} style={{ marginLeft: '5px', padding: '5px 10px' }}>취소</button>
-                                    </>
+                                        <button 
+                                            onClick={() => toggleStockEdit(product.product_id)} 
+                                            className="px-2 py-1 text-xs bg-gray-500 text-white rounded hover:bg-gray-600 transition-colors duration-200 whitespace-nowrap"
+                                        >
+                                            취소
+                                        </button>
+                                    </div>
                                 ) : (
-                                    <>
-                                        {product.stock}
-                                        <button onClick={() => toggleStockEdit(product.product_id)} style={{ marginLeft: '10px', padding: '5px 10px' }}>수정</button>
-                                    </>
+                                    <div className="flex items-center justify-between">
+                                        <span>{product.stock}</span>
+                                        <button 
+                                            onClick={() => toggleStockEdit(product.product_id)} 
+                                            className="px-2 py-1 text-xs bg-[#306f65] text-white rounded hover:bg-[#58bcb5] transition-colors duration-200 whitespace-nowrap"
+                                        >
+                                            수정
+                                        </button>
+                                    </div>
                                 )}
                             </td>
-                            <td style={{ border: '1px solid #ddd', padding: '8px' }}>{product.memo}</td>
-                            <td style={{ border: '1px solid #ddd', padding: '8px' }}>
+                            <td className="border border-gray-300 px-3 py-2 text-sm text-gray-600 min-w-[150px]">{product.memo}</td>
+                            <td className="border border-gray-300 px-3 py-2 text-sm w-20">
                                 {/* 다른 액션 버튼 (삭제 등) */}
                             </td>
                         </tr>

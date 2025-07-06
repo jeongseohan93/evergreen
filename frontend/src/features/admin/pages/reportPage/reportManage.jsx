@@ -2,7 +2,7 @@ import React from "react";
 import { useNavigate } from "react-router-dom";
 import useReport from '../../components/report/hooks/UseReport';
 
-const ReportManage = ({ onView, onEdit, onWrite, onGoDashboard }) => {
+const ReportManage = ({ onView, onEdit, onWrite }) => {
   const navigate = useNavigate();
   const {
     reports,
@@ -45,12 +45,6 @@ const ReportManage = ({ onView, onEdit, onWrite, onGoDashboard }) => {
               조행기 작성
             </button>
           </div>
-          <button 
-            onClick={onGoDashboard}
-            className="px-4 py-2 cursor-pointer text-white border-transparent rounded transition-colors bg-[#306f65] hover:bg-white hover:text-[#306f65] hover:border-[#306f65] border"
-          >
-            대시보드로 이동
-          </button>
         </div>
         <div className="mb-5 flex gap-2">
           <input

@@ -61,7 +61,8 @@ const LoginForm = () => {
 
         {error && (
           <div className="text-red-600 text-sm text-center mt-2">
-            {error}
+            {/* 에러메세지 타입이 문자열로 정의 되어야 오류 발생 X */}
+            {typeof error === "string" ? error : error?.message}  
           </div>
         )}
       </form>

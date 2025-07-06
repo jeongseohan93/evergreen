@@ -99,6 +99,13 @@ class User extends Sequelize.Model {
                 targetKey: 'user_uuid', // User 모델의 UUID PK
                 onDelete: 'CASCADE',
             });
+
+            // board 관계 추가
+            db.User.hasMany(db.Board, {
+                foreignKey: 'user_id',      // Board 테이블의 user_id
+                sourceKey: 'user_uuid',     // User 테이블의 user_uuid
+                onDelete: 'CASCADE',
+            });
         }
     }
 
