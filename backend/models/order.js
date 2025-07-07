@@ -21,14 +21,35 @@ class Order extends Model {
       status: {
         //.ENUM:이넘(열거형) => 대기 / 완료 / 취소
         //type: DataTypes.STRING(20), <= ENUM제약없이 상태값 넣고 싶을때는 이렇게 하면 됨.대신 검증은 코드로 해야 함. 
-        type: DataTypes.ENUM('pending', 'paid', 'cancelled'), // 필요 시 수정
+        type: DataTypes.ENUM('shipping', 'paid', 'delivered', 'cancelled', 'pending'), // 필요 시 수정
         allowNull: false,
         defaultValue: 'pending',
       },
       created_at: {
         type: DataTypes.DATE,
         defaultValue: DataTypes.NOW,
+      },// --- 추가해야 할 컬럼들 ---
+      tracking_number: {
+        type: DataTypes.STRING(255), // 운송장 번호는 보통 문자열
+        allowNull: true, // 운송장 번호가 없을 수도 있으니 허용
       },
+      delivery_company: {
+        type: DataTypes.STRING(100), // 택배사 이름
+        allowNull: true,
+      },
+      delivered_at: {
+        type: DataTypes.DATE, // 배송 완료 시간
+        allowNull: true,
+      },
+      cancelled_at: {
+        type: DataTypes.DATE, // 취소한 시간
+        allowNull: true,
+      }, 
+      cancel_reason: {
+        type: DataTypes.TEXT, // 취소 사유
+        allowNull: true,
+      },
+      // --- (isDelayed, daysSinceOrder, delayDays는 DB 컬럼이 아니므로 여기에 추가하지 않음) ---
     }, {
       sequelize,
       modelName: 'Order',

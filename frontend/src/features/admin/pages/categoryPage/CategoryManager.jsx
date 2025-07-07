@@ -50,7 +50,7 @@ const CategoryManager = () => {
         <h2 className="text-4xl font-bold font-aggro text-gray-800">카테고리 관리</h2>
         <div className="flex gap-2 bg-transparent items-center h-12">
           <button
-            className="h-12 flex items-center px-4 py-2 bg-[#306f65] text-white rounded-md hover:bg-[#306f65] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#306f65]"
+            className="h-12 flex items-center px-4 py-2 bg-[#306f65] text-white rounded-md hover:bg-[#26574f] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#306f65]"
             onClick={showCategoryForm ? closeAddForm : openAddForm}
           >
             {showCategoryForm ? '카테고리 추가 폼 닫기' : '새 카테고리 추가'}
@@ -66,7 +66,7 @@ const CategoryManager = () => {
 
       {/* 카테고리 추가 폼 */}
       {showCategoryForm && (
-        <div className="border border-[#306f65] p-4 rounded-lg bg-gray-50">
+        <div className="border border-[#306f65]  p-4 rounded-lg bg-gray-50">
           <CategoryAddForm
             newCategoryName={newCategoryName}
             setNewCategoryName={setNewCategoryName}
@@ -95,8 +95,8 @@ const CategoryManager = () => {
 
       {/* 카테고리 수정 폼 (editingCategory가 null이 아닐 때만 표시) */}
       {editingCategory && (
-        <div className="border p-4 rounded-lg shadow-sm bg-gray-50">
-          <h3 className="text-lg font-semibold mb-3">카테고리 수정</h3>
+        <div className="border border-[#306f65] p-4 rounded-lg shadow-sm bg-gray-50">
+          <h3 className="text-2xl font-aggro font-bold mb-3">카테고리 수정</h3>
           <CategoryUpdateForm
             category={editingCategory} // 수정할 카테고리 객체 전달
             handleUpdateCategory={handleUpdateCategory}
@@ -108,8 +108,8 @@ const CategoryManager = () => {
       )}
 
       {/* 현재 카테고리 목록 표시 */}
-      <div className="border p-4 rounded-lg shadow-sm bg-white">
-        <h3 className="text-lg font-semibold mb-3">현재 카테고리 목록 ({categories.length}개)</h3>
+      <div className="border border-[#306f65] p-4 rounded-lg shadow-sm bg-white">
+        <h3 className="text-2xl font-bold font-aggro mb-3">현재 카테고리 목록 ({categories.length}개)</h3>
         {loading && <p>카테고리 불러오는 중...</p>}
         {error && !loading && <p className="text-red-500">목록 에러: {error}</p>}
         {!loading && !error && categories.length === 0 && <p>카테고리가 없습니다.</p>}
@@ -120,7 +120,7 @@ const CategoryManager = () => {
               <div className="flex space-x-2">
                 <button
                   onClick={() => openUpdateForm(category)} // 수정 버튼 클릭 시 수정 폼 열기
-                  className="px-2 py-1 text-xs bg-blue-500 text-white rounded hover:bg-blue-600"
+                  className="px-2 py-1 text-xs bg-[#306f65] text-white rounded hover:bg-[#58bcb5]"
                 >
                   수정
                 </button>
