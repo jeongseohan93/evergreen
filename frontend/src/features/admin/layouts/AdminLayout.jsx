@@ -1,6 +1,13 @@
-import React, { useState } from 'react'; // useState 훅 추가
+// src/features/admin/layouts/AdminLayout.jsx
+
+import React, { useState } from 'react';
 import { HomeIcon, ShoppingBagIcon, UsersIcon, ChartBarIcon, CogIcon, FoldersIcon, FileTextIcon, PackageIcon } from 'lucide-react';
-import  CategoryManager  from '../pages/categoryPage/CategoryManager';
+
+// === Import 경로 재수정 ===
+// CategoryManager의 실제 위치에 맞게 경로를 설정 (pages/categoryPage 폴더 안에 있음)
+import CategoryManager from '../pages/categoryPage/CategoryManager'; // <-- 이 경로가 맞습니다!
+
+// 다른 컴포넌트들도 'pages' 폴더 하위에 있다면 기존 경로가 맞을 가능성이 높습니다.
 import ProductManagePage from '../pages/productPage/ProductManagePage';
 import SaleManagerPage from '../pages/salePage/SaleManagerPage';
 import OrderManagementPage from '../pages/orderPage/OrderManagementPage';
@@ -13,39 +20,33 @@ import ReportEdit from '../pages/reportPage/ReportEdit.jsx';
 import ReportWrite from '../pages/reportPage/ReportWrite.jsx';
 import DashBoardPage from '../pages/dashboardPage/DashBoardPage';
 
+// CategoryProductList도 CategoryManager와 같은 폴더에 있으므로 이 경로가 맞습니다.
+import CategoryProductList from '../pages/categoryPage/CategoryProductList'; 
+
+
 import { logoutAsync } from '@/features/authentication/authSlice';
 import { useNavigate } from 'react-router-dom';
 import { useDispatch } from 'react-redux';
 
 
-// === 임시 페이지 컴포넌트들 (실제로는 별도 파일에서 임포트됩니다) ===
-// 이 컴포넌트들은 AdminLayout 내에서 조건부로 렌더링될 대상입니다.
-
-// AdminDashboardPage.jsx의 내용
+// === 임시 페이지 컴포넌트들 ===
 const AdminDashboardPage = () => (
-
- 
   <div className="bg-white p-6 rounded-lg shadow-md min-h-[400px]">
-  
-
      <h1> 2026년에는 3대 700을 도전한다.</h1>
      <h1> 나는 존나 쎄다. </h1>
- <DashBoardPage />
-  
+     <DashBoardPage />
   </div>
 );
 
 
-
-
-const AdminCategoriesPage = () => (
+// AdminCategoriesPage: CategoryManager에 onCategoryClick prop을 전달하도록 수정
+const AdminCategoriesPage = ({ onCategoryClick }) => ( // prop 추가
   <div className="min-h-[400px]">
-    <CategoryManager />
+    <CategoryManager onCategoryClick={onCategoryClick} /> {/* prop 전달 */}
   </div>
 );
 
 
-// AdminProductsPage.jsx의 내용
 const AdminProductsPage = () => (
   <div className="min-h-[400px]">
     <ProductManagePage />
@@ -66,7 +67,7 @@ const OrderPage = () => (
   </div>
 );
 
-// === Header 컴포넌트 ===
+// === Header 컴포넌트 === (이전과 동일)
 const AdminHeader = ({ onGoDashboard }) => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
@@ -98,10 +99,10 @@ const AdminHeader = ({ onGoDashboard }) => {
   );
 };
 
-// === Sidebar 컴포넌트 (state를 받아 콘텐츠 전환) ===
-const AdminSidebar = ({ activeKey, setActiveKey }) => { // activeKey와 setActiveKey prop 추가
+// === Sidebar 컴포넌트 === (이전과 동일)
+const AdminSidebar = ({ activeKey, setActiveKey }) => { 
   const menuItems = [
-    { name: '대시보드', icon: HomeIcon, key: 'dashboard' }, // key로 변경
+    { name: '대시보드', icon: HomeIcon, key: 'dashboard' }, 
     { name: '상품 관리', icon: ShoppingBagIcon, key: 'products' },
     { name: '주문 관리', icon: PackageIcon, key: 'orders' },
     { name: '카테고리', icon: FoldersIcon, key: 'categories' },
@@ -119,20 +120,17 @@ const AdminSidebar = ({ activeKey, setActiveKey }) => { // activeKey와 setActiv
     <aside
       className="flex-col bg-[#306f65] text-white w-64 p-5 z-30"
     >
-      {/* Sidebar Header / Logo */}
       <div className="flex items-center justify-between pb-6 border-b border-white mb-6">
         <h2 className="text-2xl text-[#f2f2e8] font-aggro font-bold">Admin Panel</h2>
       </div>
-
-      {/* Navigation Links */}
       <nav className="flex-1">
         <ul className="space-y-2">
           {menuItems.map((item) => (
             <li key={item.name}>
-              <button // Link 대신 button 사용
+              <button 
                 onClick={() => handleClick(item.key)}
                 className={`flex items-center p-3 rounded-md transition duration-200 ease-in-out w-full text-left
-                  ${activeKey === item.key // activeKey와 일치하면 활성화 스타일
+                  ${activeKey === item.key 
                     ? 'bg-[#f2f2e8] text-black text-xl font-aggro font-bold'
                     : 'text-gray-300 hover:bg-[#58bcb5] hover:text-white'
                   }`
@@ -145,8 +143,6 @@ const AdminSidebar = ({ activeKey, setActiveKey }) => { // activeKey와 setActiv
           ))}
         </ul>
       </nav>
-
-      {/* Sidebar Footer (Optional) */}
       <div className="pt-6 border-t border-white mt-6 text-sm text-white">
         <p>&copy; 2023 Your Admin. All rights reserved.</p>
       </div>
@@ -155,28 +151,31 @@ const AdminSidebar = ({ activeKey, setActiveKey }) => { // activeKey와 setActiv
 };
 
 // === AdminLayout 컴포넌트 (내부에서 콘텐츠 전환 관리) ===
-const AdminLayout = () => { // children prop 제거
+const AdminLayout = () => { 
   const [activeComponentKey, setActiveComponentKey] = useState('dashboard');
   const [userEditId, setUserEditId] = useState(null);
   const [reportDetailId, setReportDetailId] = useState(null);
   const [reportEditId, setReportEditId] = useState(null);
+  const [selectedCategoryIdForProductList, setSelectedCategoryIdForProductList] = useState(null); 
 
-  // UserManage에 넘길 수정 핸들러
+
+  const handleCategoryItemClick = (categoryId) => {
+    setSelectedCategoryIdForProductList(categoryId); 
+    setActiveComponentKey('categoryProducts'); 
+  };
+
   const handleEditUser = (userUuid) => {
     setUserEditId(userUuid);
     setActiveComponentKey('userEdit');
   };
-  // UserEdit에서 돌아가기 핸들러
   const handleCancelEdit = () => {
     setUserEditId(null);
     setActiveComponentKey('users');
   };
-  // UserManage에서 대시보드로 이동 핸들러
   const handleGoDashboard = () => {
     setActiveComponentKey('dashboard');
   };
 
-  // ReportManage 관련 핸들러
   const handleViewReport = (reportId) => {
     setReportDetailId(reportId);
     setActiveComponentKey('reportDetail');
@@ -194,10 +193,9 @@ const AdminLayout = () => { // children prop 제거
     setActiveComponentKey('reports');
   };
 
-  // 키에 따라 렌더링할 컴포넌트 맵
   const ComponentMap = {
     'dashboard': <AdminDashboardPage />,
-    'categories': <AdminCategoriesPage />,
+    'categories': <AdminCategoriesPage onCategoryClick={handleCategoryItemClick} />, 
     'products': <AdminProductsPage />,
     'orders': <OrderPage />,
     'sale': <SalePage/>,
@@ -208,9 +206,10 @@ const AdminLayout = () => { // children prop 제거
     'reportEdit': <ReportEdit reportId={reportEditId} onCancel={handleCancelReport} />,
     'reportWrite': <ReportWrite onCancel={handleCancelReport} />,
     'settings': <div className="bg-white p-6 rounded-lg shadow-md min-h-[400px]"><h2>설정 페이지</h2></div>,
+    'categoryProducts': <CategoryProductList categoryId={selectedCategoryIdForProductList} />, 
   };
 
-  const CurrentComponent = ComponentMap[activeComponentKey] || <AdminDashboardPage />; // 기본값: 대시보드
+  const CurrentComponent = ComponentMap[activeComponentKey] || <AdminDashboardPage />; 
 
   return (
     <div className="min-h-screen flex flex-col bg-gray-100 font-sans">
@@ -219,22 +218,17 @@ const AdminLayout = () => { // children prop 제거
       <div className="flex flex-1">
         <AdminSidebar activeKey={activeComponentKey === 'userEdit' ? 'users' : activeComponentKey} setActiveKey={setActiveComponentKey} />
         
-        {/* Main Content Area */}
         <main className="flex-1 p-6 overflow-y-auto bg-[#f2f2e8]">
-          {CurrentComponent} {/* 선택된 컴포넌트 렌더링 */}
+          {CurrentComponent} 
         </main>
       </div>
     </div>
   );
 };
 
-// === App 컴포넌트 (최상위 라우터는 필요 없음) ===
-// 이제 AdminLayout이 자체적으로 콘텐츠를 전환하므로,
-// App.js에서는 단순히 AdminLayout을 렌더링하거나, 특정 경로에 연결할 수 있습니다.
-// 이 예시에서는 AdminLayout을 직접 렌더링하는 형태로 단순화했습니다.
 const App = () => {
   return (
-    <AdminLayout /> // AdminLayout이 모든 콘텐츠를 관리
+    <AdminLayout /> 
   );
 };
 
