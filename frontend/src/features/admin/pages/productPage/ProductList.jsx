@@ -1,4 +1,4 @@
-// features/admin/product/components/ProductList.jsx
+// src/features/admin/product/components/ProductList.jsx
 import React from 'react';
 
 // 기본 이미지 또는 깨진 이미지 표시를 위한 대체 이미지 URL (필요에 따라 변경)
@@ -6,20 +6,26 @@ const DEFAULT_IMAGE_URL = '/images/default_product.png'; // 실제 경로에 맞
 
 const ProductList = ({ 
     products, 
-    // editingStock,        // <-- 이 prop을 제거 (기존 코드에서 이미 제거됨)
-    // toggleStockEdit,     // <-- 이 prop을 제거 (기존 코드에서 이미 제거됨)
-    // handleStockUpdate,   // <-- 이 prop을 제거 (기존 코드에서 이미 제거됨)
     categories,
     editingProduct,
     toggleEditMode,
     handleEditInputChange,
-    handleUpdateProduct
+    handleUpdateProduct,
+    // --- 여기에 handleDeleteProduct prop 추가 ---
+    handleDeleteProduct 
+    // --- 추가 끝 ---
 }) => {
     // 카테고리 ID를 이름으로 변환하는 헬퍼 함수
-    const getCategoryName = (categoryId) => {
-        const category = categories.find(cat => cat.category_id === categoryId);
-        return category ? category.name : '알 수 없음';
-    };
+   const getCategoryName = (categoryId) => {
+    // categories가 배열이 아니거나 비어있을 경우 방어
+    if (!Array.isArray(categories) || categories.length === 0) {
+        console.warn("ProductList: categories prop이 유효한 배열이 아니거나 비어있습니다. categoryId:", categoryId, "현재 categories:", categories);
+        return '알 수 없음 (목록 없음)'; // 명확한 메시지로 변경
+    }
+    // categoryId를 숫자로 명시적으로 변환하여 비교 (백엔드에서 문자열로 올 수 있기 때문)
+    const category = categories.find(cat => cat.category_id === Number(categoryId));
+    return category ? category.name : '알 수 없음';
+};
 
     // 현재 행이 수정 모드인지 확인
     const isEditingRow = (productId) => editingProduct && editingProduct.product_id === productId;
@@ -229,12 +235,22 @@ const ProductList = ({
                                         </button>
                                     </div>
                                 ) : (
-                                    <button 
-                                        onClick={() => toggleEditMode(product)} 
-                                        className="px-3 py-1 text-xs bg-[#306f65] text-white rounded hover:bg-[#58bcb5] transition-colors duration-200"
-                                    >
-                                        수정
-                                    </button>
+                                    <div className="flex flex-col gap-1"> {/* 버튼 두 개를 감싸기 위해 div 추가 */}
+                                        <button 
+                                            onClick={() => toggleEditMode(product)} 
+                                            className="px-3 py-1 text-xs bg-[#306f65] text-white rounded hover:bg-[#58bcb5] transition-colors duration-200"
+                                        >
+                                            수정
+                                        </button>
+                                        {/* --- 삭제 버튼 추가 --- */}
+                                        <button
+                                            onClick={() => handleDeleteProduct(product.product_id)} // product_id를 인자로 전달
+                                            className="px-3 py-1 text-xs bg-red-600 text-white rounded hover:bg-red-700 transition-colors duration-200 mt-1" // 간격 추가
+                                        >
+                                            삭제
+                                        </button>
+                                        {/* --- 추가 끝 --- */}
+                                    </div>
                                 )}
                             </td>
                         </tr>

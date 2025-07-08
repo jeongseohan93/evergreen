@@ -1,16 +1,16 @@
-// src/features/admin/components/category/CategoryManager.js
-import React from 'react';
-// import { useNavigate } from 'react-router-dom'; // 더 이상 navigate를 사용하지 않으므로 제거 가능
+// src/features/admin/pages/categoryPage/CategoryManager.js
+import React, { useState } from 'react'; // ⭐ useState 임포트 활성화 ⭐
+// import { useNavigate } from 'react-router-dom'; // 사용하지 않으므로 제거 가능
 import useCategoryManagement from '../../components/category/hooks/useCategoryManagements';
 
 import CategoryAddForm from './CategoryAddForm';
 import CategoryDeleteForm from './CategoryDeleteForm';
 import CategoryUpdateForm from './CategoryUpdateForm';
+import CategoryProductList from './CategoryProductList'; 
 
 
-// onCategoryClick prop을 받도록 수정
-const CategoryManager = ({ onCategoryClick }) => { 
-  // const navigate = useNavigate(); // useNavigate 훅 제거
+const CategoryManager = () => { 
+  const [selectedCategoryIdForProducts, setSelectedCategoryIdForProducts] = useState(null);
 
   const {
     categories,
@@ -31,7 +31,7 @@ const CategoryManager = ({ onCategoryClick }) => {
     openUpdateForm,
     closeUpdateForm,
     editingCategory,
-    setSelectedCategoryToDelete: setHookSelectedCategoryToDelete
+    setSelectedCategoryToDelete: setHookSelectedCategoryToDelete // 훅의 setSelectedCategoryToDelete를 별칭으로 받음
   } = useCategoryManagement();
 
 
@@ -39,20 +39,35 @@ const CategoryManager = ({ onCategoryClick }) => {
 
   const handleSelectCategoryToDeleteInForm = (categoryIdString) => {
     const foundCategory = categories.find(cat => cat.category_id.toString() === categoryIdString);
-    setHookSelectedCategoryToDelete(foundCategory || null);
+    setHookSelectedCategoryToDelete(foundCategory || null); // 훅의 setter 호출
   };
 
-  // 카테고리 이름을 클릭했을 때 AdminLayout에 알리는 함수
   const handleCategoryNameClick = (categoryId) => {
-      // navigate 대신 onCategoryClick prop으로 받은 함수 호출
-      if (onCategoryClick) {
-          onCategoryClick(categoryId); 
-      }
+      setSelectedCategoryIdForProducts(categoryId);
   };
+
+  const handleBackToCategoryManager = () => {
+    setSelectedCategoryIdForProducts(null);
+  };
+
+
+  if (selectedCategoryIdForProducts) {
+    return (
+      <div>
+        <button
+          onClick={handleBackToCategoryManager}
+          className="mb-4 px-4 py-2 bg-gray-200 text-gray-700 rounded-md hover:bg-gray-300"
+        >
+          ← 돌아가기
+        </button>
+        <CategoryProductList categoryId={selectedCategoryIdForProducts} />
+      </div>
+    );
+  }
+
 
   return (
     <div className="space-y-6 p-6">
-      {/* 상단: 카테고리 관리 제목 + 버튼 2개 (오른쪽 정렬) */}
       <div className="flex items-center justify-between mb-6">
         <h2 className="text-4xl font-bold font-aggro text-gray-800">카테고리 관리</h2>
         <div className="flex gap-2 bg-transparent items-center h-12">
@@ -71,7 +86,6 @@ const CategoryManager = ({ onCategoryClick }) => {
         </div>
       </div>
 
-      {/* 카테고리 추가 폼 */}
       {showCategoryForm && (
         <div className="border border-[#306f65]  p-4 rounded-lg bg-gray-50">
           <CategoryAddForm
@@ -85,7 +99,6 @@ const CategoryManager = ({ onCategoryClick }) => {
         </div>
       )}
 
-      {/* 카테고리 삭제 폼 */}
       {showDeleteCategoryForm && (
         <div className="border border-[#306f65] p-4 rounded-lg bg-gray-50">
           <CategoryDeleteForm
@@ -100,12 +113,11 @@ const CategoryManager = ({ onCategoryClick }) => {
         </div>
       )}
 
-      {/* 카테고리 수정 폼 (editingCategory가 null이 아닐 때만 표시) */}
       {editingCategory && (
         <div className="border border-[#306f65] p-4 rounded-lg shadow-sm bg-gray-50">
           <h3 className="text-2xl font-aggro font-bold mb-3">카테고리 수정</h3>
           <CategoryUpdateForm
-            category={editingCategory} // 수정할 카테고리 객체 전달
+            category={editingCategory}
             handleUpdateCategory={handleUpdateCategory}
             closeUpdateForm={closeUpdateForm}
             loading={loading}
@@ -114,32 +126,34 @@ const CategoryManager = ({ onCategoryClick }) => {
         </div>
       )}
 
-      {/* 현재 카테고리 목록 표시 */}
       <div className="border border-[#306f65] p-4 rounded-lg shadow-sm bg-white">
         <h3 className="text-2xl font-bold font-aggro mb-3">현재 카테고리 목록 ({categories.length}개)</h3>
         {loading && <p>카테고리 불러오는 중...</p>}
         {error && !loading && <p className="text-red-500">목록 에러: {error}</p>}
         {!loading && !error && categories.length === 0 && <p>카테고리가 없습니다.</p>}
-        <ul className="list-disc pl-5">
-          {categories.map((category) => (
-            <li key={category.category_id} className="py-1 flex items-center justify-between">
-              <button 
-                  onClick={() => handleCategoryNameClick(category.category_id)}
-                  className="text-blue-600 hover:underline cursor-pointer font-medium"
-              >
-                  {category.name}
-              </button>
-              <div className="flex space-x-2">
+        {/* ⭐ categories가 배열이 아닐 때 map 호출 방지 (useCategoryManagement 수정으로 해결됨) ⭐ */}
+        {!loading && !error && categories.length > 0 && (
+          <ul className="list-disc pl-5">
+            {categories.map((category) => (
+              <li key={category.category_id} className="py-1 flex items-center justify-between">
                 <button
-                  onClick={() => openUpdateForm(category)} // 수정 버튼 클릭 시 수정 폼 열기
-                  className="px-2 py-1 text-xs bg-[#306f65] text-white rounded hover:bg-[#58bcb5]"
+                    onClick={() => handleCategoryNameClick(category.category_id)}
+                    className="text-blue-600 hover:underline cursor-pointer font-medium"
                 >
-                  수정
+                    {category.name}
                 </button>
-              </div>
-            </li>
-          ))}
-        </ul>
+                <div className="flex space-x-2">
+                  <button
+                    onClick={() => openUpdateForm(category)}
+                    className="px-2 py-1 text-xs bg-[#306f65] text-white rounded hover:bg-[#58bcb5]"
+                  >
+                    수정
+                  </button>
+                </div>
+              </li>
+            ))}
+          </ul>
+        )}
       </div>
     </div>
   );

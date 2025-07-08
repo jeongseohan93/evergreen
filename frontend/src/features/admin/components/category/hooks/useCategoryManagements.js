@@ -1,7 +1,8 @@
 // features/admin/components/category/hooks/useCategoryManagements.js
 import { useState, useEffect, useCallback } from 'react';
 // updateCategory API 함수를 임포트합니다.
-import { addCategory, deleteCategory, fetchCategories as fetchCategoriesApi, updateCategory } from '../../../api/categoryApi';
+// fetchCategoriesApi는 categoryApi에서 가져온 함수이름이 겹치지 않게 별칭으로 변경
+import { addCategory, deleteCategory, fetchCategories as fetchCategoriesFromApi, updateCategory } from '../../../api/categoryApi';
 
 const useCategoryManagement = () => {
     const [categories, setCategories] = useState([]);
@@ -15,23 +16,34 @@ const useCategoryManagement = () => {
     // 카테고리 수정 관련 상태 추가: 현재 수정 중인 카테고리 객체 또는 null
     const [editingCategory, setEditingCategory] = useState(null); 
 
-    const fetchCategories = useCallback(async () => {
+    // API에서 카테고리 목록을 불러오는 함수 (이름 충돌 방지를 위해 내부 함수 이름을 fetchCategoriesData로 변경)
+    const fetchCategoriesData = useCallback(async () => { // ⭐ 함수 이름 변경 ⭐
         setLoading(true);
         setError('');
         try {
-            const fetchedCategoriesArray = await fetchCategoriesApi();
-            setCategories(fetchedCategoriesArray);
+            // ⭐ fetchCategoriesFromApi가 { success: true, data: [...] } 객체를 반환 ⭐
+            const result = await fetchCategoriesFromApi(); // ⭐ 별칭으로 임포트한 함수 호출 ⭐
+            
+            if (result.success) { // ⭐ result.success 확인 ⭐
+                setCategories(result.data); // ⭐ result.data에 접근하여 배열 설정 ⭐
+            } else {
+                // API 호출은 성공했으나, success가 false인 경우 (백엔드에서 메시지를 줄 때)
+                setError(result.message || '카테고리 목록을 불러오는 데 실패했습니다.');
+                setCategories([]); // 실패 시 빈 배열로 설정
+            }
         } catch (err) {
             console.error('카테고리 목록 불러오기 오류:', err);
+            // API 호출 자체에서 오류 발생한 경우 (네트워크 오류 등)
             setError(err.response?.data?.message || '카테고리 목록을 불러오는 데 실패했습니다.');
+            setCategories([]); // 에러 시 빈 배열로 설정
         } finally {
             setLoading(false);
         }
     }, []);
 
     useEffect(() => {
-        fetchCategories();
-    }, [fetchCategories]);
+        fetchCategoriesData(); // ⭐ 변경된 함수 이름 호출 ⭐
+    }, [fetchCategoriesData]);
 
     const handleAddCategory = async (e) => {
         e.preventDefault();
@@ -44,7 +56,7 @@ const useCategoryManagement = () => {
         try {
             const response = await addCategory(newCategoryName);
             if (response.success) {
-                await fetchCategories();
+                await fetchCategoriesData(); // ⭐ 변경된 함수 이름 호출 ⭐
                 setShowCategoryForm(false);
                 setNewCategoryName('');
             } else {
@@ -59,8 +71,6 @@ const useCategoryManagement = () => {
     };
 
     const handleDeleteCategory = async () => {
-        // 이 부분은 selectedCategoryToDelete가 `category_id` 자체가 아니라
-        // 전체 카테고리 객체여야 정상 작동할 거야. (openDeleteForm에서 객체를 넘겨주므로)
         if (!selectedCategoryToDelete || !selectedCategoryToDelete.category_id) {
             setError('삭제할 카테고리를 선택해주세요.');
             return;
@@ -70,7 +80,7 @@ const useCategoryManagement = () => {
         try {
             const response = await deleteCategory(selectedCategoryToDelete.category_id); // category_id 사용
             if (response.success) {
-                await fetchCategories();
+                await fetchCategoriesData(); // ⭐ 변경된 함수 이름 호출 ⭐
                 setShowDeleteCategoryForm(false);
                 setSelectedCategoryToDelete(null);
             } else {
@@ -85,7 +95,8 @@ const useCategoryManagement = () => {
     };
 
     // 카테고리 수정 처리 함수 추가
-    const handleUpdateCategory = async (categoryId, newName) => {
+    // ⭐ updateCategory API 호출 시, newName 대신 { name: newName } 객체로 전달해야 함 ⭐
+    const handleUpdateCategory = async (categoryId, newName) => { // newName은 string
         if (!newName.trim()) {
             setError('새 카테고리 이름을 입력해주세요.');
             return;
@@ -93,9 +104,10 @@ const useCategoryManagement = () => {
         setLoading(true);
         setError('');
         try {
-            const response = await updateCategory(categoryId, newName); // updateCategory API 호출
+            // ⭐ API에 전달할 데이터 형식을 객체로 변경 ⭐
+            const response = await updateCategory(categoryId, { name: newName }); 
             if (response.success) {
-                await fetchCategories(); // 수정 성공 시 목록 새로고침
+                await fetchCategoriesData(); // ⭐ 변경된 함수 이름 호출 ⭐
                 setEditingCategory(null); // 수정 폼 닫기
             } else {
                 setError(response.message || '카테고리 수정에 실패했습니다.');
@@ -161,7 +173,7 @@ const useCategoryManagement = () => {
         showDeleteCategoryForm,
         editingCategory, // 새로 추가된 상태
         setEditingCategory, // 새로 추가된 상태 변경 함수
-        fetchCategories,
+        fetchCategories: fetchCategoriesData, // ⭐ 외부로 노출되는 이름은 기존 fetchCategories로 유지 ⭐
         handleAddCategory,
         handleDeleteCategory,
         handleUpdateCategory, // 새로 추가된 함수

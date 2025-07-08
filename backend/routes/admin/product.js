@@ -19,6 +19,9 @@ router.post('/categories' , productController.addCategory);
 // 카테고리 삭제
 router.delete('/categories/:category_id' , productController.deleteCategory);
 
+// 상품 삭제
+router.delete('/productDel/:productId' , productController.productDelete);
+
 router.put('/categories/:category_id' , productController.updateCategory);
 
 //상품 수정

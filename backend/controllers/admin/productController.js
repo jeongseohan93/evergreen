@@ -461,3 +461,58 @@ exports.updateCategory = async (req, res) => {
     }
 };
 //------------------------------카테고리 수정------------------------------------------------
+
+//--------------------------------------상품 삭제-------------------------------------------
+
+exports.productDelete = async (req, res) => {
+    const productId = parseInt(req.params.productId); // URL 파라미터에서 상품 ID 가져오기
+
+    // 상품 ID가 유효한 숫자인지 확인
+    if (isNaN(productId)) {
+        return res.status(400).json({
+            success: false,
+            message: '유효하지 않은 상품 ID입니다.'
+        });
+    }
+
+    try {
+        // 1. 해당 ID의 상품이 존재하는지 확인 (선택 사항이지만 안전을 위해 권장)
+        const product = await Product.findByPk(productId);
+        if (!product) {
+            return res.status(404).json({
+                success: false,
+                message: '해당 상품을 찾을 수 없습니다.'
+            });
+        }
+
+        // 2. 데이터베이스에서 상품 삭제
+        // Sequelize의 destroy 메서드를 사용하여 해당 product_id를 가진 레코드를 삭제
+        const deletedRows = await Product.destroy({
+            where: { product_id: productId }
+        });
+
+        // deletedRows는 삭제된 레코드의 수를 반환
+        if (deletedRows === 0) {
+            // 상품이 존재했지만 어떤 이유로 삭제되지 않았을 경우 (매우 드물게 발생)
+            return res.status(404).json({
+                success: false,
+                message: '상품을 삭제할 수 없습니다. 다시 시도해주세요.'
+            });
+        }
+
+        // 3. 성공 응답 전송
+        res.status(200).json({
+            success: true,
+            message: '상품이 성공적으로 삭제되었습니다.'
+        });
+
+    } catch (error) {
+        console.error('상품 삭제 중 오류 발생:', error); // 에러 로깅
+        res.status(500).json({
+            success: false,
+            message: '상품 삭제 중 서버 오류가 발생했습니다.',
+            error: error.message // 개발 단계에서 디버깅을 위해 에러 메시지 포함
+        });
+    }
+};
+//--------------------------------------상품 삭제-------------------------------------------

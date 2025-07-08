@@ -20,8 +20,8 @@ import ReportEdit from '../pages/reportPage/ReportEdit.jsx';
 import ReportWrite from '../pages/reportPage/ReportWrite.jsx';
 import DashBoardPage from '../pages/dashboardPage/DashBoardPage';
 
-// CategoryProductList도 CategoryManager와 같은 폴더에 있으므로 이 경로가 맞습니다.
-import CategoryProductList from '../pages/categoryPage/CategoryProductList'; 
+// CategoryProductList는 이제 AdminLayout에서 직접 임포트할 필요 없음
+// import CategoryProductList from '../pages/categoryPage/CategoryProductList';
 
 
 import { logoutAsync } from '@/features/authentication/authSlice';
@@ -39,10 +39,10 @@ const AdminDashboardPage = () => (
 );
 
 
-// AdminCategoriesPage: CategoryManager에 onCategoryClick prop을 전달하도록 수정
-const AdminCategoriesPage = ({ onCategoryClick }) => ( // prop 추가
+// AdminCategoriesPage: 이제 onCategoryClick prop을 전달할 필요 없음
+const AdminCategoriesPage = () => (
   <div className="min-h-[400px]">
-    <CategoryManager onCategoryClick={onCategoryClick} /> {/* prop 전달 */}
+    <CategoryManager /> {/* onCategoryClick prop 제거 */}
   </div>
 );
 
@@ -99,9 +99,9 @@ const AdminHeader = ({ onGoDashboard }) => {
 };
 
 // === Sidebar 컴포넌트 === (이전과 동일)
-const AdminSidebar = ({ activeKey, setActiveKey }) => { 
+const AdminSidebar = ({ activeKey, setActiveKey }) => {
   const menuItems = [
-    { name: '대시보드', icon: HomeIcon, key: 'dashboard' }, 
+    { name: '대시보드', icon: HomeIcon, key: 'dashboard' },
     { name: '상품 관리', icon: ShoppingBagIcon, key: 'products' },
     { name: '주문 관리', icon: PackageIcon, key: 'orders' },
     { name: '카테고리', icon: FoldersIcon, key: 'categories' },
@@ -126,10 +126,10 @@ const AdminSidebar = ({ activeKey, setActiveKey }) => {
         <ul className="space-y-2">
           {menuItems.map((item) => (
             <li key={item.name}>
-              <button 
+              <button
                 onClick={() => handleClick(item.key)}
                 className={`flex items-center p-3 rounded-md transition duration-200 ease-in-out w-full text-left
-                  ${activeKey === item.key 
+                  ${activeKey === item.key
                     ? 'bg-[#f2f2e8] text-black text-xl font-aggro font-bold'
                     : 'text-gray-300 hover:bg-[#58bcb5] hover:text-white'
                   }`
@@ -150,18 +150,20 @@ const AdminSidebar = ({ activeKey, setActiveKey }) => {
 };
 
 // === AdminLayout 컴포넌트 (내부에서 콘텐츠 전환 관리) ===
-const AdminLayout = () => { 
+const AdminLayout = () => {
   const [activeComponentKey, setActiveComponentKey] = useState('dashboard');
   const [userEditId, setUserEditId] = useState(null);
   const [reportDetailId, setReportDetailId] = useState(null);
   const [reportEditId, setReportEditId] = useState(null);
-  const [selectedCategoryIdForProductList, setSelectedCategoryIdForProductList] = useState(null); 
+  // ⭐ 삭제: selectedCategoryIdForProductList 상태 제거 ⭐
+  // const [selectedCategoryIdForProductList, setSelectedCategoryIdForProductList] = useState(null);
 
 
-  const handleCategoryItemClick = (categoryId) => {
-    setSelectedCategoryIdForProductList(categoryId); 
-    setActiveComponentKey('categoryProducts'); 
-  };
+  // ⭐ 삭제: handleCategoryItemClick 함수 제거 ⭐
+  // const handleCategoryItemClick = (categoryId) => {
+  //   setSelectedCategoryIdForProductList(categoryId);
+  //   setActiveComponentKey('categoryProducts');
+  // };
 
   const handleEditUser = (userUuid) => {
     setUserEditId(userUuid);
@@ -194,7 +196,7 @@ const AdminLayout = () => {
 
   const ComponentMap = {
     'dashboard': <AdminDashboardPage />,
-    'categories': <AdminCategoriesPage onCategoryClick={handleCategoryItemClick} />, 
+    'categories': <AdminCategoriesPage />, // ⭐ 수정: onCategoryClick prop 제거 ⭐
     'products': <AdminProductsPage />,
     'orders': <OrderPage />,
     'sale': <SalePage/>,
@@ -205,10 +207,11 @@ const AdminLayout = () => {
     'reportEdit': <ReportEdit reportId={reportEditId} onCancel={handleCancelReport} />,
     'reportWrite': <ReportWrite onCancel={handleCancelReport} />,
     'settings': <div className="bg-white p-6 rounded-lg shadow-md min-h-[400px]"><h2>설정 페이지</h2></div>,
-    'categoryProducts': <CategoryProductList categoryId={selectedCategoryIdForProductList} />, 
+    // ⭐ 삭제: 'categoryProducts' 항목 제거 ⭐
+    // 'categoryProducts': <CategoryProductList categoryId={selectedCategoryIdForProductList} />,
   };
 
-  const CurrentComponent = ComponentMap[activeComponentKey] || <AdminDashboardPage />; 
+  const CurrentComponent = ComponentMap[activeComponentKey] || <AdminDashboardPage />;
 
   return (
     <div className="min-h-screen flex flex-col bg-gray-100 font-sans">
@@ -216,9 +219,9 @@ const AdminLayout = () => {
 
       <div className="flex flex-1">
         <AdminSidebar activeKey={activeComponentKey === 'userEdit' ? 'users' : activeComponentKey} setActiveKey={setActiveComponentKey} />
-        
+
         <main className="flex-1 p-6 overflow-y-auto bg-[#f2f2e8]">
-          {CurrentComponent} 
+          {CurrentComponent}
         </main>
       </div>
     </div>
@@ -227,7 +230,7 @@ const AdminLayout = () => {
 
 const App = () => {
   return (
-    <AdminLayout /> 
+    <AdminLayout />
   );
 };
 

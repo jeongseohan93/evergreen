@@ -57,3 +57,16 @@ export const updateProduct = async (productId, updatedData) => {
         return { success: false, message: error.response?.data?.message || '상품 수정 실패' };
     }
 };
+
+
+export const deleteProduct = async (productId) => {
+  try {
+    const response = await apiService.delete(`/admin/product/productDel/${productId}`);
+    // 백엔드에서 success: true, message: '상품이 성공적으로 삭제되었습니다.' 형태로 응답한다고 가정
+    return { success: response.status === 200 && response.data.success, message: response.data.message };
+  } catch (error) {
+    console.error('API Error: deleteProduct', error);
+    // 에러 응답 구조에 따라 메시지를 가져오거나 기본 메시지 반환
+    return { success: false, message: error.response?.data?.message || '상품 삭제 실패' };
+  }
+};

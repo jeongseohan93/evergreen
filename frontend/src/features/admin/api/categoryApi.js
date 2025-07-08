@@ -22,7 +22,7 @@ export const deleteCategory = async (categoryId) => {
   }
 };
 
-export const fetchCategories = async () => {
+/* export const fetchCategories = async () => {
   try {
     // 경로 수정: /admin/categories -> /admin/product/categories
     const response = await apiService.get('/admin/product/categories');
@@ -32,19 +32,29 @@ export const fetchCategories = async () => {
     console.error('API Error: fetchCategories', error);
     throw error;
   }
-};
-
-/* export const fetchCategories = async () => {
+}; */
+ 
+export const fetchCategories = async () => {
   try {
     const response = await apiService.get('/admin/product/categories'); 
-    return { success: response.data.success, data: response.data.data }; 
+    console.log("categoryApi - fetchCategories 응답 raw data (success):", response.data); 
+    
+    return { 
+      success: response.data.success, 
+      data: response.data.data || [], 
+      message: response.data.message 
+    }; 
   } catch (error) {
-    console.error('API Error: fetchCategories', error.response?.data || error.message);
-    // ⭐️⭐️⭐️ 에러 시에도 일관된 객체 형태 반환 (message 필드 포함) ⭐️⭐️⭐️
-    return { success: false, message: error.response?.data?.message || '카테고리 불러오기 실패' }; 
+    console.error('API Error: fetchCategories (catch 블록)', error.response?.data || error.message);
+    return { 
+      success: false, 
+      message: error.response?.data?.message || '카테고리 불러오기 실패', 
+      data: [] 
+    }; 
   }
 };
- */
+
+
 export const updateCategory = async (categoryId, newName) => {
   try {
     // 백엔드 경로: PUT /admin/product/categories/:id
