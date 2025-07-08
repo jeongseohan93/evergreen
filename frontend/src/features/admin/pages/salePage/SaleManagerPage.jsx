@@ -42,27 +42,36 @@ const SaleManagerPage = () => {
     } = saleManagement;
 
     return (
-        <div className="space-y-6 p-6">
-            <h2 className="text-2xl font-bold mb-4">매출 관리</h2>
+        <div style={{ padding: '20px', maxWidth: '1200px', margin: '0 auto' }}>
+            <h1 className="text-4xl font-aggro font-bold mb-4 text-black">매출 관리</h1>
 
             {/* 매출 입력 폼 */}
-            <div className="border p-4 rounded-lg shadow-sm bg-gray-50">
+            <div className="mb-6 p-6 bg-white rounded-lg border border-[#306f65]">
                 <button
                     onClick={toggleSaleForm}
-                    className="px-6 py-3 bg-indigo-600 text-white rounded-md hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 mb-4"
+                    className={`w-full py-3 px-6 rounded-lg font-medium transition-all duration-200 flex items-center justify-center gap-2 ${
+                        showSaleForm
+                            ? 'bg-gray-100 text-gray-700 hover:bg-gray-200 border border-gray-300'
+                            : 'bg-[#306f65] text-white hover:bg-[#58bcb5] hover:shadow-lg'
+                    }`}
                 >
-                    {showSaleForm ? '매출 입력 취소' : '오프라인 매출 입력'}
+                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
+                    </svg>
+                    {showSaleForm ? '매출 입력 폼 닫기' : '오프라인 매출 입력'}
                 </button>
                 {showSaleForm && (
-                    <SaleAddForm
-                        newSale={newSale}
-                        handleSaleInputChange={handleSaleInputChange}
-                        handleAddSale={handleAddSale}
-                        loading={loading}
-                        error={error}
-                        toggleSaleForm={toggleSaleForm}
-                        selectSaleDateToday={selectSaleDateToday}
-                    />
+                    <div className="mt-6">
+                        <SaleAddForm
+                            newSale={newSale}
+                            handleSaleInputChange={handleSaleInputChange}
+                            handleAddSale={handleAddSale}
+                            loading={loading}
+                            error={error}
+                            toggleSaleForm={toggleSaleForm}
+                            selectSaleDateToday={selectSaleDateToday}
+                        />
+                    </div>
                 )}
             </div>
 

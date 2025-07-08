@@ -53,8 +53,7 @@ const AdminProductsPage = () => (
 );
 
 const SalePage = () => (
-  <div className="bg-white p-6 rounded-lg shadow-md min-h-[400px]">
-    <h2 className="text-2xl font-bold mb-4 text-gray-800">매출 관리</h2>
+  <div className="min-h-[400px]">
    <SaleManagerPage />
   </div>
 );
