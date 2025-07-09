@@ -38,6 +38,21 @@ const ProductAddForm = ({ showAddForm, toggleAddForm, newProduct, handleInputCha
                             />
                         </div>
                         
+                        {/* 새로운 브랜드명 입력 칸 추가 */}
+                        <div>
+                            <label className="block text-sm font-medium text-[#58bcb5] mb-2">
+                                브랜드명 *
+                            </label>
+                            <input 
+                                type="text" 
+                                name="brand" 
+                                value={newProduct.brand} 
+                                onChange={handleInputChange} 
+                                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#306f65] focus:border-transparent"
+                                placeholder="브랜드명을 입력하세요"
+                            />
+                        </div>
+                        
                         <div>
                             <label className="block text-sm font-medium text-[#58bcb5] mb-2">
                                 가격 *

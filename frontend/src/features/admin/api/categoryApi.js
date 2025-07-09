@@ -34,6 +34,17 @@ export const fetchCategories = async () => {
   }
 };
 
+/* export const fetchCategories = async () => {
+  try {
+    const response = await apiService.get('/admin/product/categories'); 
+    return { success: response.data.success, data: response.data.data }; 
+  } catch (error) {
+    console.error('API Error: fetchCategories', error.response?.data || error.message);
+    // ⭐️⭐️⭐️ 에러 시에도 일관된 객체 형태 반환 (message 필드 포함) ⭐️⭐️⭐️
+    return { success: false, message: error.response?.data?.message || '카테고리 불러오기 실패' }; 
+  }
+};
+ */
 export const updateCategory = async (categoryId, newName) => {
   try {
     // 백엔드 경로: PUT /admin/product/categories/:id

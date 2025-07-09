@@ -18,12 +18,15 @@ const SaleMemoModal = ({
                     {selectedMemoData.offline_sales.map((sale, index) => (
                         <div key={index} className="memo-item border p-3 rounded-md bg-gray-50">
                             <div className="memo-header flex justify-between items-center mb-1">
-                                <h5 className="font-medium text-gray-800">오프라인 매출 #{index + 1}</h5>
-                                <span className="memo-amount text-sm font-semibold text-gray-700">{formatCurrency(sale.offline_amount)}원</span>
+                                <strong className="text-gray-800">오프라인 매출 #{index + 1}</strong>
+                                <span className="flex items-center">
+                                    <span className="text-sm font-bold text-[#306f65]">{formatCurrency(sale.offline_amount)}</span>
+                                    <span className="text-sm font-bold text-black">원</span>
+                                </span>
                             </div>
                             {sale.memo ? (
                                 <div className="memo-text text-sm text-gray-600 whitespace-pre-wrap">
-                                    {sale.memo}
+                                    {sale.memo}+
                                 </div>
                             ) : (
                                 <p className="no-memo text-sm text-gray-500 italic">메모 없음</p>
@@ -55,28 +58,29 @@ const SaleMemoModal = ({
         <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50" onClick={closeMemoModal}>
             <div className="bg-white rounded-lg shadow-xl p-6 w-full max-w-md mx-4" onClick={(e) => e.stopPropagation()}>
                 <div className="flex justify-between items-center border-b pb-3 mb-4">
-                    <h3 className="text-xl font-semibold text-gray-900">매출 메모</h3>
+                    <h3 className="text-xl font-bold font-aggro">매출 메모</h3>
                     <button className="text-gray-500 hover:text-gray-700 text-2xl" onClick={closeMemoModal}>
                         &times;
                     </button>
                 </div>
                 {/* 이곳에 max-h-와 overflow-y-auto 클래스 추가 */}
                 <div className="modal-body space-y-3 max-h-80 overflow-y-auto pr-2"> 
-                    <p className="text-sm text-gray-700">
-                        <strong>날짜:</strong> {selectedMemoData.date || (selectedMemoData.month ? `${selectedMemoData.month}월` : '') || (selectedMemoData.year ? `${selectedMemoData.year}년` : '')}
+                    <p className="text-sm">
+                        <strong>날짜:</strong> <span className="text-[#306f65]">{selectedMemoData.date || (selectedMemoData.month ? `${selectedMemoData.month}월` : '') || (selectedMemoData.year ? `${selectedMemoData.year}년` : '')}</span>
                     </p>
-                    <p className="text-sm text-gray-700">
-                        <strong>오프라인 매출:</strong> {formatCurrency(selectedMemoData.offline_amount)}원
+                    <p className="text-sm">
+                        <strong>오프라인 매출:</strong> <span className="text-[#306f65]">{formatCurrency(selectedMemoData.offline_amount)}</span>
+                        <span>원</span>
                     </p>
                     <div>
-                        <h4 className="font-semibold text-gray-800 mb-2">메모:</h4>
+                        <h4 className="font-aggro font-bold mt-10">상세:</h4>
                         {renderMemoContent()}
                     </div>
                 </div>
                 <div className="flex justify-end mt-4">
                     <button
                         onClick={closeMemoModal}
-                        className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 text-sm"
+                        className="px-4 py-2 bg-[#306f65] text-white rounded-md text-sm"
                     >
                         닫기
                     </button>

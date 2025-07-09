@@ -21,4 +21,7 @@ router.delete('/categories/:category_id' , productController.deleteCategory);
 
 router.put('/categories/:category_id' , productController.updateCategory);
 
+//상품 수정
+router.put('/productMod/:productId' , productController.productMod);
+
 module.exports = router;

@@ -17,27 +17,27 @@ const SaleViewSection = ({
     error
 }) => {
     return (
-        <div className="border p-4 rounded-lg shadow-sm bg-white">
-            <h3 className="text-xl font-semibold mb-3">매출 조회</h3>
+        <div className="p-4 rounded-lg bg-white border border-[#306f65]">
+            <h3 className="text-xl font-bold mb-3 font-aggro">매출 조회</h3>
             {loading && <p className="text-gray-600 mb-2">매출 데이터 불러오는 중...</p>}
             {error && <p className="text-red-500 mb-2">{error}</p>}
 
             <div className="sale-controls flex flex-col md:flex-row justify-between items-center mb-4 space-y-2 md:space-y-0 md:space-x-4">
                 <div className="period-selector flex space-x-2">
                     <button
-                        className={`px-4 py-2 rounded-md text-sm ${selectedSalePeriod === 'daily' ? 'bg-blue-600 text-white' : 'bg-gray-200 text-gray-800 hover:bg-gray-300'}`}
+                        className={`px-4 py-2 rounded-md text-sm ${selectedSalePeriod === 'daily' ? 'bg-[#306f65] text-white' : 'bg-gray-200 text-gray-800 border hover:border-[#306f65] hover:bg-white hover:text-[#306f65]'}`}
                         onClick={() => setSelectedSalePeriod('daily')}
                     >
                         일간
                     </button>
                     <button
-                        className={`px-4 py-2 rounded-md text-sm ${selectedSalePeriod === 'monthly' ? 'bg-blue-600 text-white' : 'bg-gray-200 text-gray-800 hover:bg-gray-300'}`}
+                        className={`px-4 py-2 rounded-md text-sm ${selectedSalePeriod === 'monthly' ? 'bg-[#306f65] text-white' : 'bg-gray-200 text-gray-800 border hover:border-[#306f65] hover:bg-white hover:text-[#306f65]'}`}
                         onClick={() => setSelectedSalePeriod('monthly')}
                     >
                         월간
                     </button>
                     <button
-                        className={`px-4 py-2 rounded-md text-sm ${selectedSalePeriod === 'yearly' ? 'bg-blue-600 text-white' : 'bg-gray-200 text-gray-800 hover:bg-gray-300'}`}
+                        className={`px-4 py-2 rounded-md text-sm ${selectedSalePeriod === 'yearly' ? 'bg-[#306f65] text-white' : 'bg-gray-200 text-gray-800 border hover:border-[#306f65] hover:bg-white hover:text-[#306f65]'}`}
                         onClick={() => setSelectedSalePeriod('yearly')}
                     >
                         연간
@@ -48,14 +48,14 @@ const SaleViewSection = ({
                     <div className="date-button-selector flex items-center space-x-2">
                         <div className="year-selector flex items-center space-x-1">
                             <button
-                                className="px-2 py-1 bg-gray-200 text-gray-800 rounded-md hover:bg-gray-300 text-sm"
+                                className="px-2 py-1.5 bg-[#58bcb5] text-white rounded hover:bg-[#306f65] text-sm"
                                 onClick={() => handleYearChange('prev')}
                             >
                                 ◀
                             </button>
                             <span className="current-year font-semibold text-gray-800">{selectedSaleYear}년</span>
                             <button
-                                className="px-2 py-1 bg-gray-200 text-gray-800 rounded-md hover:bg-gray-300 text-sm"
+                                className="px-2 py-1.5 bg-[#58bcb5] text-white rounded hover:bg-[#306f65] text-sm"
                                 onClick={() => handleYearChange('next')}
                             >
                                 ▶
@@ -64,7 +64,7 @@ const SaleViewSection = ({
                         <select
                             value={selectedSaleMonth}
                             onChange={(e) => handleMonthSelect(parseInt(e.target.value))}
-                            className="p-2 border border-gray-300 rounded-md shadow-sm text-sm focus:ring-indigo-500 focus:border-indigo-500"
+                            className="p-2 border border-gray-300 rounded-md text-sm focus:border-[#306f65]"
                         >
                             {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12].map(month => (
                                 <option key={month} value={month}>
@@ -73,7 +73,7 @@ const SaleViewSection = ({
                             ))}
                         </select>
                         <button
-                            className="px-3 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 text-sm"
+                            className="px-3 py-2 bg-[#306f65] hover:bg-[#26574f] text-white rounded-md text-sm"
                             onClick={selectToday}
                         >
                             오늘
@@ -85,21 +85,21 @@ const SaleViewSection = ({
                     <div className="date-button-selector flex items-center space-x-2">
                         <div className="year-selector flex items-center space-x-1">
                             <button
-                                className="px-2 py-1 bg-gray-200 text-gray-800 rounded-md hover:bg-gray-300 text-sm"
+                                className="px-2 py-1.5 bg-[#58bcb5] text-white rounded hover:bg-[#306f65] text-sm"
                                 onClick={() => handleYearChange('prev')}
                             >
                                 ◀
                             </button>
                             <span className="current-year font-semibold text-gray-800">{selectedSaleYear}년</span>
                             <button
-                                className="px-2 py-1 bg-gray-200 text-gray-800 rounded-md hover:bg-gray-300 text-sm"
+                                className="px-2 py-1.5 bg-[#58bcb5] text-white rounded hover:bg-[#306f65] text-sm"
                                 onClick={() => handleYearChange('next')}
                             >
                                 ▶
                             </button>
                         </div>
                         <button
-                            className="px-3 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 text-sm"
+                            className="px-3 py-2 bg-[#306f65] hover:bg-[#26574f] text-white rounded-md text-sm"
                             onClick={selectThisMonth}
                         >
                             이번 년도

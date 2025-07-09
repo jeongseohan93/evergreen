@@ -1,46 +1,59 @@
 // src/features/admin/api/productApi.js
 import { apiService } from '@/shared';
 
-export const getAllProducts = async () => {
+// getAllProducts 함수 수정: categoryId 인자를 받도록 변경
+export const getAllProducts = async (categoryId = null) => { // categoryId 기본값 null
   try {
-    // 상품 전체 조회: 백엔드 경로 '/productAll'에 맞춰 수정
-    const response = await apiService.get('/admin/product/productAll'); 
+    let url = '/admin/product/productAll'; // 기존 URL
+    if (categoryId) { // categoryId가 제공되면 쿼리 파라미터 추가
+      url += `?categoryId=${categoryId}`;
+    }
+    const response = await apiService.get(url); 
+    // 응답 구조가 response.data.data 인지 확인 필요. 만약 직접 배열이면 response.data
     return { success: true, data: response.data.data || [] };
   } catch (error) {
     console.error('API Error: getAllProducts', error);
-    throw error;
+    // 에러 발생 시 throw 대신 객체 반환으로 통일하는 것이 useProductManagement 훅에서 처리하기 용이
+    return { success: false, message: error.response?.data?.message || '상품 불러오기 실패' }; 
   }
 };
 
 export const searchProducts = async (keyword) => {
   try {
-    // 상품 검색: 백엔드 경로 '/productSearch'에 맞춰 수정
     const response = await apiService.get(`/admin/product/productSearch`, { params: { keyword } }); 
     return { success: true, data: response.data.data || [] };
   } catch (error) {
     console.error('API Error: searchProducts', error);
-    throw error;
+    return { success: false, message: error.response?.data?.message || '상품 검색 실패' };
   }
 };
 
 export const updateStock = async (product_id, newStock) => {
   try {
-    // 재고 수정: 백엔드 경로 '/productStock'에 맞춰 수정 (POST 요청이므로 body에 productId와 stock 전달)
     const response = await apiService.post('/admin/product/productStock', { product_id, stock: newStock }); 
     return { success: response.status === 200, message: response.data.message };
   } catch (error) {
     console.error('API Error: updateStock', error);
-    throw error;
+    return { success: false, message: error.response?.data?.message || '재고 수정 실패' };
   }
 };
 
 export const addProduct = async (newProductData) => {
   try {
-    // 상품 추가: 백엔드 경로 '/productAdd'에 맞춰 수정
     const response = await apiService.post('/admin/product/productAdd', newProductData); 
     return { success: response.status === 201, message: response.data.message };
   } catch (error) {
     console.error('API Error: addProduct', error);
-    throw error;
+    return { success: false, message: error.response?.data?.message || '상품 추가 실패' };
   }
+};
+
+export const updateProduct = async (productId, updatedData) => {
+    try {
+        const response = await apiService.put(`/admin/product/productMod/${productId}`, updatedData);
+        return { success: response.status === 200 && response.data.success, data: response.data.data, message: response.data.message };
+    } catch (error) {
+        console.error('updateProduct API Error:', error);
+        return { success: false, message: error.response?.data?.message || '상품 수정 실패' };
+    }
 };
