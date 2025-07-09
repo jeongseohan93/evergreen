@@ -20,6 +20,9 @@ import ReportEdit from '../pages/reportPage/ReportEdit.jsx';
 import ReportWrite from '../pages/reportPage/ReportWrite.jsx';
 import DashBoardPage from '../pages/dashboardPage/DashBoardPage';
 
+import sh from '../../../assets/image/sh.png';
+import toon from '../../../assets/image/toon.png';
+
 // CategoryProductList는 이제 AdminLayout에서 직접 임포트할 필요 없음
 // import CategoryProductList from '../pages/categoryPage/CategoryProductList';
 
@@ -32,8 +35,10 @@ import { useDispatch } from 'react-redux';
 // === 임시 페이지 컴포넌트들 ===
 const AdminDashboardPage = () => (
   <div className="bg-white p-6 rounded-lg shadow-md min-h-[400px]">
-     <h1> 2026년에는 3대 700을 도전한다.</h1>
-     <h1> 나는 존나 쎄다. </h1>
+     <div style={{ display: 'flex', alignItems: 'center', gap: '20px' }}>
+      <div> <img src={sh} alt="정서한" className="sh" /></div> 이게 인생존망 원본 ㅋㅋ →
+      <div> <img src={toon} alt="원본" className="toon" /></div>
+    </div>
      <DashBoardPage />
   </div>
 );
@@ -143,7 +148,7 @@ const AdminSidebar = ({ activeKey, setActiveKey }) => {
         </ul>
       </nav>
       <div className="pt-6 border-t border-white mt-6 text-sm text-white">
-        <p>&copy; 2023 Your Admin. All rights reserved.</p>
+        <p>&copy; 2025.05 to 2025.07 <br/> Node.js 정복하다.</p>
       </div>
     </aside>
   );
@@ -206,7 +211,7 @@ const AdminLayout = () => {
     'reportDetail': <ReportDetail reportId={reportDetailId} onCancel={handleCancelReport} />,
     'reportEdit': <ReportEdit reportId={reportEditId} onCancel={handleCancelReport} />,
     'reportWrite': <ReportWrite onCancel={handleCancelReport} />,
-    'settings': <div className="bg-white p-6 rounded-lg shadow-md min-h-[400px]"><h2>설정 페이지</h2></div>,
+    'settings': <div className="bg-white p-6 rounded-lg shadow-md min-h-[400px]"><h2>배너추가,삭제,선택,글 삭제, 댓글 삭제, 공지 등록 이런거 넣어야하는데..</h2></div>,
     // ⭐ 삭제: 'categoryProducts' 항목 제거 ⭐
     // 'categoryProducts': <CategoryProductList categoryId={selectedCategoryIdForProductList} />,
   };

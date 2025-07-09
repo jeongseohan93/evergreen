@@ -24,7 +24,7 @@ const CategoryUpdateForm = ({ category, handleUpdateCategory, closeUpdateForm, l
           카테고리 ID: {category.category_id}
         </label>
         <label htmlFor="updateCategoryName" className="text-base font-medium text-gray-500 mb-1">
-          새 카테고리 이름
+          수정할 카테고리 이름
         </label>
         <input
           type="text"
