@@ -42,7 +42,7 @@ const DashBoardPage = () => {
     // 데이터가 성공적으로 로드되었을 때 UI 렌더링
     return (
         <div className="p-6">
-            <h2 className="text-2xl font-bold mb-4">대시보드</h2>
+           <br/> <h1> 프론트엔드 마스터가 되었음에, 기뻐하는 정서한의 모습</h1> <br/><br/><br/><br/>
             <p className="text-gray-600 mb-6">정서한이 프론트 다 해주면 좋겠다.</p>
           <p className="text-xl font-semibold text-gray-700 mb-4"> {todayDate}</p>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
