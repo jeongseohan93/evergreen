@@ -75,35 +75,16 @@ const AdminHeader = ({ onGoDashboard }) => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
+  // handleLogout을 AdminSidebar로 전달하기 위해 export
   const handleLogout = async () => {
     await dispatch(logoutAsync());
     navigate('/login');
   };
 
-  return (
-    <header className="bg-white p-4 shadow-md flex items-center justify-between z-20 sticky top-0">
-      <div className="flex items-center">
-        <div className="text-2xl font-aggro text-gray-800 font-bold">
-          관리자 페이지
-        </div>
-      </div>
-      <div className="flex items-center space-x-4">
-        <button
-          onClick={onGoDashboard}
-          className="px-4 py-2 cursor-pointer text-white rounded transition-colors bg-[#306f65] hover:bg-white hover:text-[#306f65] hover:border-[#306f65] border text-sm rounded-md"
-        >
-          대시보드로 이동
-        </button>
-        <button onClick={handleLogout} className="text-sm bg-[#58bcb5] text-white border border-[#58bcb5] hover:bg-white hover:text-[#58bcb5] px-4 py-2 rounded-md transition duration-200 ease-in-out">
-          로그아웃
-        </button>
-      </div>
-    </header>
-  );
 };
 
 // === Sidebar 컴포넌트 === (이전과 동일)
-const AdminSidebar = ({ activeKey, setActiveKey }) => {
+const AdminSidebar = ({ activeKey, setActiveKey, onGoDashboard, onLogout }) => {
   const menuItems = [
     { name: '대시보드', icon: HomeIcon, key: 'dashboard' },
     { name: '상품 관리', icon: ShoppingBagIcon, key: 'products' },
@@ -124,7 +105,12 @@ const AdminSidebar = ({ activeKey, setActiveKey }) => {
       className="flex-col bg-[#306f65] text-white w-64 p-5 z-30"
     >
       <div className="flex items-center justify-between pb-6 border-b border-white mb-6">
-        <h2 className="text-2xl text-[#f2f2e8] font-aggro font-bold">Admin Panel</h2>
+        <h2
+          className="text-2xl text-[#f2f2e8] font-aggro font-bold cursor-pointer hover:text-[#58bcb5]"
+          onClick={onGoDashboard}
+        >
+          Admin Panel
+        </h2>
       </div>
       <nav className="flex-1">
         <ul className="space-y-2">
@@ -144,6 +130,17 @@ const AdminSidebar = ({ activeKey, setActiveKey }) => {
               </button>
             </li>
           ))}
+          <li>
+            <button
+              onClick={onLogout}
+              className="flex items-center p-3 rounded-md transition duration-200 ease-in-out w-full text-left text-gray-300 hover:bg-[#58bcb5] hover:text-white"
+            >
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="mr-3" width="20" height="20">
+                <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 9V5.25A2.25 2.25 0 0013.5 3h-6A2.25 2.25 0 005.25 5.25v13.5A2.25 2.25 0 007.5 21h6a2.25 2.25 0 002.25-2.25V15M18 12H9m0 0l3-3m-3 3l3 3" />
+              </svg>
+              <span className="font-medium">로그아웃</span>
+            </button>
+          </li>
         </ul>
       </nav>
       <div className="pt-6 border-t border-white mt-6 text-sm text-white">
@@ -159,6 +156,14 @@ const AdminLayout = () => {
   const [userEditId, setUserEditId] = useState(null);
   const [reportDetailId, setReportDetailId] = useState(null);
   const [reportEditId, setReportEditId] = useState(null);
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
+
+  const handleLogout = async () => {
+    await dispatch(logoutAsync());
+    navigate('/login');
+  };
+
   // ⭐ 삭제: selectedCategoryIdForProductList 상태 제거 ⭐
   // const [selectedCategoryIdForProductList, setSelectedCategoryIdForProductList] = useState(null);
 
@@ -222,7 +227,7 @@ const AdminLayout = () => {
       <AdminHeader onGoDashboard={handleGoDashboard} />
 
       <div className="flex flex-1">
-        <AdminSidebar activeKey={['reportEdit', 'reportWrite', 'reportDetail'].includes(activeComponentKey) ? 'reports' : (activeComponentKey === 'userEdit' ? 'users' : activeComponentKey)} setActiveKey={setActiveComponentKey} />
+        <AdminSidebar activeKey={['reportEdit', 'reportWrite', 'reportDetail'].includes(activeComponentKey) ? 'reports' : (activeComponentKey === 'userEdit' ? 'users' : activeComponentKey)} setActiveKey={setActiveComponentKey} onGoDashboard={handleGoDashboard} onLogout={handleLogout} />
 
         <main className="flex-1 p-6 overflow-y-auto bg-[#f2f2e8]">
           {CurrentComponent}
