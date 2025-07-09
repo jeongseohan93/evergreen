@@ -60,8 +60,7 @@ const SalePage = () => (
 );
 
 const OrderPage = () => (
-  <div className="bg-white p-6 rounded-lg shadow-md min-h-[400px]">
-    <h2 className="text-2xl font-bold mb-4 text-gray-800">주문 관리</h2>
+  <div className="min-h-[400px]">
    <OrderManagementPage />
   </div>
 );
@@ -218,7 +217,7 @@ const AdminLayout = () => {
       <AdminHeader onGoDashboard={handleGoDashboard} />
 
       <div className="flex flex-1">
-        <AdminSidebar activeKey={activeComponentKey === 'userEdit' ? 'users' : activeComponentKey} setActiveKey={setActiveComponentKey} />
+        <AdminSidebar activeKey={['reportEdit', 'reportWrite', 'reportDetail'].includes(activeComponentKey) ? 'reports' : (activeComponentKey === 'userEdit' ? 'users' : activeComponentKey)} setActiveKey={setActiveComponentKey} />
 
         <main className="flex-1 p-6 overflow-y-auto bg-[#f2f2e8]">
           {CurrentComponent}

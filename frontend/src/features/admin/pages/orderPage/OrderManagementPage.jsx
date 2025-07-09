@@ -39,12 +39,12 @@ const OrderManagementPage = () => {
     const filteredDeliveries = getFilteredDeliveries(); // 필터링된 배송 목록
 
     return (
-        <div className="delivery-dashboard-container">
+        <div style={{ padding: '20px', maxWidth: '1200px', margin: '0 auto' }}>
             {loading && <p>로딩 중...</p>}
             {error && <p className="error-message">{error}</p>}
 
             <div className="delivery-section">
-                <h2>배송 관리</h2>
+                <h2 className="font-aggro text-4xl font-bold">배송 관리</h2>
                 
                 {/* 필터 섹션 컴포넌트 */}
                 <DeliveryFilterSection
