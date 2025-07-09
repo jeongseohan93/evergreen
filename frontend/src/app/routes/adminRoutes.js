@@ -1,14 +1,14 @@
 // src/app/routes/adminRoutes.js
 import { Outlet } from 'react-router-dom';
-import AdminOutlet from './adminOutlet';
+import AdminOutlet from './AdminOutlet'
 import DashboardPage from '@/features/admin/pages/DashBoardPage';
 import { PrivateRoute } from '@/shared';
-import UserManage from '@/features/admin/pages/userPage/UserManage';
-import UserEdit from '@/features/admin/pages/userPage/UserEdit';
-import ReportManage from '@/features/admin/pages/reportPage/ReportManage';
-import ReportWrite from '@/features/admin/pages/reportPage/ReportWrite';
-import ReportDetail from '@/features/admin/pages/reportPage/ReportDetail';
-import ReportEdit from '@/features/admin/pages/reportPage/ReportEdit';
+import UserManage from '@/features/admin/pages/userPage/userManage';
+import UserEdit from '@/features/admin/pages/userPage/userEdit';
+import ReportManage from '@/features/admin/pages/reportPage/reportManage';
+import ReportWrite from '@/features/admin/pages/reportPage/reportWrite';
+import ReportDetail from '@/features/admin/pages/reportPage/reportDetail';
+import ReportEdit from '@/features/admin/pages/reportPage/reportEdit';
 
 
 const adminRoutes = [
