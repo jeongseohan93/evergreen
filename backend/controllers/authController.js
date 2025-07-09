@@ -51,7 +51,7 @@ exports.idcheckr = async (req, res) => {
 // - 비밀번호 해싱(bcrypt) 후 사용자 생성
 // - 회원가입 성공 시 201 Created 응답, 실패 시 500 에러
 // ===============================
-exports.register = async (req, res) => {
+exports.signup = async (req, res) => {
   const {
     email,
     password,

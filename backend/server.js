@@ -7,6 +7,7 @@ const morgan = require('morgan'); // HTTP 요청 로그를 콘솔에 출력해�
 const cookieParser = require('cookie-parser'); // HTTP 요청의 쿠키를 파싱(분석)하여 `req.cookies` 객체에 넣어주는 미들웨어 임포트
 const auth = require('./routes/auth'); // 사용자 인증 관련 라우터 (로그인, 회원가입 등)
 const admin = require('./routes/admin'); // 관리자 인증 관련 라우터
+const homeRouter = require('./routes/product');
 const reportRouter = require('./routes/admin/report');
 const passportConfig = require('./passport'); // Passport 설정 파일 불러오기 (전략 등록, 시리얼라이즈/디시리얼라이즈 등 설정 포함)
 const { notFound, errorHandler } = require('./middlewares/error'); // 404/500 에러 처리 미들웨어
@@ -34,7 +35,7 @@ passportConfig(); // Passport 설정 함수 실행 (미들웨어 적용 전에 �
 // force: true → 테이블 전체 삭제 후 재생성 (초기 개발/테스트 때만 사용)
 // alter: true → 기존 테이블과 모델의 차이만 자동 반영 (실운영에서는 권장X, 데이터 유실 가능성 있음)
 sequelize.sync() // 모델 정의와 실제 DB 테이블을 동기화 (필요시 테이블 생성)
-// .sync({ force: true })  // 개발 중 테이블 구조 바꿀 때만! 주석 풀면 기존 데이터 전부 삭제
+//.sync({ force: true })  // 개발 중 테이블 구조 바꿀 때만! 주석 풀면 기존 데이터 전부 삭제
 // .sync({ alter: true })   // 컬럼 구조 자동 반영(권장X), 운영환경에서는 직접 마이그레이션 사용
     .then(() => {
         console.log('DB 연결 성공');
@@ -74,6 +75,7 @@ app.use(passport.initialize()); // passport 인증 시스템 초기화
 app.use('/auth', auth); // auth → 인증 관련 라우터
 app.use('/admin', admin); //admin -> 관리자 인증 관련 라우터
 app.use('/adminReport', reportRouter);
+app.use('/products', homeRouter )
 //정적 파일 서빙: 이미지 미리보기를 위해 작성
 app.use('/adminImages', express.static(path.join(__dirname, 'public/adminImages')));
 

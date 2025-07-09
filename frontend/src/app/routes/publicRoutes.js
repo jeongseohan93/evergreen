@@ -1,8 +1,9 @@
 // src/app/routes/publicRoutes.js
 import LoginPage from '@/features/authentication/pages/LoginPage';
-import RegisterPage from '@/features/authentication/pages/RegisterPage' // 회원가입 페이지가 있다면
 import FindIdPage from '@/features/authentication/pages/FindIdPage';
 import FindPasswordPage from '@/features/authentication/pages/FindPasswordPage';
+import SignPage from '@/features/authentication/pages/SignPage';
+import SignAgreePage from '@/features/authentication/pages/SignAgreePage';
 
 import PrivacyPolicyPage from '@/features/policies/pages/PrivacyPolicyPage';
 import HelpPage from '@/features/policies/pages/HelpPage';
@@ -26,7 +27,7 @@ import CategorySearchPage from '@/features/product/pages/CategorySearchPage';
 
 const publicRoutes = [
   { path: '/login', element: <LoginPage /> },
-  { path: '/register', element: <RegisterPage />},
+  { path: '/signup', element:<SignPage/>},
   { path: '/findid', element: <FindIdPage /> },
   { path: '/findpassword', element: <FindPasswordPage /> },
 

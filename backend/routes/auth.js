@@ -2,7 +2,7 @@
 
 const express = require('express');
 const { isNotLoggedIn, isLoggedIn } = require('../middlewares/index'); // jwt토근 유무 및 로그인 상태가 아닌지 체크하는 미들웨어
-const { idcheckr, register, login, logout } = require('../controllers/authController'); // 로그인 요청 처리 컨트롤러
+const { idcheckr, signup, login, logout } = require('../controllers/authController'); // 로그인 요청 처리 컨트롤러
 const { isjwt } = require('../utils/isjwt'); // JWT 토큰 생성 및 검증 유틸리티
 const { sendToken } = require('../controllers/sendController');
 const jwt  =require('jsonwebtoken');
@@ -20,7 +20,7 @@ router.post('/idcheck', idcheckr);
 // [회원가입 API 라우팅]
 // - POST /register: 회원가입 요청을 register 컨트롤러에 전달
 // ===============================
-router.post('/register', register);
+router.post('/signup', signup);
  
 
 // ========================
