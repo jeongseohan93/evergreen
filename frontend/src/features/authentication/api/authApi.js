@@ -14,3 +14,8 @@ export const checkAuth = async () => {
   const response = await apiService.get('/auth/me');
   return response.data;
 };
+
+export const signUp = async (formData) => {
+  const response = await apiService.post('/auth/signup', formData);
+  return response.data;
+}
