@@ -2,16 +2,15 @@
 
 import { useState, useEffect, useCallback } from 'react';
 
-// 상품 관련 API는 productApi에서만 임포트
 import {
     getAllProducts,
     searchProducts,
     addProduct,
     updateProduct,
-    deleteProduct, // <-- ⭐ deleteProduct API 함수 임포트 ⭐
+    deleteProduct,
+    uploadProductImage,
 } from '../../../api/productApi';
 
-// 카테고리 관련 API는 categoryApi에서만 임포트
 import { fetchCategories as fetchCategoriesApi } from '../../../api/categoryApi';
 
 
@@ -27,10 +26,22 @@ const useProductManagement = () => {
     const [showAddForm, setShowAddForm] = useState(false);
 
     const [newProduct, setNewProduct] = useState({
-        name: '', price: '', category_id: '', memo: '', stock: '', small_photo: '', large_photo: '', brand: ''
+        name: '', price: '', category_id: '', memo: '', stock: '',
+        small_photo: '',
+        large_photo: '',
+        brand: '',
+        pick: 'nothing', // 기본값 설정
     });
 
     const [editingProduct, setEditingProduct] = useState(null);
+
+    // ⭐ 중요: 새 상품 추가 폼을 위한 이미지 업로드 관련 상태 다시 정의 ⭐
+    const [uploadingSmallImage, setUploadingSmallImage] = useState(false);
+    const [smallImageUploadMessage, setSmallImageUploadMessage] = useState('');
+
+    const [uploadingLargeImage, setUploadingLargeImage] = useState(false);
+    const [largeImageUploadMessage, setLargeImageUploadMessage] = useState('');
+
 
     const fetchAllProducts = useCallback(async () => {
         setError('');
@@ -47,36 +58,26 @@ const useProductManagement = () => {
             setError(err.response?.data?.message || '상품을 불러오는 도중 오류가 발생했습니다.');
         }
     }, []);
-const fetchCategories = useCallback(async () => {
-     // 기존 setError('');는 그대로 유지해도 됨
-     setError(''); 
-     try {
-         // ⭐⭐ 여기를 이렇게 수정해야 해! ⭐⭐
-         // categoryApi에서 { success, data, message } 객체를 받을 것으로 기대
-         const response = await fetchCategoriesApi(); 
 
-         // 디버깅용 로그 - 이 로그들이 예상대로 찍히는지 반드시 확인!
-         console.log("useProductManagement - fetchCategories: categoryApi에서 받은 response:", response);
-         console.log("useProductManagement - fetchCategories: response.success:", response.success);
-         console.log("useProductManagement - fetchCategories: Array.isArray(response.data):", Array.isArray(response.data));
-
-         // ⭐⭐ response.success와 response.data를 확인하여 상태 설정 ⭐⭐
-         if (response.success && Array.isArray(response.data)) {
-             setCategories(response.data); // 핵심: response.data를 categories로 설정
-             console.log("useProductManagement - fetchCategories: categories 상태 설정 완료:", response.data);
-         } else {
-             // API는 성공했지만, 데이터 형식이 예상과 다를 때 (백엔드 버그 또는 예상치 못한 응답)
-             setError(response.message || "카테고리 데이터를 불러왔으나 형식이 올바르지 않습니다.");
-             setCategories([]); // 안전하게 빈 배열로 설정
-             console.error("useProductManagement - fetchCategories: API 응답 형식 오류 또는 데이터 없음", response);
-         }
-     } catch (err) {
-         // API 호출 자체가 실패했을 때 (네트워크 오류, 서버 오류 등)
-         setError(err.response?.data?.message || '카테고리 목록을 불러오는 데 실패했습니다.');
-         setCategories([]); // 에러 시에도 안전하게 빈 배열로 설정
-         console.error("useProductManagement - fetchCategories: API 호출 실패", err);
-     }
- }, []); // 의존성 배열은 []로 유지
+    const fetchCategories = useCallback(async () => {
+        setError('');
+        try {
+            const response = await fetchCategoriesApi();
+            console.log("useProductManagement - fetchCategories: categoryApi에서 받은 response:", response);
+            if (response.success && Array.isArray(response.data)) {
+                setCategories(response.data);
+                console.log("useProductManagement - fetchCategories: categories 상태 설정 완료:", response.data);
+            } else {
+                setError(response.message || "카테고리 데이터를 불러왔으나 형식이 올바르지 않습니다.");
+                setCategories([]);
+                console.error("useProductManagement - fetchCategories: API 응답 형식 오류 또는 데이터 없음", response);
+            }
+        } catch (err) {
+            setError(err.response?.data?.message || '카테고리 목록을 불러오는 데 실패했습니다.');
+            setCategories([]);
+            console.error("useProductManagement - fetchCategories: API 호출 실패", err);
+        }
+    }, []);
 
     const initialLoad = useCallback(async () => {
         setLoading(true);
@@ -129,9 +130,15 @@ const fetchCategories = useCallback(async () => {
         setShowAddForm(!showAddForm);
         if (!showAddForm) {
             setNewProduct({
-                name: '', price: '', category_id: '', memo: '', stock: '', small_photo: '', large_photo: '', brand: ''
+                name: '', price: '', category_id: '', memo: '', stock: '',
+                small_photo: '', large_photo: '', brand: '', pick: 'nothing'
             });
             setError('');
+            // ⭐ 다시 활성화: 폼 열 때 이미지 관련 상태 초기화 ⭐
+            setSmallImageUploadMessage('');
+            setLargeImageUploadMessage('');
+            setUploadingSmallImage(false);
+            setUploadingLargeImage(false);
         }
     };
 
@@ -143,13 +150,89 @@ const fetchCategories = useCallback(async () => {
         }));
     };
 
+    // ⭐ 수정: 새로운 상품 추가 폼을 위한 파일 변경 및 업로드 핸들러 ⭐
+    const handleNewProductSmallFileChange = async (e) => {
+        const file = e.target.files[0];
+        if (!file) {
+            setNewProduct(prev => ({ ...prev, small_photo: '' }));
+            setSmallImageUploadMessage(''); // 파일 선택 취소 시 메시지 초기화
+            return;
+        }
+
+        setUploadingSmallImage(true); // 업로드 시작
+        setSmallImageUploadMessage('작은 사진 업로드 중...');
+        setError('');
+        try {
+            const result = await uploadProductImage(file);
+            if (result.success) {
+                setNewProduct(prev => ({ ...prev, small_photo: result.imageUrl }));
+                setSmallImageUploadMessage('작은 사진 업로드 성공!');
+            } else {
+                setSmallImageUploadMessage(`작은 사진 업로드 실패: ${result.message}`);
+                e.target.value = ''; // 실패 시 input 파일 초기화
+                setNewProduct(prev => ({ ...prev, small_photo: '' })); // URL도 클리어
+            }
+        } catch (err) {
+            console.error('작은 사진 업로드 오류:', err);
+            setSmallImageUploadMessage(`작은 사진 업로드 실패: ${err.message || '알 수 없는 오류'}`);
+            e.target.value = '';
+            setNewProduct(prev => ({ ...prev, small_photo: '' }));
+        } finally {
+            setUploadingSmallImage(false); // 업로드 완료 (성공/실패 무관)
+        }
+    };
+
+    // ⭐ 수정: 새로운 상품 추가 폼을 위한 큰 사진 파일 변경 및 업로드 핸들러 ⭐
+    const handleNewProductLargeFileChange = async (e) => {
+        const file = e.target.files[0];
+        if (!file) {
+            setNewProduct(prev => ({ ...prev, large_photo: '' }));
+            setLargeImageUploadMessage(''); // 파일 선택 취소 시 메시지 초기화
+            return;
+        }
+
+        setUploadingLargeImage(true); // 업로드 시작
+        setLargeImageUploadMessage('큰 사진 업로드 중...');
+        setError('');
+        try {
+            const result = await uploadProductImage(file);
+            if (result.success) {
+                setNewProduct(prev => ({ ...prev, large_photo: result.imageUrl }));
+                setLargeImageUploadMessage('큰 사진 업로드 성공!');
+            } else {
+                setLargeImageUploadMessage(`큰 사진 업로드 실패: ${result.message}`);
+                e.target.value = ''; // 실패 시 input 파일 초기화
+                setNewProduct(prev => ({ ...prev, large_photo: '' })); // URL도 클리어
+            }
+        } catch (err) {
+            console.error('큰 사진 업로드 오류:', err);
+            setLargeImageUploadMessage(`큰 사진 업로드 실패: ${err.message || '알 수 없는 오류'}`);
+            e.target.value = '';
+            setNewProduct(prev => ({ ...prev, large_photo: '' }));
+        } finally {
+            setUploadingLargeImage(false); // 업로드 완료 (성공/실패 무관)
+        }
+    };
+
+
     const handleAddProduct = async (e) => {
         e.preventDefault();
+
+        // ⭐ 다시 활성화: 이미지 업로드 중일 때는 상품 추가 방지 ⭐
+        if (uploadingSmallImage || uploadingLargeImage) {
+            setError('이미지 업로드 중입니다. 잠시 기다려주세요.');
+            return;
+        }
 
         if (!newProduct.name.trim() || !String(newProduct.price).trim() || !String(newProduct.category_id).trim()) {
             setError('상품명, 가격, 카테고리는 필수 입력 항목입니다.');
             return;
         }
+        // small_photo가 필수라면 이 유효성 검사 주석 해제
+        // if (!newProduct.small_photo) {
+        //     setError('작은 사진은 필수입니다.');
+        //     return;
+        // }
 
         setLoading(true);
         setError('');
@@ -159,8 +242,12 @@ const fetchCategories = useCallback(async () => {
                 await fetchAllProducts();
                 setShowAddForm(false);
                 setNewProduct({
-                    name: '', price: '', category_id: '', memo: '', stock: '', small_photo: '', large_photo: '', brand: ''
+                    name: '', price: '', category_id: '', memo: '', stock: '',
+                    small_photo: '', large_photo: '', brand: '', pick: 'nothing'
                 });
+                // ⭐ 추가: 상품 추가 성공 후 이미지 관련 상태 초기화 ⭐
+                setSmallImageUploadMessage('');
+                setLargeImageUploadMessage('');
             } else {
                 setError(response.message || '상품 추가에 실패했습니다.');
             }
@@ -174,7 +261,11 @@ const fetchCategories = useCallback(async () => {
 
     const toggleEditMode = (productToEdit) => {
         if (productToEdit) {
-            setEditingProduct({ ...productToEdit });
+            setEditingProduct({
+                ...productToEdit,
+                _small_photo_file: null, // 작은 사진용 File 객체
+                _large_photo_file: null  // 큰 사진용 File 객체
+            });
         } else {
             setEditingProduct(null);
         }
@@ -188,6 +279,35 @@ const fetchCategories = useCallback(async () => {
             [name]: value
         }));
     };
+
+    const handleSmallFileChangeForEdit = (productId, file) => {
+        setEditingProduct(prev => {
+            if (!prev || prev.product_id !== productId) return prev;
+
+            if (file) {
+                return { ...prev, _small_photo_file: file, small_photo: null };
+            } else {
+                const newState = { ...prev };
+                delete newState._small_photo_file;
+                return newState;
+            }
+        });
+    };
+
+    const handleLargeFileChangeForEdit = (productId, file) => {
+        setEditingProduct(prev => {
+            if (!prev || prev.product_id !== productId) return prev;
+
+            if (file) {
+                return { ...prev, _large_photo_file: file, large_photo: null };
+            } else {
+                const newState = { ...prev };
+                delete newState._large_photo_file;
+                return newState;
+            }
+        });
+    };
+
 
     const handleUpdateProduct = async (productId, updatedData) => {
         if (!updatedData.name.trim() || !String(updatedData.price).trim() || !String(updatedData.category_id).trim()) {
@@ -205,24 +325,56 @@ const fetchCategories = useCallback(async () => {
 
         setLoading(true);
         setError('');
+
         try {
-            console.log("handleUpdateProduct: 업데이트 요청 데이터", updatedData);
-            const result = await updateProduct(productId, updatedData);
+            let finalUpdateData = { ...updatedData };
+
+            if (updatedData._small_photo_file instanceof File) {
+                console.log("작은 사진 파일 업로드 시작:", updatedData._small_photo_file.name);
+                const smallImageUploadResult = await uploadProductImage(updatedData._small_photo_file);
+                if (smallImageUploadResult.success) {
+                    finalUpdateData.small_photo = smallImageUploadResult.imageUrl;
+                    console.log("작은 사진 업로드 성공, URL:", smallImageUploadResult.imageUrl);
+                } else {
+                    setError(`작은 사진 업로드 실패: ${smallImageUploadResult.message}`);
+                    setLoading(false);
+                    return;
+                }
+            } else if (updatedData.small_photo === null) {
+                finalUpdateData.small_photo = null;
+            }
+
+            if (updatedData._large_photo_file instanceof File) {
+                console.log("큰 사진 파일 업로드 시작:", updatedData._large_photo_file.name);
+                const largeImageUploadResult = await uploadProductImage(updatedData._large_photo_file);
+                if (largeImageUploadResult.success) {
+                    finalUpdateData.large_photo = largeImageUploadResult.imageUrl;
+                    console.log("큰 사진 업로드 성공, URL:", largeImageUploadResult.imageUrl);
+                } else {
+                    setError(`큰 사진 업로드 실패: ${largeImageUploadResult.message}`);
+                    setLoading(false);
+                    return;
+                }
+            } else if (updatedData.large_photo === null) {
+                finalUpdateData.large_photo = null;
+            }
+
+            delete finalUpdateData._small_photo_file;
+            delete finalUpdateData._large_photo_file;
+
+            console.log("handleUpdateProduct: 최종 업데이트 요청 데이터", finalUpdateData);
+            const result = await updateProduct(productId, finalUpdateData);
             console.log("handleUpdateProduct: updateProduct API 응답 결과:", result);
 
             if (result.success) {
                 alert(result.message || '상품이 성공적으로 업데이트되었습니다.');
-                console.log("handleUpdateProduct: fetchAllProducts 호출 직전");
-
-                await fetchAllProducts(); // 상품 목록 새로고침
+                await fetchAllProducts();
 
                 if (isSearching && searchKeyword.trim()) {
-                    console.log("handleUpdateProduct: 검색 중이므로 검색 결과 갱신 시작");
-                    await handleSearch(); // 검색 결과도 갱신
+                    await handleSearch();
                 }
 
                 setEditingProduct(null);
-                console.log("handleUpdateProduct: fetchAllProducts 호출 완료");
             } else {
                 setError(result.message || '상품 수정에 실패했습니다.');
                 alert(`상품 수정 실패: ${result.message || '알 수 없는 오류'}`);
@@ -235,23 +387,21 @@ const fetchCategories = useCallback(async () => {
         }
     };
 
-    // --- ⭐⭐⭐ 새로운 상품 삭제 함수 추가 ⭐⭐⭐ ---
     const handleDeleteProduct = useCallback(async (productId) => {
         if (!window.confirm('정말로 이 상품을 삭제하시겠습니까?')) {
-            return; // 사용자가 취소하면 아무것도 하지 않음
+            return;
         }
 
         setLoading(true);
         setError('');
         try {
-            const response = await deleteProduct(productId); // deleteProduct API 호출
+            const response = await deleteProduct(productId);
             if (response.success) {
                 alert(response.message || '상품이 성공적으로 삭제되었습니다.');
-                // 현재 검색 중인 상태에 따라 목록 갱신
                 if (isSearching && searchKeyword.trim()) {
-                    await handleSearch(); // 검색 결과 갱신
+                    await handleSearch();
                 } else {
-                    await fetchAllProducts(); // 전체 목록 새로고침
+                    await fetchAllProducts();
                 }
             } else {
                 setError(response.message || '상품 삭제에 실패했습니다.');
@@ -263,7 +413,7 @@ const fetchCategories = useCallback(async () => {
         } finally {
             setLoading(false);
         }
-    }, [isSearching, searchKeyword, fetchAllProducts, handleSearch]); // 의존성 배열에 관련 함수/상태 추가
+    }, [isSearching, searchKeyword, fetchAllProducts, handleSearch]);
 
     return {
         products,
@@ -286,7 +436,18 @@ const fetchCategories = useCallback(async () => {
         toggleEditMode,
         handleEditInputChange,
         handleUpdateProduct,
-        handleDeleteProduct // <-- ⭐ 반환 객체에 추가 ⭐
+        handleDeleteProduct,
+        // ProductList에서 수정 모드를 위한 핸들러
+        handleSmallFileChange: handleSmallFileChangeForEdit,
+        handleLargeFileChange: handleLargeFileChangeForEdit,
+
+        // 새 상품 추가 폼에서만 사용되는 이미지 관련 상태와 핸들러
+        handleNewProductSmallFileChange,
+        handleNewProductLargeFileChange,
+        uploadingSmallImage, // 이제 이 상태들이 ProductAddForm에서 사용될 수 있음
+        uploadingLargeImage, //
+        smallImageUploadMessage,
+        largeImageUploadMessage
     };
 };
 

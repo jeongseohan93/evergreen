@@ -1,10 +1,8 @@
 // src/features/admin/pages/productPage/ProductManagePage.jsx
 
 import React from 'react';
-// ⭐⭐ useProductManagement 훅의 임포트 경로 수정 (중괄호 제거) ⭐⭐
-import useProductManagement from '../../components/product/hooks/useProductManagement'; // <-- default export로 가져옴
+import useProductManagement from '../../components/product/hooks/useProductManagement'; // 경로 확인 필요
 
-// 같은 폴더 내에 있는 컴포넌트들의 임포트 경로 (이전과 동일, 정확함)
 import ProductList from './ProductList';
 import ProductSearch from './ProductSearch';
 import ProductAddForm from './ProductAddForm';
@@ -15,15 +13,15 @@ const ProductManagePage = () => {
     const {
         products,
         categories,
-        loading,
-        error,
+        loading, // ⭐ loading 상태 받아옴 ⭐
+        error,   // ⭐ error 상태 받아옴 ⭐
         searchKeyword,
         setSearchKeyword,
         searchResults,
         isSearching,
         showAddForm,
         newProduct,
-        clearSearch, 
+        clearSearch,
         handleSearch,
         toggleAddForm,
         handleInputChange,
@@ -32,8 +30,19 @@ const ProductManagePage = () => {
         toggleEditMode,
         handleEditInputChange,
         handleUpdateProduct,
-        handleDeleteProduct 
-    } = useProductManagement(); // <-- 여기서 호출하는 건 그대로
+        handleDeleteProduct,
+        // ⭐ useProductManagement 훅에서 반환하는 모든 필요한 값들을 정확히 받아옴 ⭐
+        // ProductList (수정 모드)에서 사용될 핸들러
+        handleSmallFileChange,      // useProductManagement에서 'handleSmallFileChangeForEdit'의 별칭으로 반환됨
+        handleLargeFileChange,      // useProductManagement에서 'handleLargeFileChangeForEdit'의 별칭으로 반환됨
+        // ProductAddForm (새 상품 추가)에서 사용될 핸들러 및 상태
+        handleNewProductSmallFileChange, // ⭐ 새 상품용 핸들러 받아옴 ⭐
+        handleNewProductLargeFileChange, // ⭐ 새 상품용 핸들러 받아옴 ⭐
+        uploadingSmallImage,             // ⭐ 업로드 상태 받아옴 ⭐
+        uploadingLargeImage,             // ⭐ 업로드 상태 받아옴 ⭐
+        smallImageUploadMessage,         // ⭐ 메시지 상태 받아옴 ⭐
+        largeImageUploadMessage          // ⭐ 메시지 상태 받아옴 ⭐
+    } = useProductManagement();
 
     const displayProducts = isSearching ? searchResults : products;
     const listTitle = isSearching ? `검색 결과 (${searchResults.length}개)` : '전체 상품 목록';
@@ -43,7 +52,7 @@ const ProductManagePage = () => {
             <h1 className="text-4xl font-aggro font-bold mb-4 text-black">상품 관리</h1>
 
             <ProductErrorDisplay error={error} />
-            
+
             <ProductAddForm
                 showAddForm={showAddForm}
                 toggleAddForm={toggleAddForm}
@@ -51,19 +60,28 @@ const ProductManagePage = () => {
                 handleInputChange={handleInputChange}
                 handleAddProduct={handleAddProduct}
                 categories={categories}
+                // ⭐ ProductAddForm에 새 상품용 핸들러 및 상태, 그리고 error/loading 전달 ⭐
+                handleNewProductSmallFileChange={handleNewProductSmallFileChange} // ⭐ 올바른 prop 이름으로 전달 ⭐
+                handleNewProductLargeFileChange={handleNewProductLargeFileChange} // ⭐ 올바른 prop 이름으로 전달 ⭐
+                uploadingSmallImage={uploadingSmallImage}
+                uploadingLargeImage={uploadingLargeImage}
+                smallImageUploadMessage={smallImageUploadMessage}
+                largeImageUploadMessage={largeImageUploadMessage}
+                error={error}   // ⭐ error 전달 ⭐
+                loading={loading} // ⭐ loading 전달 ⭐
             />
 
             <ProductSearch
                 searchKeyword={searchKeyword}
                 setSearchKeyword={setSearchKeyword}
                 handleSearch={handleSearch}
-                clearSearch={clearSearch} 
+                clearSearch={clearSearch}
                 isSearching={isSearching}
             />
 
             <div className="mt-30 mb-6 p-6 bg-white rounded-lg border border-[#306f65]">
                 <h2 className="text-2xl font-aggro font-bold mb-4 text-black">{listTitle}</h2>
-                {loading ? ( 
+                {loading ? (
                     <ProductLoadingSpinner loading={loading} />
                 ) : displayProducts.length === 0 && isSearching ? (
                     <p className="text-center py-3 text-gray-500">검색 결과가 없습니다.</p>
@@ -78,6 +96,9 @@ const ProductManagePage = () => {
                         handleEditInputChange={handleEditInputChange}
                         handleUpdateProduct={handleUpdateProduct}
                         handleDeleteProduct={handleDeleteProduct}
+                        // ⭐ ProductList에 수정 모드용 핸들러 전달 (useProductManagement에서 별칭으로 반환된 이름 그대로) ⭐
+                        handleSmallFileChange={handleSmallFileChange} // useProductManagement에서 반환된 이름
+                        handleLargeFileChange={handleLargeFileChange} // useProductManagement에서 반환된 이름
                     />
                 )}
             </div>
