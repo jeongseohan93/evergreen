@@ -130,6 +130,10 @@ const AdminSidebar = ({ activeKey, setActiveKey, onGoDashboard, onLogout }) => {
               </button>
             </li>
           ))}
+        </ul>
+      </nav>
+      <div className="pt-6 border-t border-white mt-6">
+        <ul>
           <li>
             <button
               onClick={onLogout}
@@ -142,9 +146,9 @@ const AdminSidebar = ({ activeKey, setActiveKey, onGoDashboard, onLogout }) => {
             </button>
           </li>
         </ul>
-      </nav>
-      <div className="pt-6 border-t border-white mt-6 text-sm text-white">
-        <p>&copy; 2025.05 to 2025.07 <br/> Node.js 정복하다.</p>
+        <div className="text-sm text-white mt-4">
+          <p>&copy; 2025.05 to 2025.07 <br/> Node.js 정복하다.</p>
+        </div>
       </div>
     </aside>
   );
