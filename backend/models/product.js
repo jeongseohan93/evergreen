@@ -41,17 +41,13 @@ class Product extends Model {
       memo: {
         type: DataTypes.TEXT,
       },
-      // 원산지 컬럼
       origin: {
         type: DataTypes.STRING(100), // 예: '대한민국', '중국', '일본' 등
         allowNull: true,
-        comment: '원산지',
       },
-      // 모델명 컬럼
       model_name: {
         type: DataTypes.STRING(100), // 예: 'ABC-1234'
         allowNull: true,
-        comment: '모델명',
       },
       small_photo: {
         type: DataTypes.STRING(255),
