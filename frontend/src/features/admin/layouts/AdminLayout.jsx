@@ -19,6 +19,8 @@ import ReportDetail from '../pages/reportPage/ReportDetail.jsx';
 import ReportEdit from '../pages/reportPage/ReportEdit.jsx';
 import ReportWrite from '../pages/reportPage/ReportWrite.jsx';
 import DashBoardPage from '../pages/dashboardPage/DashBoardPage';
+import BannerManager from '../pages/bannerPage/BannerManager';
+
 
 import sh from '../../../assets/image/sh.png';
 import toon from '../../../assets/image/toon.png';
@@ -51,6 +53,11 @@ const AdminCategoriesPage = () => (
   </div>
 );
 
+const BannerManagerPage = () => (
+ <div className="min-h-[400px]">
+  <BannerManager />
+</div>
+);
 
 const AdminProductsPage = () => (
   <div className="min-h-[400px]">
@@ -210,7 +217,7 @@ const AdminLayout = () => {
     'reportDetail': <ReportDetail reportId={reportDetailId} onCancel={handleCancelReport} />,
     'reportEdit': <ReportEdit reportId={reportEditId} onCancel={handleCancelReport} />,
     'reportWrite': <ReportWrite onCancel={handleCancelReport} />,
-    'settings': <div className="bg-white p-6 rounded-lg shadow-md min-h-[400px]"><h2>배너추가,삭제,선택,글 삭제, 댓글 삭제, 공지 등록 이런거 넣어야하는데..</h2></div>,
+    'settings': <BannerManagerPage />,
     // ⭐ 삭제: 'categoryProducts' 항목 제거 ⭐
     // 'categoryProducts': <CategoryProductList categoryId={selectedCategoryIdForProductList} />,
   };
