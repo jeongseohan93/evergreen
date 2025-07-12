@@ -91,7 +91,7 @@ app.use('/images', express.static(imagesDirPath));
 
 
 // 3. 기존 adminImages 정적 파일 서빙 설정 (public/adminImages가 backend 폴더와 같은 레벨에 있을 때)
-const adminImagesDirPath = path.join(__dirname, '..', 'public', 'adminImages');
+const adminImagesDirPath = path.join(__dirname, 'public', 'adminImages');
 console.log('Express가 /adminImages/ 요청에 사용할 실제 AdminImages 폴더 경로:', adminImagesDirPath);
 app.use('/adminImages', express.static(adminImagesDirPath));
 

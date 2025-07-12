@@ -56,7 +56,7 @@ const AdminCategoriesPage = () => (
 const BannerManagerPage = () => (
  <div className="min-h-[400px]">
   <BannerManager />
-</div>
+ </div>
 );
 
 const AdminProductsPage = () => (
@@ -100,7 +100,7 @@ const AdminSidebar = ({ activeKey, setActiveKey, onGoDashboard, onLogout }) => {
     { name: '회원 관리', icon: UsersIcon, key: 'users' },
     { name: '매출 관리', icon: ChartBarIcon, key: 'sale' },
     { name: '리포트 관리', icon: FileTextIcon, key: 'reports' },
-    { name: '설정', icon: CogIcon, key: 'settings' },
+    { name: '설정(배너 관리)', icon: CogIcon, key: 'settings' },
   ];
 
   const handleClick = (key) => {

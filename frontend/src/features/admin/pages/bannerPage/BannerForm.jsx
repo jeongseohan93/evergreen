@@ -89,8 +89,8 @@ function BannerForm({ editingBanner, onAdd, onUpdate, onCancelEdit }) {
     };
 
     return (
-        <div className="bg-white p-6 rounded-lg shadow-md mb-8 max-w-2xl mx-auto">
-            <h2 className="text-2xl font-semibold text-gray-700 mb-6 text-center">
+        <div className="mb-6 p-6 bg-white rounded-lg border border-[#306f65]">
+            <h2 className="text-2xl font-bold font-aggro text-[#306f65] mb-6 text-center">
                 {editingBanner ? '배너 수정' : '새 배너 추가'}
             </h2>
             <form onSubmit={handleSubmit} className="space-y-4">
@@ -118,7 +118,7 @@ function BannerForm({ editingBanner, onAdd, onUpdate, onCancelEdit }) {
                         placeholder="배너 제목 (선택 사항)"
                         value={formData.title}
                         onChange={handleInputChange}
-                        className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                        className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-indigo-500 focus:border-[#306f65] sm:text-sm"
                     />
                 </div>
                 <div>
@@ -130,7 +130,7 @@ function BannerForm({ editingBanner, onAdd, onUpdate, onCancelEdit }) {
                         placeholder="클릭 시 이동할 URL (선택 사항)"
                         value={formData.link_url}
                         onChange={handleInputChange}
-                        className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                        className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-indigo-500 focus:border-[#306f65] sm:text-sm"
                     />
                 </div>
                 <div>
@@ -142,8 +142,24 @@ function BannerForm({ editingBanner, onAdd, onUpdate, onCancelEdit }) {
                         placeholder="배너 노출 순서"
                         value={formData.order}
                         onChange={handleInputChange}
-                        className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                        className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-indigo-500 focus:border-[#306f65] sm:text-sm"
                     />
+                </div>
+                <div>
+                    <label htmlFor="bannerImage" className="block text-sm font-medium text-gray-700">배너 이미지</label>
+                    <input
+                        type="file"
+                        id="bannerImage"
+                        name="bannerImage"
+                        onChange={handleInputChange}
+                        className="w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-[#e6f4f2] file:text-[#306f65] hover:file:bg-[#d8edea]"
+                    />
+                    {editingBanner && !formData.bannerImage && (
+                        <p className="mt-2 text-sm text-gray-500">
+                            현재 이미지: <a href={`http://localhost:3000${editingBanner.image_url}`} target="_blank" rel="noopener noreferrer" className="text-indigo-600 hover:underline">보기</a>
+                            (새 이미지 선택 시 교체됩니다)
+                        </p>
+                    )}
                 </div>
                 <div className="flex items-center">
                     <input
@@ -156,26 +172,10 @@ function BannerForm({ editingBanner, onAdd, onUpdate, onCancelEdit }) {
                     />
                     <label htmlFor="is_active" className="ml-2 block text-sm text-gray-900">활성화</label>
                 </div>
-                <div>
-                    <label htmlFor="bannerImage" className="block text-sm font-medium text-gray-700">배너 이미지</label>
-                    <input
-                        type="file"
-                        id="bannerImage"
-                        name="bannerImage"
-                        onChange={handleInputChange}
-                        className="mt-1 block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-indigo-50 file:text-indigo-700 hover:file:bg-indigo-100"
-                    />
-                    {editingBanner && !formData.bannerImage && (
-                        <p className="mt-2 text-sm text-gray-500">
-                            현재 이미지: <a href={`http://localhost:3000${editingBanner.image_url}`} target="_blank" rel="noopener noreferrer" className="text-indigo-600 hover:underline">보기</a>
-                            (새 이미지 선택 시 교체됩니다)
-                        </p>
-                    )}
-                </div>
                 <div className="flex justify-center space-x-4 pt-4">
                     <button
                         type="submit"
-                        className="px-6 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition duration-150 ease-in-out"
+                        className="px-6 py-2 text-sm font-medium rounded-md text-white bg-[#306f65] hover:bg-[#58bcb5] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#306f65] transition duration-150 ease-in-out"
                     >
                         {editingBanner ? '배너 수정하기' : '새 배너 추가하기'}
                     </button>
@@ -183,7 +183,7 @@ function BannerForm({ editingBanner, onAdd, onUpdate, onCancelEdit }) {
                     <button
                         type="button"
                         onClick={onCancelEdit} // 부모 컴포넌트에서 전달받은 취소 핸들러
-                        className="px-6 py-2 border border-gray-300 text-sm font-medium rounded-md shadow-sm text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition duration-150 ease-in-out"
+                        className="px-6 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#58bcb5] transition duration-150 ease-in-out"
                     >
                         취소
                     </button>

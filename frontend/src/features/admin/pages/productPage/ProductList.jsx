@@ -74,12 +74,13 @@ const ProductList = ({
                         <tr key={product.product_id} className="hover:bg-gray-50">
                             <td className="border border-gray-300 px-3 py-2 text-sm font-medium min-w-[180px]">
                                 {isEditingRow(product.product_id) ? (
-                                    <input
-                                        type="text"
+                                    <textarea
                                         name="name"
                                         value={editingProduct.name || ''}
                                         onChange={handleEditInputChange}
-                                        className="w-full px-2 py-1 border border-gray-300 rounded text-sm focus:outline-none focus:ring-1 focus:ring-[#306f65]"
+                                        rows="2"
+                                        className="w-full min-w-0 px-2 py-1 border border-gray-300 rounded text-sm focus:outline-none focus:ring-1 focus:ring-[#306f65]"
+                                        style={{width: '100%', minWidth: 0, height: 'auto', overflow: 'auto', resize: 'vertical'}}
                                     />
                                 ) : (
                                     product.name
@@ -92,7 +93,8 @@ const ProductList = ({
                                         name="pick"
                                         value={editingProduct.pick || 'nothing'}
                                         onChange={handleEditInputChange}
-                                        className="w-full px-2 py-1 border border-gray-300 rounded text-sm focus:outline-none focus:ring-1 focus:ring-[#306f65]"
+                                        className="w-full min-w-0 px-2 py-1 border border-gray-300 rounded text-sm focus:outline-none focus:ring-1 focus:ring-[#306f65] overflow-auto"
+                                        style={{overflow: 'auto'}}
                                     >
                                         <option value="nothing">선택 안 함</option>
                                         <option value="best">베스트</option>
@@ -112,7 +114,8 @@ const ProductList = ({
                                         name="brand"
                                         value={editingProduct.brand || ''}
                                         onChange={handleEditInputChange}
-                                        className="w-full px-2 py-1 border border-gray-300 rounded text-sm focus:outline-none focus:ring-1 focus:ring-[#306f65]"
+                                        className="w-full min-w-0 px-2 py-1 border border-gray-300 rounded text-sm focus:outline-none focus:ring-1 focus:ring-[#306f65]"
+                                        style={{width: '100%', minWidth: 0, overflow: 'auto'}}
                                     />
                                 ) : (
                                     product.brand || '-'
@@ -126,7 +129,8 @@ const ProductList = ({
                                         name="price"
                                         value={editingProduct.price || ''}
                                         onChange={handleEditInputChange}
-                                        className="w-full px-2 py-1 border border-gray-300 rounded text-sm focus:outline-none focus:ring-1 focus:ring-[#306f65]"
+                                        className="w-full min-w-0 px-2 py-1 border border-gray-300 rounded text-sm focus:outline-none focus:ring-1 focus:ring-[#306f65]"
+                                        style={{width: '100%', minWidth: 0, overflow: 'auto'}}
                                     />
                                 ) : (
                                     `${product.price.toLocaleString()}원`
@@ -139,7 +143,8 @@ const ProductList = ({
                                         name="category_id"
                                         value={editingProduct.category_id || ''}
                                         onChange={handleEditInputChange}
-                                        className="w-full px-2 py-1 border border-gray-300 rounded text-sm focus:outline-none focus:ring-1 focus:ring-[#306f65]"
+                                        className="w-full min-w-0 px-2 py-1 border border-gray-300 rounded text-sm focus:outline-none focus:ring-1 focus:ring-[#306f65] overflow-auto"
+                                        style={{overflow: 'auto'}}
                                     >
                                         <option value="">선택</option>
                                         {categories.map(cat => (
@@ -158,7 +163,8 @@ const ProductList = ({
                                         name="stock"
                                         value={editingProduct.stock || ''}
                                         onChange={handleEditInputChange}
-                                        className="w-16 px-2 py-1 border border-gray-300 rounded text-sm focus:outline-none focus:ring-2 focus:ring-[#306f65] focus:border-transparent"
+                                        className="w-full min-w-0 px-2 py-1 border border-gray-300 rounded text-sm focus:outline-none focus:ring-2 focus:ring-[#306f65] focus:border-transparent"
+                                        style={{width: '100%', minWidth: 0, overflow: 'auto'}}
                                     />
                                 ) : (
                                     product.stock
@@ -171,8 +177,9 @@ const ProductList = ({
                                         name="memo"
                                         value={editingProduct.memo || ''}
                                         onChange={handleEditInputChange}
-                                        rows="2"
-                                        className="w-full px-2 py-1 border border-gray-300 rounded text-sm focus:outline-none focus:ring-1 focus:ring-[#306f65]"
+                                        rows="4"
+                                        className="w-full min-w-0 px-2 py-1 border border-gray-300 rounded text-sm focus:outline-none focus:ring-1 focus:ring-[#306f65]"
+                                        style={{width: '100%', minWidth: 0, height: 'auto', overflow: 'auto', resize: 'vertical'}}
                                     />
                                 ) : (
                                     product.memo

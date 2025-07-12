@@ -3,31 +3,31 @@ import React from 'react';
 
 function BannerList({ banners, onEdit, onDelete, onToggleActive, onChangeOrder }) {
     return (
-        <div className="bg-white p-6 rounded-lg shadow-md max-w-4xl mx-auto">
-            <h2 className="text-2xl font-semibold text-gray-700 mb-6 text-center">현재 배너 목록</h2>
+        <div className="mb-6 p-6 bg-white rounded-lg border border-[#306f65]">
+            <h2 className="text-2xl font-bold font-aggro text-[#306f65] mb-6 text-center">현재 배너 목록</h2>
             {banners.length === 0 ? (
                 <p className="text-center text-gray-600">등록된 배너가 없습니다.</p>
             ) : (
                 <div className="overflow-x-auto">
-                    <table className="min-w-full divide-y divide-gray-200">
-                        <thead className="bg-gray-50">
-                            <tr>
-                                <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">ID</th>
-                                <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">이미지</th>
-                                <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">제목</th>
-                                <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">링크</th>
-                                <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">순서</th>
-                                <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">활성화</th>
-                                <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">생성일</th>
-                                <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">수정일</th>
-                                <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">액션</th>
+                    <table className="w-full border-collapse mt-5">
+                        <thead>
+                            <tr className="bg-gray-100">
+                                <th className="border border-gray-300 px-3 py-2 text-left text-sm font-semibold text-gray-700">ID</th>
+                                <th className="border border-gray-300 px-3 py-2 text-left text-sm font-semibold text-gray-700">이미지</th>
+                                <th className="border border-gray-300 px-3 py-2 text-left text-sm font-semibold text-gray-700">제목</th>
+                                <th className="border border-gray-300 px-3 py-2 text-left text-sm font-semibold text-gray-700">링크</th>
+                                <th className="border border-gray-300 px-3 py-2 text-left text-sm font-semibold text-gray-700">순서</th>
+                                <th className="border border-gray-300 px-3 py-2 text-left text-sm font-semibold text-gray-700">활성화</th>
+                                <th className="border border-gray-300 px-3 py-2 text-left text-sm font-semibold text-gray-700">생성일</th>
+                                <th className="border border-gray-300 px-3 py-2 text-left text-sm font-semibold text-gray-700">수정일</th>
+                                <th className="border border-gray-300 px-3 py-2 text-left text-sm font-semibold text-gray-700">액션</th>
                             </tr>
                         </thead>
-                        <tbody className="bg-white divide-y divide-gray-200">
+                        <tbody>
                             {banners.map(banner => (
-                                <tr key={banner.banner_id}>
-                                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{banner.banner_id}</td>
-                                    <td className="px-6 py-4 whitespace-nowrap">
+                                <tr key={banner.banner_id} className="hover:bg-gray-50">
+                                    <td className="border border-gray-300 px-3 py-2 text-sm text-gray-900">{banner.banner_id}</td>
+                                    <td className="border border-gray-300 px-3 py-2 text-sm text-center">
                                         {banner.image_url && (
                                             <img
                                                 src={`http://localhost:3000${banner.image_url}`} // ⭐ 실제 백엔드 서버 주소와 uploads 경로를 조합
@@ -37,45 +37,46 @@ function BannerList({ banners, onEdit, onDelete, onToggleActive, onChangeOrder }
                                             />
                                         )}
                                     </td>
-                                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{banner.title || '-'}</td>
-                                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                                    <td className="border border-gray-300 px-3 py-2 text-sm text-gray-900">{banner.title || '-'}</td>
+                                    <td className="border border-gray-300 px-3 py-2 text-sm text-gray-900">
                                         {banner.link_url ? (
                                             <a href={banner.link_url} target="_blank" rel="noopener noreferrer" className="text-indigo-600 hover:underline">
                                                 링크
                                             </a>
                                         ) : '-'}
                                     </td>
-                                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                                        <input
-                                            type="number"
-                                            value={banner.order}
-                                            onChange={(e) => onChangeOrder(banner.banner_id, parseInt(e.target.value))} // onChangeOrder 콜백 호출
-                                            className="w-20 px-2 py-1 border border-gray-300 rounded-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 text-center"
-                                        />
+                                    <td className="border border-gray-300 px-3 py-2 text-sm text-gray-900 text-center">
+                                        {banner.order}
                                     </td>
-                                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 text-center">
-                                        <input
-                                            type="checkbox"
-                                            checked={banner.is_active}
-                                            onChange={() => onToggleActive(banner.banner_id, banner.is_active)} // onToggleActive 콜백 호출
-                                            className="h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded"
+                                    <td className="border border-gray-300 px-3 py-2 text-sm text-gray-900 text-center">
+                                    <button
+                                        type="button"
+                                        onClick={() => onToggleActive(banner.banner_id, banner.is_active)}
+                                        className={`relative inline-flex h-7 w-12 items-center rounded-full transition-colors duration-200 focus:outline-none ${banner.is_active ? 'bg-[#306f65]' : 'bg-gray-300'}`}
+                                        >
+                                        <span
+                                            className={`inline-block h-5 w-5 transform rounded-full bg-white shadow transition-transform duration-300 ease-in-out ${banner.is_active ? 'translate-x-6' : 'translate-x-1'}`}
+                                            style={{ willChange: 'transform' }}
                                         />
+                                    </button>
                                     </td>
-                                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{new Date(banner.created_at).toLocaleDateString('ko-KR')}</td>
-                                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{new Date(banner.updated_at).toLocaleDateString('ko-KR')}</td>
-                                    <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                                        <button
-                                            onClick={() => onEdit(banner)} // onEdit 콜백 호출
-                                            className="text-indigo-600 hover:text-indigo-900 mr-3 p-1 rounded-md hover:bg-indigo-50 transition duration-150 ease-in-out"
-                                        >
-                                            수정
-                                        </button>
-                                        <button
-                                            onClick={() => onDelete(banner.banner_id)} // onDelete 콜백 호출
-                                            className="text-red-600 hover:text-red-900 p-1 rounded-md hover:bg-red-50 transition duration-150 ease-in-out"
-                                        >
-                                            삭제
-                                        </button>
+                                    <td className="border border-gray-300 px-3 py-2 text-sm text-gray-900">{new Date(banner.created_at).toLocaleDateString('ko-KR')}</td>
+                                    <td className="border border-gray-300 px-3 py-2 text-sm text-gray-900">{new Date(banner.updated_at).toLocaleDateString('ko-KR')}</td>
+                                    <td className="border border-gray-300 px-3 py-2 text-sm w-32 text-center font-medium">
+                                        <div className="flex flex-col gap-1 items-center justify-center">
+                                            <button
+                                                onClick={() => onEdit(banner)}
+                                                className="px-7 py-1 text-xs bg-[#306f65] text-white rounded hover:bg-[#58bcb5] transition-colors duration-200"
+                                            >
+                                                수정
+                                            </button>
+                                            <button
+                                                onClick={() => onDelete(banner.banner_id)}
+                                                className="px-7 py-1 text-xs bg-red-600 text-white rounded hover:bg-red-700 transition-colors duration-200 mt-1"
+                                            >
+                                                삭제
+                                            </button>
+                                        </div>
                                     </td>
                                 </tr>
                             ))}

@@ -105,7 +105,13 @@ const ReportWrite = ({ onCancel }) => {
                   </div>
                 ) : (
                   <div key={idx} className="flex items-center my-2">
-                    <img src={item.value} alt={`첨부 이미지${idx+1}`} className="max-w-xs rounded" />
+                    <img
+                      src={item.value.startsWith('/adminImages/')
+                        ? `http://localhost:3005${item.value}`
+                        : item.value}
+                      alt={`첨부 이미지${idx+1}`}
+                      className="max-w-xs rounded"
+                    />
                     <button
                       type="button"
                       onClick={() => handleRemoveContent(idx)}
@@ -121,7 +127,7 @@ const ReportWrite = ({ onCancel }) => {
           <div className="flex justify-end gap-3">
             <button
               type="submit"
-              className="px-5 py-2 cursor-pointer text-white border-transparent rounded transition-colors bg-[#306f65]"
+              className="px-5 py-2 cursor-pointer text-white border-transparent rounded transition-colors bg-[#306f65] hover:bg-[#58bcb5]"
               disabled={loading}
             >
               {loading ? '작성 중...' : '작성하기'}

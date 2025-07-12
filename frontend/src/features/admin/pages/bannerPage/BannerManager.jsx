@@ -20,8 +20,8 @@ const BannerManager = () => {
   } = useBannerManagement();
 
   return (
-    <div className="container mx-auto p-4">
-      <h1 className="text-2xl font-bold mb-6">배너 관리</h1>
+    <div style={{ padding: '20px', maxWidth: '1200px', margin: '0 auto' }}>
+      <h1 className="text-4xl font-bold font-aggro mb-6">배너 관리</h1>
 
       {/* 배너 추가/수정 폼 */}
       <div className="mb-8">
