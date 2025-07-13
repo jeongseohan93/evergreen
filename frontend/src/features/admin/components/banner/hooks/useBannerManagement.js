@@ -190,8 +190,8 @@ import {
      * @param {Object} banner - 수정할 배너 객체
      */
     const startEditing = useCallback((banner) => {
-        setEditingBanner(banner);
-        setError(null); // 수정 모드 시작 시 에러 상태 초기화
+        // setEditingBanner(banner); // 수정 모드 진입 막기
+        // setError(null);
     }, []);
 
     /**

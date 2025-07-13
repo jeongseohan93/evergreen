@@ -1,7 +1,7 @@
 // frontend/src/features/admin/components/banner/BannerForm.jsx
 import React, { useState, useEffect } from 'react';
 
-function BannerForm({ editingBanner, onAdd, onUpdate, onCancelEdit }) {
+function BannerForm({ editingBanner, onAdd, onUpdate }) {
     // 폼 데이터 상태
     const [formData, setFormData] = useState({
         title: '',
@@ -14,6 +14,8 @@ function BannerForm({ editingBanner, onAdd, onUpdate, onCancelEdit }) {
     const [formError, setFormError] = useState(null); 
     // 성공 메시지 상태 추가
     const [formSuccess, setFormSuccess] = useState(null);
+    // 이미지 미리보기 상태
+    const [previewUrl, setPreviewUrl] = useState(null);
 
     // editingBanner prop이 변경될 때마다 폼 데이터를 업데이트합니다.
     useEffect(() => {
@@ -49,6 +51,17 @@ function BannerForm({ editingBanner, onAdd, onUpdate, onCancelEdit }) {
             ...prev,
             [name]: type === 'checkbox' ? checked : (name === 'bannerImage' ? files[0] : value)
         }));
+        // 이미지 미리보기 처리
+        if (name === 'bannerImage' && files && files[0]) {
+            const file = files[0];
+            const reader = new FileReader();
+            reader.onloadend = () => {
+                setPreviewUrl(reader.result);
+            };
+            reader.readAsDataURL(file);
+        } else if (name === 'bannerImage') {
+            setPreviewUrl(null);
+        }
     };
 
     // 폼 제출 핸들러
@@ -80,7 +93,7 @@ function BannerForm({ editingBanner, onAdd, onUpdate, onCancelEdit }) {
             // 성공 시 폼을 닫거나 목록으로 돌아가기 위해 onCancelEdit 호출 (이것이 editingBanner를 null로 만듦)
             // 성공 메시지가 잠시 보인 후 폼이 닫히도록 약간의 지연을 줄 수 있음
             setTimeout(() => {
-                onCancelEdit();
+                // onCancelEdit(); // 이 부분은 이제 삭제되었으므로 주석 처리
             }, 1500); // 1.5초 후 폼 닫기
         } else {
             // 실패 메시지 표시 대신 폼 내부에 에러 표시
@@ -91,7 +104,7 @@ function BannerForm({ editingBanner, onAdd, onUpdate, onCancelEdit }) {
     return (
         <div className="mb-6 p-6 bg-white rounded-lg border border-[#306f65]">
             <h2 className="text-2xl font-bold font-aggro text-[#306f65] mb-6 text-center">
-                {editingBanner ? '배너 수정' : '새 배너 추가'}
+                새 배너 추가
             </h2>
             <form onSubmit={handleSubmit} className="space-y-4">
                 {/* 에러 메시지 표시 영역 */}
@@ -152,13 +165,12 @@ function BannerForm({ editingBanner, onAdd, onUpdate, onCancelEdit }) {
                         id="bannerImage"
                         name="bannerImage"
                         onChange={handleInputChange}
-                        className="w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-[#e6f4f2] file:text-[#306f65] hover:file:bg-[#d8edea]"
+                        className="w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-[#e6f4f2] file:text-[#306f65] hover:file:bg-[#d8edea] border border-gray-300 rounded focus:outline-none focus:border-[#306f65]"
                     />
-                    {editingBanner && !formData.bannerImage && (
-                        <p className="mt-2 text-sm text-gray-500">
-                            현재 이미지: <a href={`http://localhost:3000${editingBanner.image_url}`} target="_blank" rel="noopener noreferrer" className="text-indigo-600 hover:underline">보기</a>
-                            (새 이미지 선택 시 교체됩니다)
-                        </p>
+                    {previewUrl && (
+                        <div className="mt-2 flex justify-center">
+                            <img src={previewUrl} alt="미리보기" className="w-24 h-24 object-contain rounded border border-gray-200" />
+                        </div>
                     )}
                 </div>
                 <div className="flex items-center">
@@ -177,15 +189,7 @@ function BannerForm({ editingBanner, onAdd, onUpdate, onCancelEdit }) {
                         type="submit"
                         className="px-6 py-2 text-sm font-medium rounded-md text-white bg-[#306f65] hover:bg-[#58bcb5] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#306f65] transition duration-150 ease-in-out"
                     >
-                        {editingBanner ? '배너 수정하기' : '새 배너 추가하기'}
-                    </button>
-                    {/* 취소 버튼을 항상 표시하도록 변경 */}
-                    <button
-                        type="button"
-                        onClick={onCancelEdit} // 부모 컴포넌트에서 전달받은 취소 핸들러
-                        className="px-6 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#58bcb5] transition duration-150 ease-in-out"
-                    >
-                        취소
+                        새 배너 추가하기
                     </button>
                 </div>
             </form>

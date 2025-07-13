@@ -80,7 +80,7 @@ const ProductList = ({
                                         onChange={handleEditInputChange}
                                         rows="2"
                                         className="w-full min-w-0 px-2 py-1 border border-gray-300 rounded text-sm focus:outline-none focus:ring-1 focus:ring-[#306f65]"
-                                        style={{width: '100%', minWidth: 0, height: 'auto', overflow: 'auto', resize: 'vertical'}}
+                                        style={{width: '100%', minWidth: 0, height: 'auto', overflow: 'auto', resize: 'none'}}
                                     />
                                 ) : (
                                     product.name
@@ -179,7 +179,7 @@ const ProductList = ({
                                         onChange={handleEditInputChange}
                                         rows="4"
                                         className="w-full min-w-0 px-2 py-1 border border-gray-300 rounded text-sm focus:outline-none focus:ring-1 focus:ring-[#306f65]"
-                                        style={{width: '100%', minWidth: 0, height: 'auto', overflow: 'auto', resize: 'vertical'}}
+                                        style={{width: '100%', minWidth: 0, height: 'auto', overflow: 'auto', resize: 'none'}}
                                     />
                                 ) : (
                                     product.memo
@@ -268,13 +268,13 @@ const ProductList = ({
                                     <div className="flex flex-col gap-1">
                                         <button
                                             onClick={() => handleUpdateProduct(product.product_id, editingProduct)}
-                                            className="px-3 py-1 text-xs bg-blue-600 text-white rounded hover:bg-blue-700 transition-colors duration-200"
+                                            className="px-5 py-1 text-xs bg-[#306f65] text-white rounded hover:bg-[#58bcb5] transition-colors duration-200 mb-1"
                                         >
                                             저장
                                         </button>
                                         <button
                                             onClick={() => toggleEditMode(null)}
-                                            className="px-3 py-1 text-xs bg-gray-500 text-white rounded hover:bg-gray-600 transition-colors duration-200"
+                                            className="px-5 py-1 text-xs bg-gray-400 text-white rounded hover:bg-gray-500 transition-colors duration-200"
                                         >
                                             취소
                                         </button>

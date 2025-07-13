@@ -56,8 +56,8 @@ class Banner extends Model {
       sequelize, // 필수: sequelize 인스턴스 전달
       modelName: 'Banner', // 모델 이름
       tableName: 'banners', // 실제 데이터베이스 테이블 이름
-      timestamps: false, // 직접 created_at, updated_at 필드를 쓸 경우 false로
-      underscored: false, // `updatedAt` 대신 `updated_at`을 쓰려면 true (여기서는 false로 유지)
+      timestamps: true, // 직접 created_at, updated_at 필드를 쓸 경우 false로
+      underscored: true, // `updatedAt` 대신 `updated_at`을 쓰려면 true (여기서는 false로 유지)
     });
   }
 
