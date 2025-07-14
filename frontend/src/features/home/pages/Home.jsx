@@ -9,11 +9,6 @@ import useProduct from '../hooks/useProduct';
 
 const Home = () => {
 
-    const { products, loading, error } = useProduct();
-    
-    if (loading) return <div>로딩 중...</div>;
-    if (error) return <div>에러가 발생했습니다.</div>;
-
     return (
         <>
             <Header />
@@ -23,7 +18,7 @@ const Home = () => {
             
             <HomeHeader title = '인기상품' />
 
-            <CardBundle products={products?.popular} />
+       
 
             <HomeHeader title = '신상품' />
             
