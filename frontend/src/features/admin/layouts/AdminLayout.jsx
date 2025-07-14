@@ -19,21 +19,28 @@ import ReportDetail from '../pages/reportPage/reportDetail.jsx';
 import ReportEdit from '../pages/reportPage/reportEdit.jsx';
 import ReportWrite from '../pages/reportPage/reportWrite.jsx';
 import DashBoardPage from '../pages/dashboardPage/DashBoardPage';
+import BannerManager from '../pages/bannerPage/BannerManager';
+
+
+import sh from '../../../assets/image/sh.png';
+
 
 // CategoryProductList는 이제 AdminLayout에서 직접 임포트할 필요 없음
 // import CategoryProductList from '../pages/categoryPage/CategoryProductList';
 
 
 import { logoutAsync } from '@/features/authentication/authSlice';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom'; // <-- 여기를 수정했습니다!
 import { useDispatch } from 'react-redux';
 
 
 // === 임시 페이지 컴포넌트들 ===
 const AdminDashboardPage = () => (
   <div className="bg-white p-6 rounded-lg shadow-md min-h-[400px]">
-     <h1> 2026년에는 3대 700을 도전한다.</h1>
-     <h1> 나는 존나 쎄다. </h1>
+     <div style={{ display: 'flex', alignItems: 'center', gap: '20px' }}>
+      <div> <img src={sh} alt="정서한" className="sh" /></div> 
+ 
+    </div>
      <DashBoardPage />
   </div>
 );
@@ -46,6 +53,11 @@ const AdminCategoriesPage = () => (
   </div>
 );
 
+const BannerManagerPage = () => (
+ <div className="min-h-[400px]">
+  <BannerManager />
+ </div>
+);
 
 const AdminProductsPage = () => (
   <div className="min-h-[400px]">
@@ -60,46 +72,20 @@ const SalePage = () => (
 );
 
 const OrderPage = () => (
-  <div className="bg-white p-6 rounded-lg shadow-md min-h-[400px]">
-    <h2 className="text-2xl font-bold mb-4 text-gray-800">주문 관리</h2>
+  <div className="min-h-[400px]">
    <OrderManagementPage />
   </div>
 );
 
-// === Header 컴포넌트 === (이전과 동일)
+// === Header 컴포넌트 === (수정됨: 의도적으로 아무것도 렌더링하지 않음)
 const AdminHeader = ({ onGoDashboard }) => {
-  const dispatch = useDispatch();
-  const navigate = useNavigate();
-
-  const handleLogout = async () => {
-    await dispatch(logoutAsync());
-    navigate('/login');
-  };
-
-  return (
-    <header className="bg-white p-4 shadow-md flex items-center justify-between z-20 sticky top-0">
-      <div className="flex items-center">
-        <div className="text-2xl font-aggro text-gray-800 font-bold">
-          관리자 페이지
-        </div>
-      </div>
-      <div className="flex items-center space-x-4">
-        <button
-          onClick={onGoDashboard}
-          className="px-4 py-2 cursor-pointer text-white rounded transition-colors bg-[#306f65] hover:bg-white hover:text-[#306f65] hover:border-[#306f65] border text-sm rounded-md"
-        >
-          대시보드로 이동
-        </button>
-        <button onClick={handleLogout} className="text-sm bg-[#58bcb5] text-white border border-[#58bcb5] hover:bg-white hover:text-[#58bcb5] px-4 py-2 rounded-md transition duration-200 ease-in-out">
-          로그아웃
-        </button>
-      </div>
-    </header>
-  );
+  // AdminHeader는 의도적으로 아무것도 렌더링하지 않습니다.
+  // 필요한 경우 여기에 JSX를 추가하여 헤더를 표시할 수 있습니다.
+  return null; 
 };
 
 // === Sidebar 컴포넌트 === (이전과 동일)
-const AdminSidebar = ({ activeKey, setActiveKey }) => {
+const AdminSidebar = ({ activeKey, setActiveKey, onGoDashboard, onLogout }) => {
   const menuItems = [
     { name: '대시보드', icon: HomeIcon, key: 'dashboard' },
     { name: '상품 관리', icon: ShoppingBagIcon, key: 'products' },
@@ -108,7 +94,7 @@ const AdminSidebar = ({ activeKey, setActiveKey }) => {
     { name: '회원 관리', icon: UsersIcon, key: 'users' },
     { name: '매출 관리', icon: ChartBarIcon, key: 'sale' },
     { name: '리포트 관리', icon: FileTextIcon, key: 'reports' },
-    { name: '설정', icon: CogIcon, key: 'settings' },
+    { name: '배너 관리', icon: CogIcon, key: 'settings' },
   ];
 
   const handleClick = (key) => {
@@ -120,7 +106,12 @@ const AdminSidebar = ({ activeKey, setActiveKey }) => {
       className="flex-col bg-[#306f65] text-white w-64 p-5 z-30"
     >
       <div className="flex items-center justify-between pb-6 border-b border-white mb-6">
-        <h2 className="text-2xl text-[#f2f2e8] font-aggro font-bold">Admin Panel</h2>
+        <h2
+          className="text-2xl text-[#f2f2e8] font-aggro font-bold cursor-pointer hover:text-[#58bcb5]"
+          onClick={onGoDashboard}
+        >
+          Admin Panel
+        </h2>
       </div>
       <nav className="flex-1">
         <ul className="space-y-2">
@@ -142,8 +133,24 @@ const AdminSidebar = ({ activeKey, setActiveKey }) => {
           ))}
         </ul>
       </nav>
-      <div className="pt-6 border-t border-white mt-6 text-sm text-white">
-        <p>&copy; 2023 Your Admin. All rights reserved.</p>
+      <div className="pt-6 border-t border-white mt-6">
+        <ul>
+          <li>
+            {/* AdminLayout에서 전달받은 onLogout prop 사용 */}
+            <button
+              onClick={onLogout}
+              className="flex items-center p-3 rounded-md transition duration-200 ease-in-out w-full text-left text-gray-300 hover:bg-[#58bcb5] hover:text-white"
+            >
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="mr-3" width="20" height="20">
+                <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 9V5.25A2.25 2.25 0 0013.5 3h-6A2.25 2.25 0 005.25 5.25v13.5A2.25 2.25 0 007.5 21h6a2.25 2.25 0 002.25-2.25V15M18 12H9m0 0l3-3m-3 3l3 3" />
+              </svg>
+              <span className="font-medium">로그아웃</span>
+            </button>
+          </li>
+        </ul>
+        <div className="text-sm text-white mt-4">
+          <p>&copy; 2025.05 to 2025.07 <br/> Node.js 정복하다.</p>
+        </div>
       </div>
     </aside>
   );
@@ -155,6 +162,15 @@ const AdminLayout = () => {
   const [userEditId, setUserEditId] = useState(null);
   const [reportDetailId, setReportDetailId] = useState(null);
   const [reportEditId, setReportEditId] = useState(null);
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
+
+  // 이 handleLogout 함수는 AdminSidebar로 prop으로 전달되어 사용됩니다.
+  const handleLogout = async () => {
+    await dispatch(logoutAsync());
+    navigate('/login');
+  };
+
   // ⭐ 삭제: selectedCategoryIdForProductList 상태 제거 ⭐
   // const [selectedCategoryIdForProductList, setSelectedCategoryIdForProductList] = useState(null);
 
@@ -206,7 +222,7 @@ const AdminLayout = () => {
     'reportDetail': <ReportDetail reportId={reportDetailId} onCancel={handleCancelReport} />,
     'reportEdit': <ReportEdit reportId={reportEditId} onCancel={handleCancelReport} />,
     'reportWrite': <ReportWrite onCancel={handleCancelReport} />,
-    'settings': <div className="bg-white p-6 rounded-lg shadow-md min-h-[400px]"><h2>설정 페이지</h2></div>,
+    'settings': <BannerManagerPage />,
     // ⭐ 삭제: 'categoryProducts' 항목 제거 ⭐
     // 'categoryProducts': <CategoryProductList categoryId={selectedCategoryIdForProductList} />,
   };
@@ -215,10 +231,12 @@ const AdminLayout = () => {
 
   return (
     <div className="min-h-screen flex flex-col bg-gray-100 font-sans">
-      <AdminHeader onGoDashboard={handleGoDashboard} />
+      {/* AdminHeader는 의도적으로 아무것도 렌더링하지 않습니다. */}
+      <AdminHeader onGoDashboard={handleGoDashboard} /> 
 
       <div className="flex flex-1">
-        <AdminSidebar activeKey={activeComponentKey === 'userEdit' ? 'users' : activeComponentKey} setActiveKey={setActiveComponentKey} />
+        {/* AdminSidebar에 handleLogout 함수를 onLogout prop으로 전달 */}
+        <AdminSidebar activeKey={['reportEdit', 'reportWrite', 'reportDetail'].includes(activeComponentKey) ? 'reports' : (activeComponentKey === 'userEdit' ? 'users' : activeComponentKey)} setActiveKey={setActiveComponentKey} onGoDashboard={handleGoDashboard} onLogout={handleLogout} />
 
         <main className="flex-1 p-6 overflow-y-auto bg-[#f2f2e8]">
           {CurrentComponent}

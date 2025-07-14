@@ -12,6 +12,7 @@ router.get('/productSearch' , productController.productSearch);
 router.post('/productStock' , productController.productStock);
 // 상품 추가
 router.post('/productAdd' , productController.productAdd);
+router.post('/upload-image', productController.uploadProductImage);
 // 카테고리 조회
 router.get('/categories' , productController.getCategories);
 // 카테고리 추가

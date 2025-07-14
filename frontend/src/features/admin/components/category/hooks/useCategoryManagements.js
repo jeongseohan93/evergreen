@@ -94,8 +94,7 @@ const useCategoryManagement = () => {
         }
     };
 
-    // 카테고리 수정 처리 함수 추가
-    // ⭐ updateCategory API 호출 시, newName 대신 { name: newName } 객체로 전달해야 함 ⭐
+    // 카테고리 수정 처리 함수
     const handleUpdateCategory = async (categoryId, newName) => { // newName은 string
         if (!newName.trim()) {
             setError('새 카테고리 이름을 입력해주세요.');
@@ -104,8 +103,10 @@ const useCategoryManagement = () => {
         setLoading(true);
         setError('');
         try {
-            // ⭐ API에 전달할 데이터 형식을 객체로 변경 ⭐
-            const response = await updateCategory(categoryId, { name: newName }); 
+            // ⭐⭐⭐ 이 줄을 수정했습니다. ⭐⭐⭐
+            // categoryApi.js의 updateCategory 함수는 두 번째 인자로 'newName' 문자열을 직접 받습니다.
+            // 따라서 이미 { name: newName } 객체를 만들어서 넘겨줄 필요가 없습니다.
+            const response = await updateCategory(categoryId, newName); 
             if (response.success) {
                 await fetchCategoriesData(); // ⭐ 변경된 함수 이름 호출 ⭐
                 setEditingCategory(null); // 수정 폼 닫기

@@ -41,6 +41,14 @@ class Product extends Model {
       memo: {
         type: DataTypes.TEXT,
       },
+      origin: {
+        type: DataTypes.STRING(100), // 예: '대한민국', '중국', '일본' 등
+        allowNull: true,
+      },
+      model_name: {
+        type: DataTypes.STRING(100), // 예: 'ABC-1234'
+        allowNull: true,
+      },
       small_photo: {
         type: DataTypes.STRING(255),
       },

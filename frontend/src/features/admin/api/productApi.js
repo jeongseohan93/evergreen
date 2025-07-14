@@ -70,3 +70,37 @@ export const deleteProduct = async (productId) => {
     return { success: false, message: error.response?.data?.message || '상품 삭제 실패' };
   }
 };
+
+export const uploadProductImage = async (imageFile) => {
+  try {
+    // FormData 객체를 사용하여 파일을 전송
+    const formData = new FormData();
+    // 'productImage'는 백엔드 Multer 설정의 필드 이름과 일치해야 해.
+    formData.append('productImage', imageFile);
+
+    const response = await apiService.post('/admin/product/upload-image', formData, {
+      headers: {
+        // FormData를 사용할 때는 'Content-Type': 'multipart/form-data' 헤더가 필요해.
+        // axios는 FormData 객체를 넘기면 자동으로 이 헤더를 설정해주지만, 명시적으로 추가해도 돼.
+        'Content-Type': 'multipart/form-data',
+      },
+    });
+
+    // 백엔드에서 success: true, imageUrl: '/uploads/파일명.jpg' 형태로 응답한다고 가정
+    return { success: response.data.success, imageUrl: response.data.imageUrl, message: response.data.message };
+  } catch (error) {
+    console.error('API Error: uploadProductImage', error);
+    return { success: false, message: error.response?.data?.message || '이미지 업로드 실패' };
+  }
+};
+
+export const getCategories = async () => {
+    try {
+        // 백엔드 라우트가 '/admin/product/categories'인지 확인
+        const response = await apiService.get('/admin/product/categories');
+        return { success: true, data: response.data.data || [] }; // 응답 구조에 맞게 수정
+    } catch (error) {
+        console.error('API Error: getCategories', error);
+        return { success: false, message: error.response?.data?.message || '카테고리 불러오기 실패' };
+    }
+};

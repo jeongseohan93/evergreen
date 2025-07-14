@@ -20,6 +20,7 @@ export const signUp = async (formData) => {
   return response.data;
 }
 
+
 export const findId = async (phone) => {
   const response = await apiService.post('/auth/findid', { phone });
   return response.data;
@@ -34,5 +35,6 @@ export const resetPasswordWithCode = async ({ email, code, newPassword }) => {
   const response = await apiService.post('/auth/reset-password', { email, code, newPassword });
   return response.data;
 };
+
 
 

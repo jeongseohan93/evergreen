@@ -164,7 +164,7 @@ const ReportEdit = ({ reportId, onCancel }) => {
             <div className="flex justify-end">
               <button
                 type="submit"
-                className="px-6 py-2 cursor-pointer text-white border-transparent rounded transition-colors bg-[#306f65]"
+                className="px-6 py-2 cursor-pointer text-white border-transparent rounded transition-colors bg-[#306f65] hover:bg-[#58bcb5]"
                 disabled={loading}
               >
                 {loading ? '수정 중...' : '수정하기'}

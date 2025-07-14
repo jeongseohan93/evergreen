@@ -61,6 +61,15 @@ const ReportManage = ({ onView, onEdit, onWrite }) => {
           >
             검색
           </button>
+          <button
+            className="px-4 py-2 cursor-pointer text-white border-none rounded transition-colors bg-gray-400 hover:bg-gray-500"
+            onClick={() => {
+              setSearchTerm("");
+              fetchReports();
+            }}
+          >
+            초기화
+          </button>
         </div>
         <div className="overflow-x-auto">
           <table className="w-full table-fixed">

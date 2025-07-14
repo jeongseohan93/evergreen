@@ -5,6 +5,114 @@ const Category = require('../../models/category');
 const {Op} = require('sequelize');
 
 
+// --- 이미지 추가를 위해 새로 추가되는 부분 시작 ---------------------------------------------
+const multer = require('multer');
+const path = require('path');
+const fs = require('fs'); // fs 모듈 추가
+
+// 이미지 저장 설정
+const storage = multer.diskStorage({
+    destination: function (req, file, cb) {
+        // ⭐ 여기가 중요! 서버의 실제 파일 시스템 경로를 지정해야 해.
+        // 보통 서버 파일이 있는 위치를 기준으로 '../uploads'나 './uploads' (현재 디렉토리 기준)
+        // 아니면 path.join(process.cwd(), 'uploads')를 사용해서 프로젝트 루트에 명시적으로 지정
+        // 지금은 'uploads/'로 되어 있는데, 서버가 실행되는 위치 기준으로 'uploads' 폴더가 없으면 에러남.
+        // 서버가 실행되는 파일의 위치를 기준으로 path.join(__dirname, 'uploads') 또는
+        // path.join(__dirname, '..', 'uploads') (만약 이 파일이 routes 폴더 안에 있다면)
+        // 으로 바꾸는 걸 추천.
+        // 또는 가장 확실한 방법: process.cwd()는 터미널에서 node 명령을 실행한 디렉토리.
+        const uploadDir = path.join(process.cwd(), 'uploads');
+        console.log('파일 저장 시도 경로 (백엔드):', uploadDir); // ⭐ 이 로그를 추가해봐! ⭐
+
+        // 혹시 'uploads' 폴더가 없다면 자동으로 생성하는 로직 (선택 사항)
+        if (!fs.existsSync(uploadDir)) {
+            fs.mkdirSync(uploadDir, { recursive: true }); // recursive: true는 상위 폴더도 함께 생성
+        }
+
+        cb(null, uploadDir);
+    },
+    filename: function (req, file, cb) {
+        // ⭐ 이 부분이 핵심! 파일 이름 생성 로직 수정 ⭐
+        const originalname = file.originalname;
+        const extension = path.extname(originalname); // .png, .jpg 등 확장자
+        const basename = path.basename(originalname, extension); // 확장자를 제외한 파일 이름
+
+        // 파일명 중복을 피하기 위해 타임스탬프와 랜덤 문자열을 조합
+        const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
+
+        // 최종 파일 이름: 원본 이름_타임스탬프.확장자 또는 타임스탬프.확장자
+        const newFileName = `${basename}-${uniqueSuffix}${extension}`;
+        // 또는 간단히: const newFileName = `${Date.now()}-${uniqueSuffix}${extension}`; // 이렇게 해도 됨
+
+        console.log('생성될 파일 이름 (백엔드):', newFileName); // ⭐ 이 로그도 추가해봐! ⭐
+        cb(null, newFileName);
+    }
+});
+
+// 파일 필터 설정 (선택 사항): 이미지 파일만 허용
+const fileFilter = (req, file, cb) => {
+    // 파일의 MIME 타입이 'image/'로 시작하는지 확인
+    if (file.mimetype.startsWith('image/')) {
+        cb(null, true); // 허용
+    } else {
+        // 이미지 파일이 아니면 에러 반환
+        cb(new Error('이미지 파일만 업로드할 수 있습니다.'), false);
+    }
+};
+
+// multer 업로드 미들웨어 생성
+// storage 설정과 fileFilter를 적용
+const upload = multer({
+    storage: storage,
+    fileFilter: fileFilter,
+    // 파일 크기 제한 (선택 사항): 5MB로 제한
+    limits: {
+        fileSize: 5 * 1024 * 1024 // 5 MB
+    }
+});
+
+// 상품 이미지 업로드 API
+// 'productImage'는 프론트엔드에서 FormData에 추가할 필드 이름과 동일해야 해.
+exports.uploadProductImage = (req, res) => {
+    // upload.single('productImage') 미들웨어를 실행
+    upload.single('productImage')(req, res, function (err) {
+        if (err instanceof multer.MulterError) {
+            // Multer 에러 발생 시 (예: 파일 크기 초과, 잘못된 필드 이름 등)
+            return res.status(400).json({
+                success: false,
+                message: `파일 업로드 오류: ${err.message}`
+            });
+        } else if (err) {
+            // 그 외 알 수 없는 에러 발생 시
+            return res.status(500).json({
+                success: false,
+                message: `서버 오류: ${err.message}`
+            });
+        }
+
+        // 파일이 업로드되지 않았을 경우
+        if (!req.file) {
+            return res.status(400).json({
+                success: false,
+                message: '이미지 파일을 선택해주세요.'
+            });
+        }
+
+        // 파일 업로드 성공 시
+        // 클라이언트에서 접근할 수 있는 이미지 URL을 생성
+        // 예: /uploads/1678888888888-image.jpg
+        const imageUrl = `/uploads/${req.file.filename}`;
+
+        res.status(200).json({
+            success: true,
+            message: '이미지 업로드 성공!',
+            imageUrl: imageUrl, // 업로드된 이미지의 URL 반환
+            fileName: req.file.filename // 파일명도 함께 반환 (필요시)
+        });
+    });
+};
+// --- 새로 추가되는 부분 끝 ------------------------------------------------------------------
+
 //------------------------------상품 현황------------------------------------------------
 // product는 user 로그인시에도 재사용 가능성있음.
 // 모든 상품 조회
@@ -65,11 +173,14 @@ if(!keyword){
 try {
     const result = await Product.findAll({
         where : {
-            name : {
-                    [Op.like] : `%${keyword}%`
+            [Op.or]: [ // OR 연산자를 사용하여 여러 필드 검색
+                { name: { [Op.like]: `%${keyword}%` } },
+                { brand: { [Op.like]: `%${keyword}%` } }, // 브랜드 검색 추가
+                { origin: { [Op.like]: `%${keyword}%` } }, // 원산지 검색 추가
+                { model_name: { [Op.like]: `%${keyword}%` } } // 모델명 검색 추가
+            ]
         }
-    }
-});
+    });
     res.status(200).json({
         success : true,
         data : result,
@@ -89,16 +200,18 @@ try {
 exports.productMod = async (req, res) => {
   
     const productId = parseInt(req.params.productId);
-    const { name, price, category_id, memo, stock, small_photo, large_photo, brand, pick } = req.body; 
+    // origin, model_name 필드 추가
+    const { name, price, category_id, memo, stock, small_photo, large_photo, brand, pick, origin, model_name } = req.body; 
 
     if (isNaN(productId)) {
         return res.status(400).json({ success: false, message: '유효하지 않은 상품 ID입니다.' });
     }
 
-    if (!name || !price || !category_id) {
+    // 필수 입력 항목에 brand, origin 추가
+    if (!name || !price || !category_id || !brand || !origin) {
         return res.status(400).json({
             success: false,
-            message: '상품명, 가격, 카테고리는 필수 입력 항목입니다.'
+            message: '상품명, 가격, 카테고리, 브랜드, 원산지는 필수 입력 항목입니다.'
         });
     }
 
@@ -120,6 +233,22 @@ exports.productMod = async (req, res) => {
         return res.status(400).json({
             success: false,
             message: '브랜드명은 100자 이내의 문자열이어야 합니다.'
+        });
+    }
+
+    // origin 유효성 검사 추가 (필수 입력)
+    if (origin !== undefined && (typeof origin !== 'string' || !origin.trim() || origin.length > 100)) {
+        return res.status(400).json({
+            success: false,
+            message: '원산지는 100자 이내의 필수 문자열이어야 합니다.'
+        });
+    }
+
+    // model_name 유효성 검사 추가 (선택 사항)
+    if (model_name !== undefined && (typeof model_name !== 'string' || (model_name && model_name.length > 100))) {
+        return res.status(400).json({
+            success: false,
+            message: '모델명은 100자 이내의 문자열이어야 합니다.'
         });
     }
 
@@ -146,6 +275,8 @@ exports.productMod = async (req, res) => {
                 small_photo: small_photo || null,
                 large_photo: large_photo || null,
                 brand: brand || null,
+                origin: origin || null, // origin 필드 업데이트
+                model_name: model_name || null, // model_name 필드 업데이트
                 pick: finalPick
             },
             {
@@ -230,12 +361,14 @@ exports.productStock = async (req,res) => {
 
 //------------------------------상품 추가------------------------------------------------
 exports.productAdd = async (req, res) => {
-    const { name, price, category_id, memo, stock, small_photo, large_photo, brand } = req.body;
+    // origin, model_name 필드 추가
+    const { name, price, category_id, memo, stock, small_photo, large_photo, brand, origin, model_name } = req.body;
     
-    if (!name || !price || !category_id) {
+    // 필수 입력 항목에 brand, origin 추가
+    if (!name || !price || !category_id || !brand || !origin) {
         return res.status(400).json({
             success: false,
-            message: '상품명, 가격, 카테고리는 필수 입력 항목입니다.'
+            message: '상품명, 가격, 카테고리, 브랜드, 원산지는 필수 입력 항목입니다.'
         });
     }
     
@@ -259,6 +392,22 @@ exports.productAdd = async (req, res) => {
             message: '브랜드명은 100자 이내의 문자열이어야 합니다.'
         });
     }
+
+    // origin 유효성 검사 추가 (필수 입력)
+    if (origin !== undefined && (typeof origin !== 'string' || !origin.trim() || origin.length > 100)) {
+        return res.status(400).json({
+            success: false,
+            message: '원산지는 100자 이내의 필수 문자열이어야 합니다.'
+        });
+    }
+
+    // model_name 유효성 검사 추가 (선택 사항)
+    if (model_name !== undefined && (typeof model_name !== 'string' || (model_name && model_name.length > 100))) {
+        return res.status(400).json({
+            success: false,
+            message: '모델명은 100자 이내의 문자열이어야 합니다.'
+        });
+    }
     
     try {
         const newProduct = await Product.create({
@@ -269,7 +418,9 @@ exports.productAdd = async (req, res) => {
             stock: stock ? parseInt(stock) : 0,
             small_photo: small_photo || null,
             large_photo: large_photo || null,
-            brand: brand || null
+            brand: brand || null,
+            origin: origin || null, // origin 필드 추가
+            model_name: model_name || null // model_name 필드 추가
         });
         
         res.status(201).json({
