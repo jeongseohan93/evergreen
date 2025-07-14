@@ -8,6 +8,7 @@ const {Op} = require('sequelize');
 // --- 이미지 추가를 위해 새로 추가되는 부분 시작 ---------------------------------------------
 const multer = require('multer');
 const path = require('path');
+const fs = require('fs'); // fs 모듈 추가
 
 // 이미지 저장 설정
 const storage = multer.diskStorage({
@@ -24,7 +25,6 @@ const storage = multer.diskStorage({
         console.log('파일 저장 시도 경로 (백엔드):', uploadDir); // ⭐ 이 로그를 추가해봐! ⭐
 
         // 혹시 'uploads' 폴더가 없다면 자동으로 생성하는 로직 (선택 사항)
-        const fs = require('fs');
         if (!fs.existsSync(uploadDir)) {
             fs.mkdirSync(uploadDir, { recursive: true }); // recursive: true는 상위 폴더도 함께 생성
         }
@@ -173,11 +173,14 @@ if(!keyword){
 try {
     const result = await Product.findAll({
         where : {
-            name : {
-                    [Op.like] : `%${keyword}%`
+            [Op.or]: [ // OR 연산자를 사용하여 여러 필드 검색
+                { name: { [Op.like]: `%${keyword}%` } },
+                { brand: { [Op.like]: `%${keyword}%` } }, // 브랜드 검색 추가
+                { origin: { [Op.like]: `%${keyword}%` } }, // 원산지 검색 추가
+                { model_name: { [Op.like]: `%${keyword}%` } } // 모델명 검색 추가
+            ]
         }
-    }
-});
+    });
     res.status(200).json({
         success : true,
         data : result,
@@ -197,16 +200,18 @@ try {
 exports.productMod = async (req, res) => {
   
     const productId = parseInt(req.params.productId);
-    const { name, price, category_id, memo, stock, small_photo, large_photo, brand, pick } = req.body; 
+    // origin, model_name 필드 추가
+    const { name, price, category_id, memo, stock, small_photo, large_photo, brand, pick, origin, model_name } = req.body; 
 
     if (isNaN(productId)) {
         return res.status(400).json({ success: false, message: '유효하지 않은 상품 ID입니다.' });
     }
 
-    if (!name || !price || !category_id) {
+    // 필수 입력 항목에 brand, origin 추가
+    if (!name || !price || !category_id || !brand || !origin) {
         return res.status(400).json({
             success: false,
-            message: '상품명, 가격, 카테고리는 필수 입력 항목입니다.'
+            message: '상품명, 가격, 카테고리, 브랜드, 원산지는 필수 입력 항목입니다.'
         });
     }
 
@@ -228,6 +233,22 @@ exports.productMod = async (req, res) => {
         return res.status(400).json({
             success: false,
             message: '브랜드명은 100자 이내의 문자열이어야 합니다.'
+        });
+    }
+
+    // origin 유효성 검사 추가 (필수 입력)
+    if (origin !== undefined && (typeof origin !== 'string' || !origin.trim() || origin.length > 100)) {
+        return res.status(400).json({
+            success: false,
+            message: '원산지는 100자 이내의 필수 문자열이어야 합니다.'
+        });
+    }
+
+    // model_name 유효성 검사 추가 (선택 사항)
+    if (model_name !== undefined && (typeof model_name !== 'string' || (model_name && model_name.length > 100))) {
+        return res.status(400).json({
+            success: false,
+            message: '모델명은 100자 이내의 문자열이어야 합니다.'
         });
     }
 
@@ -254,6 +275,8 @@ exports.productMod = async (req, res) => {
                 small_photo: small_photo || null,
                 large_photo: large_photo || null,
                 brand: brand || null,
+                origin: origin || null, // origin 필드 업데이트
+                model_name: model_name || null, // model_name 필드 업데이트
                 pick: finalPick
             },
             {
@@ -338,12 +361,14 @@ exports.productStock = async (req,res) => {
 
 //------------------------------상품 추가------------------------------------------------
 exports.productAdd = async (req, res) => {
-    const { name, price, category_id, memo, stock, small_photo, large_photo, brand } = req.body;
+    // origin, model_name 필드 추가
+    const { name, price, category_id, memo, stock, small_photo, large_photo, brand, origin, model_name } = req.body;
     
-    if (!name || !price || !category_id) {
+    // 필수 입력 항목에 brand, origin 추가
+    if (!name || !price || !category_id || !brand || !origin) {
         return res.status(400).json({
             success: false,
-            message: '상품명, 가격, 카테고리는 필수 입력 항목입니다.'
+            message: '상품명, 가격, 카테고리, 브랜드, 원산지는 필수 입력 항목입니다.'
         });
     }
     
@@ -367,6 +392,22 @@ exports.productAdd = async (req, res) => {
             message: '브랜드명은 100자 이내의 문자열이어야 합니다.'
         });
     }
+
+    // origin 유효성 검사 추가 (필수 입력)
+    if (origin !== undefined && (typeof origin !== 'string' || !origin.trim() || origin.length > 100)) {
+        return res.status(400).json({
+            success: false,
+            message: '원산지는 100자 이내의 필수 문자열이어야 합니다.'
+        });
+    }
+
+    // model_name 유효성 검사 추가 (선택 사항)
+    if (model_name !== undefined && (typeof model_name !== 'string' || (model_name && model_name.length > 100))) {
+        return res.status(400).json({
+            success: false,
+            message: '모델명은 100자 이내의 문자열이어야 합니다.'
+        });
+    }
     
     try {
         const newProduct = await Product.create({
@@ -377,7 +418,9 @@ exports.productAdd = async (req, res) => {
             stock: stock ? parseInt(stock) : 0,
             small_photo: small_photo || null,
             large_photo: large_photo || null,
-            brand: brand || null
+            brand: brand || null,
+            origin: origin || null, // origin 필드 추가
+            model_name: model_name || null // model_name 필드 추가
         });
         
         res.status(201).json({

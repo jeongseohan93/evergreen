@@ -23,14 +23,14 @@ import BannerManager from '../pages/bannerPage/BannerManager';
 
 
 import sh from '../../../assets/image/sh.png';
-import toon from '../../../assets/image/toon.png';
+
 
 // CategoryProductList는 이제 AdminLayout에서 직접 임포트할 필요 없음
 // import CategoryProductList from '../pages/categoryPage/CategoryProductList';
 
 
 import { logoutAsync } from '@/features/authentication/authSlice';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom'; // <-- 여기를 수정했습니다!
 import { useDispatch } from 'react-redux';
 
 
@@ -38,8 +38,8 @@ import { useDispatch } from 'react-redux';
 const AdminDashboardPage = () => (
   <div className="bg-white p-6 rounded-lg shadow-md min-h-[400px]">
      <div style={{ display: 'flex', alignItems: 'center', gap: '20px' }}>
-      <div> <img src={sh} alt="정서한" className="sh" /></div> 이게 인생존망 원본 ㅋㅋ →
-      <div> <img src={toon} alt="원본" className="toon" /></div>
+      <div> <img src={sh} alt="정서한" className="sh" /></div> 
+ 
     </div>
      <DashBoardPage />
   </div>
@@ -77,17 +77,11 @@ const OrderPage = () => (
   </div>
 );
 
-// === Header 컴포넌트 === (이전과 동일)
+// === Header 컴포넌트 === (수정됨: 의도적으로 아무것도 렌더링하지 않음)
 const AdminHeader = ({ onGoDashboard }) => {
-  const dispatch = useDispatch();
-  const navigate = useNavigate();
-
-  // handleLogout을 AdminSidebar로 전달하기 위해 export
-  const handleLogout = async () => {
-    await dispatch(logoutAsync());
-    navigate('/login');
-  };
-
+  // AdminHeader는 의도적으로 아무것도 렌더링하지 않습니다.
+  // 필요한 경우 여기에 JSX를 추가하여 헤더를 표시할 수 있습니다.
+  return null; 
 };
 
 // === Sidebar 컴포넌트 === (이전과 동일)
@@ -142,6 +136,7 @@ const AdminSidebar = ({ activeKey, setActiveKey, onGoDashboard, onLogout }) => {
       <div className="pt-6 border-t border-white mt-6">
         <ul>
           <li>
+            {/* AdminLayout에서 전달받은 onLogout prop 사용 */}
             <button
               onClick={onLogout}
               className="flex items-center p-3 rounded-md transition duration-200 ease-in-out w-full text-left text-gray-300 hover:bg-[#58bcb5] hover:text-white"
@@ -170,6 +165,7 @@ const AdminLayout = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
+  // 이 handleLogout 함수는 AdminSidebar로 prop으로 전달되어 사용됩니다.
   const handleLogout = async () => {
     await dispatch(logoutAsync());
     navigate('/login');
@@ -235,9 +231,11 @@ const AdminLayout = () => {
 
   return (
     <div className="min-h-screen flex flex-col bg-gray-100 font-sans">
-      <AdminHeader onGoDashboard={handleGoDashboard} />
+      {/* AdminHeader는 의도적으로 아무것도 렌더링하지 않습니다. */}
+      <AdminHeader onGoDashboard={handleGoDashboard} /> 
 
       <div className="flex flex-1">
+        {/* AdminSidebar에 handleLogout 함수를 onLogout prop으로 전달 */}
         <AdminSidebar activeKey={['reportEdit', 'reportWrite', 'reportDetail'].includes(activeComponentKey) ? 'reports' : (activeComponentKey === 'userEdit' ? 'users' : activeComponentKey)} setActiveKey={setActiveComponentKey} onGoDashboard={handleGoDashboard} onLogout={handleLogout} />
 
         <main className="flex-1 p-6 overflow-y-auto bg-[#f2f2e8]">

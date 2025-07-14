@@ -14,7 +14,12 @@ const ProductList = ({
     handleDeleteProduct,
     // useProductManagement 훅에서 넘어온 파일 변경 핸들러
     handleSmallFileChange,
-    handleLargeFileChange
+    handleLargeFileChange,
+    // ⭐ 추가: 이미지 업로드 상태 및 메시지 props ⭐
+    uploadingEditSmallImage,
+    uploadingEditLargeImage,
+    editSmallImageUploadMessage,
+    editLargeImageUploadMessage,
 }) => {
     // 카테고리 ID를 이름으로 변환하는 헬퍼 함수
    const getCategoryName = (categoryId) => {
@@ -55,6 +60,10 @@ const ProductList = ({
                     <th className="border border-gray-300 px-3 py-2 text-left text-sm font-semibold text-gray-700">상품명</th>
                     <th className="border border-gray-300 px-3 py-2 text-left text-sm font-semibold text-gray-700 w-28">추천/베스트</th>
                     <th className="border border-gray-300 px-3 py-2 text-left text-sm font-semibold text-gray-700">브랜드</th>
+                    {/* ⭐ 추가: 원산지 헤더 ⭐ */}
+                    <th className="border border-gray-300 px-3 py-2 text-left text-sm font-semibold text-gray-700">원산지</th>
+                    {/* ⭐ 추가: 모델명 헤더 ⭐ */}
+                    <th className="border border-gray-300 px-3 py-2 text-left text-sm font-semibold text-gray-700">모델명</th>
                     <th className="border border-gray-300 px-3 py-2 text-left text-sm font-semibold text-gray-700">가격</th>
                     <th className="border border-gray-300 px-3 py-2 text-left text-sm font-semibold text-gray-700">카테고리</th>
                     <th className="border border-gray-300 px-3 py-2 text-left text-sm font-semibold text-gray-700">재고</th>
@@ -67,7 +76,7 @@ const ProductList = ({
             <tbody>
                 {products.length === 0 ? (
                     <tr>
-                        <td colSpan="9" className="text-center py-3 text-gray-500">상품이 없습니다.</td>
+                        <td colSpan="12" className="text-center py-3 text-gray-500">상품이 없습니다.</td> {/* colSpan 조정 */}
                     </tr>
                 ) : (
                     products.map(product => (
@@ -122,6 +131,38 @@ const ProductList = ({
                                 )}
                             </td>
 
+                            {/* ⭐ 추가: 원산지 셀 ⭐ */}
+                            <td className="border border-gray-300 px-3 py-2 text-sm w-28">
+                                {isEditingRow(product.product_id) ? (
+                                    <input
+                                        type="text"
+                                        name="origin"
+                                        value={editingProduct.origin || ''}
+                                        onChange={handleEditInputChange}
+                                        className="w-full min-w-0 px-2 py-1 border border-gray-300 rounded text-sm focus:outline-none focus:ring-1 focus:ring-[#306f65]"
+                                        style={{width: '100%', minWidth: 0, overflow: 'auto'}}
+                                    />
+                                ) : (
+                                    product.origin || '-'
+                                )}
+                            </td>
+
+                            {/* ⭐ 추가: 모델명 셀 ⭐ */}
+                            <td className="border border-gray-300 px-3 py-2 text-sm w-28">
+                                {isEditingRow(product.product_id) ? (
+                                    <input
+                                        type="text"
+                                        name="model_name"
+                                        value={editingProduct.model_name || ''}
+                                        onChange={handleEditInputChange}
+                                        className="w-full min-w-0 px-2 py-1 border border-gray-300 rounded text-sm focus:outline-none focus:ring-1 focus:ring-[#306f65]"
+                                        style={{width: '100%', minWidth: 0, overflow: 'auto'}}
+                                    />
+                                ) : (
+                                    product.model_name || '-'
+                                )}
+                            </td>
+
                             <td className="border border-gray-300 px-3 py-2 text-sm w-24">
                                 {isEditingRow(product.product_id) ? (
                                     <input
@@ -163,7 +204,7 @@ const ProductList = ({
                                         name="stock"
                                         value={editingProduct.stock || ''}
                                         onChange={handleEditInputChange}
-                                        className="w-full min-w-0 px-2 py-1 border border-gray-300 rounded text-sm focus:outline-none focus:ring-2 focus:ring-[#306f65] focus:border-transparent"
+                                        className="w-full min-w-0 px-2 py-1 border border-gray-300 rounded text-sm focus:outline-none focus:ring-2 focus:ring-[#306f65]"
                                         style={{width: '100%', minWidth: 0, overflow: 'auto'}}
                                     />
                                 ) : (
@@ -207,12 +248,19 @@ const ProductList = ({
                                             }}
                                             className="w-full text-[8px] cursor-pointer block h-6 overflow-hidden"
                                         />
-                                        {/* ⭐ 수정된 부분: 선택된 새 파일명이 있을 때만 표시 ⭐ */}
+                                        {/* 선택된 새 파일명이 있을 때만 표시 */}
                                         {editingProduct._small_photo_file ? (
                                             <span className="block text-[8px] text-blue-600 truncate w-full">
                                                 {editingProduct._small_photo_file.name}
                                             </span>
                                         ) : null}
+                                        {/* ⭐ 추가: 작은 사진 업로드 상태 메시지 ⭐ */}
+                                        {isEditingRow(product.product_id) && uploadingEditSmallImage && (
+                                            <p className="mt-1 text-[8px] text-blue-600">업로드 중...</p>
+                                        )}
+                                        {isEditingRow(product.product_id) && editSmallImageUploadMessage && !uploadingEditSmallImage && (
+                                            <p className="mt-1 text-[8px] text-gray-600">{editSmallImageUploadMessage}</p>
+                                        )}
                                     </div>
                                 ) : (
                                     <img
@@ -245,12 +293,19 @@ const ProductList = ({
                                             }}
                                             className="w-full text-[8px] cursor-pointer block h-6 overflow-hidden"
                                         />
-                                        {/* ⭐ 수정된 부분: 선택된 새 파일명이 있을 때만 표시 ⭐ */}
+                                        {/* 선택된 새 파일명이 있을 때만 표시 */}
                                         {editingProduct._large_photo_file ? (
                                             <span className="block text-[8px] text-blue-600 truncate w-full">
                                                 {editingProduct._large_photo_file.name}
                                             </span>
                                         ) : null}
+                                        {/* ⭐ 추가: 큰 사진 업로드 상태 메시지 ⭐ */}
+                                        {isEditingRow(product.product_id) && uploadingEditLargeImage && (
+                                            <p className="mt-1 text-[8px] text-blue-600">업로드 중...</p>
+                                        )}
+                                        {isEditingRow(product.product_id) && editLargeImageUploadMessage && !uploadingEditLargeImage && (
+                                            <p className="mt-1 text-[8px] text-gray-600">{editLargeImageUploadMessage}</p>
+                                        )}
                                     </div>
                                 ) : (
                                     <img
@@ -268,9 +323,11 @@ const ProductList = ({
                                     <div className="flex flex-col gap-1">
                                         <button
                                             onClick={() => handleUpdateProduct(product.product_id, editingProduct)}
-                                            className="px-5 py-1 text-xs bg-[#306f65] text-white rounded hover:bg-[#58bcb5] transition-colors duration-200 mb-1"
+                                            // ⭐ 수정: 이미지 업로드 중일 때 저장 버튼 비활성화 ⭐
+                                            disabled={uploadingEditSmallImage || uploadingEditLargeImage}
+                                            className="px-5 py-1 text-xs bg-[#306f65] text-white rounded hover:bg-[#58bcb5] transition-colors duration-200 mb-1 disabled:opacity-50 disabled:cursor-not-allowed"
                                         >
-                                            저장
+                                            {(uploadingEditSmallImage || uploadingEditLargeImage) ? '업로드 중...' : '저장'}
                                         </button>
                                         <button
                                             onClick={() => toggleEditMode(null)}

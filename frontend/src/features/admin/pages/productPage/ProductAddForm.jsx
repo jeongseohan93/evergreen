@@ -38,6 +38,7 @@ const ProductAddForm = ({
                     <h3 className="text-2xl font-bold font-aggro text-gray-800 mb-4">새 상품 추가</h3>
 
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        {/* 상품명 필드 */}
                         <div>
                             <label className="block text-sm font-medium text-[#58bcb5] mb-2">
                                 상품명 *
@@ -48,11 +49,12 @@ const ProductAddForm = ({
                                 value={newProduct.name}
                                 onChange={handleInputChange}
                                 required
-                                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#306f65] focus:border-transparent"
+                                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#306f65]" // focus:border-transparent 제거
                                 placeholder="상품명을 입력하세요"
                             />
                         </div>
 
+                        {/* 브랜드명 필드 - 이제 필수 입력입니다. */}
                         <div>
                             <label className="block text-sm font-medium text-[#58bcb5] mb-2">
                                 브랜드명 *
@@ -62,11 +64,45 @@ const ProductAddForm = ({
                                 name="brand"
                                 value={newProduct.brand}
                                 onChange={handleInputChange}
-                                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#306f65] focus:border-transparent"
+                                required // required 속성 추가
+                                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#306f65]" // focus:border-transparent 제거
                                 placeholder="브랜드명을 입력하세요"
                             />
                         </div>
 
+                        {/* 원산지 필드 - 이제 필수 입력입니다. */}
+                        <div>
+                            <label className="block text-sm font-medium text-[#58bcb5] mb-2">
+                                원산지 *
+                            </label>
+                            <input
+                                type="text"
+                                name="origin" // 'origin'으로 name 설정
+                                value={newProduct.origin}
+                                onChange={handleInputChange}
+                                required // required 속성 추가
+                                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#306f65]" // focus:border-transparent 제거
+                                placeholder="원산지를 입력하세요"
+                            />
+                        </div>
+
+                        {/* 모델명 필드 (null 허용) */}
+                        <div>
+                            <label className="block text-sm font-medium text-[#58bcb5] mb-2">
+                                모델명
+                            </label>
+                            <input
+                                type="text"
+                                name="model_name" // 'model_name'으로 name 설정
+                                value={newProduct.model_name}
+                                onChange={handleInputChange}
+                                // required 속성 제거하여 null 허용 (이전과 동일)
+                                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#306f65]" // focus:border-transparent 제거 및 색상 오타 수정
+                                placeholder="모델명을 입력하세요 (선택 사항)"
+                            />
+                        </div>
+
+                        {/* 가격 필드 */}
                         <div>
                             <label className="block text-sm font-medium text-[#58bcb5] mb-2">
                                 가격 *
@@ -77,11 +113,12 @@ const ProductAddForm = ({
                                 value={newProduct.price}
                                 onChange={handleInputChange}
                                 required
-                                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#306f65] focus:border-transparent"
+                                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#306f65]" // focus:border-transparent 제거
                                 placeholder="가격을 입력하세요"
                             />
                         </div>
 
+                        {/* 카테고리 필드 */}
                         <div>
                             <label className="block text-sm font-medium text-[#58bcb5] mb-2">
                                 카테고리 *
@@ -91,7 +128,7 @@ const ProductAddForm = ({
                                 value={newProduct.category_id}
                                 onChange={handleInputChange}
                                 required
-                                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#306f65] focus:border-transparent"
+                                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#306f65]" // focus:border-transparent 제거
                             >
                                 <option value="">카테고리 선택</option>
                                 {categories.map(cat => (
@@ -100,6 +137,7 @@ const ProductAddForm = ({
                             </select>
                         </div>
 
+                        {/* 재고 필드 */}
                         <div>
                             <label className="block text-sm font-medium text-gray-700 mb-2">
                                 재고
@@ -109,12 +147,13 @@ const ProductAddForm = ({
                                 name="stock"
                                 value={newProduct.stock}
                                 onChange={handleInputChange}
-                                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#306f65] focus:border-transparent"
+                                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#306f65]" // focus:border-transparent 제거
                                 placeholder="재고 수량"
                             />
                         </div>
                     </div>
 
+                    {/* 메모 필드 */}
                     <div>
                         <label className="block text-sm font-medium text-gray-700 mb-2">
                             메모
@@ -124,7 +163,7 @@ const ProductAddForm = ({
                             value={newProduct.memo}
                             onChange={handleInputChange}
                             rows="3"
-                            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#306f65] focus:border-transparent"
+                            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#306f65]" // focus:border-transparent 제거
                             placeholder="상품에 대한 메모를 입력하세요"
                         />
                     </div>
@@ -137,7 +176,7 @@ const ProductAddForm = ({
                         <input
                             type="file"
                             accept="image/*"
-                            onChange={handleNewProductSmallFileChange} // ⭐⭐⭐ 여기를 변경 ⭐⭐⭐
+                            onChange={handleNewProductSmallFileChange} 
                             className="w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-[#e6f4f2] file:text-[#306f65] hover:file:bg-[#d8edea]"
                         />
                         {uploadingSmallImage && <p className="mt-2 text-sm text-blue-600">작은 사진 업로드 중...</p>}
@@ -162,7 +201,7 @@ const ProductAddForm = ({
                         <input
                             type="file"
                             accept="image/*"
-                            onChange={handleNewProductLargeFileChange} // ⭐⭐⭐ 여기를 변경 ⭐⭐⭐
+                            onChange={handleNewProductLargeFileChange} 
                             className="w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-[#e6f4f2] file:text-[#306f65] hover:file:bg-[#d8edea]"
                         />
                         {uploadingLargeImage && <p className="mt-2 text-sm text-blue-600">큰 사진 업로드 중...</p>}
