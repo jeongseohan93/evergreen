@@ -2,11 +2,12 @@
 
 const express = require('express');
 const { isNotLoggedIn, isLoggedIn } = require('../middlewares/index'); // jwt토근 유무 및 로그인 상태가 아닌지 체크하는 미들웨어
-const { idcheckr, register, login, logout } = require('../controllers/authController'); // 로그인 요청 처리 컨트롤러
+const { idcheckr, register, login, logout, findId, sendVerificationCode, resetPasswordWithCode} = require('../controllers/authController'); // 로그인 요청 처리 컨트롤러
 const { isjwt } = require('../utils/isjwt'); // JWT 토큰 생성 및 검증 유틸리티
 const { sendToken } = require('../controllers/sendController');
 const jwt  =require('jsonwebtoken');
 const router = express.Router(); // 라우터 인스턴스 생성 (각 요청 경로를 모듈화하여 관리하기 위함)
+const { User } = require('../models');
 
 
 // ===============================
@@ -20,7 +21,7 @@ router.post('/idcheck', idcheckr);
 // [회원가입 API 라우팅]
 // - POST /register: 회원가입 요청을 register 컨트롤러에 전달
 // ===============================
-router.post('/register', register);
+router.post('/signup', register);
  
 
 // ========================
@@ -40,26 +41,43 @@ router.post('/register', register);
 router.post('/login', isNotLoggedIn, login, isjwt, sendToken);
 
 
-router.post('/logincheck', (req, res) => {
+router.post('/me', async (req, res) => { // async 추가
     try {
-        
-      const token = req.cookies.access_token; // ✅ 수정된 부분
-      console.log(token);
+      const token = req.cookies.access_token;
       if (!token) {
-        return res.status(401).json({ success: false, message: "No token" });
+        return res.status(200).json({ isLoggedIn: false, user: null, role: null });
       }
   
       const decoded = jwt.verify(token, process.env.JWT_SECRET);
-  
-      return res.json({
-        success: true,
-        role: decoded.role,
+
+      // 토큰에 저장된 정보로 사용자 데이터를 DB에서 조회
+      const user = await User.findOne({ 
+        where: { user_uuid: decoded.user_uuid }, // 토큰 생성 시 넣었던 값으로 조회
+        attributes: ['name', 'email', 'role'] // 필요한 정보만 선택
       });
+
+      if (!user) {
+        // 토큰은 유효하지만 해당 유저가 DB에 없는 경우
+        return res.status(200).json({ isLoggedIn: false, user: null, role: null });
+      }
+
+      // ✅ 프론트엔드가 기대하는 형태로 응답을 보냅니다.
+      return res.status(200).json({
+        isLoggedIn: true,
+        user: {
+            name: user.name,
+            email: user.email,
+            role: user.role
+        },
+       
+      });
+
     } catch (err) {
+      // 토큰이 유효하지 않은 경우 (만료, 위조 등)
       console.error("JWT 검증 실패:", err.message);
-      return res.status(401).json({ success: false, message: "Invalid token" });
+      return res.status(200).json({ isLoggedIn: false, user: null, role: null });
     }
-  });
+});
   
 
 
@@ -70,6 +88,11 @@ router.post('/logincheck', (req, res) => {
 // ===============================
 router.post('/logout', logout);
 
+router.post('/findid', findId);
+
+router.post('/checkemailsent', sendVerificationCode);
+
+router.post('/reset-password', resetPasswordWithCode);
 
 module.exports = router; // 라우터 객체를 외부 모듈에서 사용할 수 있도록 내보냄 
 

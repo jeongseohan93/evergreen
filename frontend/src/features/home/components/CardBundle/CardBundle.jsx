@@ -15,36 +15,6 @@ const CardBundle = () => {
                 hashtags={['#머시기']}
                 likes = {1}    // 배열로 전달
             />
-
-<ProductCard 
-                imageUrl={tempImage} 
-                name="낚시대" 
-                price={20000}             // 숫자로 전달
-                hashtags={['#머시기']}
-                likes = {2}    // 배열로 전달
-            />
-
-<ProductCard 
-                imageUrl={tempImage} 
-                name="낚시대" 
-                price={20000}             // 숫자로 전달
-                hashtags={['#머시기']}
-                likes = {1}    // 배열로 전달
-            />
-            <ProductCard 
-                imageUrl={tempImage} 
-                name="낚시대" 
-                price={20000}             // 숫자로 전달
-                hashtags={['#머시기']}
-                likes = {1}    // 배열로 전달
-            />
-            <ProductCard 
-                imageUrl={tempImage} 
-                name="낚시대" 
-                price={20000}             // 숫자로 전달
-                hashtags={['#머시기']}
-                likes = {1}    // 배열로 전달
-            />
         </div>
     )
 }

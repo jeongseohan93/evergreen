@@ -1,11 +1,11 @@
 // 인증(회원가입, 로그인, 로그아웃) 및 유저 관련 컨트롤러 모음
-
-const User = require('../models/user');
+const { User, Verification } = require('../models');
 const bcrypt = require('bcrypt');
 const passport = require('passport');
 const { v4: uuidv4} = require('uuid');
 const { setToken, deleteToken } = require('../utils/redis');
 const jwt = require('jsonwebtoken');
+const sendEmail = require('../utils/sendEmail'); 
 // ===============================
 // [ idcheckr 컨트롤러 ]
 // - 회원가입 시 이메일 중복 여부를 검사하는 API
@@ -116,11 +116,7 @@ exports.login = (req, res, next) => {
     }
 
     // 인증 성공! user 객체에서 필요한 정보만 추출해서 req.authData에 저장
-    req.authData = {
-      email: user.email,
-      nick: user.nick,
-      role: user.role,
-    }; // 다음 미들웨어(JWT 생성, 토큰 저장 등)에서 활용 가능
+    req.user = user;
     next(); // 다음 미들웨어로 이동
   })(req, res, next); // passport.authenticate는 미들웨어가 아닌 함수이므로 즉시 실행(괄호 위치 매우 중요)
 };
@@ -162,4 +158,83 @@ exports.logout = async (req, res, next) => {
     // JWT 검증 실패 시 (만료, 위조 등) → 401 Unauthorized 응답
     return res.status(401).json({ message: '유효하지 않은 토큰입니다.' });
   }
+};
+
+
+exports.findId = async (req, res) => {
+  try {
+    const { phone } = req.body;
+
+    if (!phone) {
+      return res.status(400).json({ message: '핸드폰 번호를 입력해주세요.' });
+    }
+
+    const userEmail = await User.findOne({
+      where: { phone },
+      attributes: ['email'],
+    });
+
+    if (!userEmail) {
+      return res.status(404).json({ message: '해당 정보로 가입된 사용자를 찾을 수 없습니다.' });
+    }
+
+    // ✅ 수정: 'user.email'을 'userEmail.email'로 변경
+    return res.status(200).json({ userId: userEmail.email });
+
+  } catch (error) {
+    // try...catch를 추가하여 예기치 못한 서버 오류에 대응합니다.
+    console.error('아이디 찾기 중 서버 오류 발생:', error);
+    return res.status(500).json({ message: '서버 내부 오류가 발생했습니다.' });
+  }
+};
+
+exports.sendVerificationCode = async (req, res) => {
+    try {
+        const { email, phone } = req.body;
+        const user = await User.findOne({ where: { email, phone } });
+        if (!user) {
+            return res.status(404).json({ message: '일치하는 사용자 정보가 없습니다.' });
+        }
+
+        const code = Math.floor(100000 + Math.random() * 900000).toString(); // 6자리 랜덤 숫자 생성
+        const expiresAt = new Date(Date.now() + 3 * 60000); // 3분 후 만료
+
+        // 기존 인증번호 삭제 후 새로 생성
+        await Verification.destroy({ where: { email } });
+        await Verification.create({ email, code, expiresAt });
+
+        await sendEmail({
+            to: email,
+            subject: '비밀번호 찾기 인증번호',
+            html: `<p>인증번호: <strong>${code}</strong></p><p>이 인증번호는 3분 후에 만료됩니다.</p>`,
+        });
+
+        res.status(200).json({ message: '인증번호가 발송되었습니다.' });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: '서버 오류가 발생했습니다.' });
+    }
+};
+
+exports.resetPasswordWithCode = async (req, res) => {
+    try {
+        const { email, code, newPassword } = req.body;
+
+        const verification = await Verification.findOne({ where: { email, code } });
+
+        // 인증번호가 없거나 만료된 경우
+        if (!verification || verification.expiresAt < new Date()) {
+            return res.status(400).json({ message: '인증번호가 유효하지 않습니다.' });
+        }
+
+        const hashedPassword = await bcrypt.hash(newPassword, 12); // 새 비밀번호 해싱
+        await User.update({ password: hashedPassword }, { where: { email } });
+
+        await Verification.destroy({ where: { email } }); // 사용된 인증번호 삭제
+
+        res.status(200).json({ message: '비밀번호가 성공적으로 변경되었습니다.' });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: '서버 오류가 발생했습니다.' });
+    }
 };

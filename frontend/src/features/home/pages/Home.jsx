@@ -12,26 +12,12 @@ const Home = () => {
             <SubHeader />
             <MenuBar />
             <BannerSlider />
+            
             <HomeHeader title = '인기상품' />
             <div>
                 <CardBundle />
             </div>
-
-            <HomeHeader title = '신상품' />
-            <div>
-                <CardBundle />
-            </div>
-
-            <HomeHeader title = '재입고상품' />
-            <div>
-                <CardBundle />
-            </div>
-
-            <HomeHeader title = '추천상품' />
-            <div>
-                <CardBundle />
-            </div>
-            
+ 
             <HomeHeader title = '리뷰' />
             <ReviewBundle />
 

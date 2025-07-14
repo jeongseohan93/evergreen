@@ -26,7 +26,7 @@ module.exports = () => {
           const exUser = await User.findOne({
             where: { email },
             paranoid: false,
-            attributes: ['email', 'name', 'role', 'password', 'deletedAt'],
+            attributes: ['user_uuid','email', 'name', 'role', 'password', 'deletedAt'],
           });
 
           if (exUser) {
