@@ -1,3 +1,4 @@
+// backend/models/board.js
 const { Model, DataTypes } = require('sequelize');
 
 class Board extends Model {
@@ -9,10 +10,15 @@ class Board extends Model {
         autoIncrement: true,
       },
       user_id: {
-        type: DataTypes.CHAR(36),
+        type: DataTypes.UUID, // UUID 타입 사용
         allowNull: false,
-        primaryKey: true,
-        collate: 'utf8_general_ci',
+        // 🚩 외래 키 제약 조건 명시 (이 부분이 없으면 FOREIGN KEY 에러 발생)
+        references: {
+          model: 'users', // 참조하는 테이블 이름 (User 모델의 tableName과 일치해야 함)
+          key: 'user_uuid', // User 모델의 기본 키 컬럼 이름
+        },
+        onUpdate: 'CASCADE',
+        onDelete: 'CASCADE',
       },
       reply: {
         type: DataTypes.TEXT,
@@ -41,15 +47,18 @@ class Board extends Model {
       title: {
         type: DataTypes.STRING(200),
       },
+      // 🚩 name 필드 주석 해제 (모델에 포함)
       name: {
         type: DataTypes.STRING(100),
+        allowNull: true, // 필요에 따라 변경 (사용자 이름이 없을 수도 있다면)
       },
       notice: {
         type: DataTypes.ENUM('Y', 'N'),
         defaultValue: 'N',
       },
       enum: {
-        type: DataTypes.ENUM('TYPE1', 'TYPE2'), // 실제 enum 값은 프로젝트에 맞게 수정 필요
+        type: DataTypes.ENUM('review', 'free'),
+        allowNull: false,
       },
     }, {
       sequelize,
@@ -57,6 +66,7 @@ class Board extends Model {
       tableName: 'board',
       timestamps: false,
       underscored: true,
+      charset: 'utf8',
       collate: 'utf8_general_ci',
     });
   }
@@ -64,12 +74,11 @@ class Board extends Model {
   static associate(db) {
     db.Board.belongsTo(db.User, {
         foreignKey: 'user_id',
-        //회원 한명의 삭제 => 그 회원이 작성한 모든 게시글 삭제
-        onDelete: 'CASCADE', 
+        targetKey: 'user_uuid',
+        as: 'User', // 🚩 as: 'User' 명시 (include 할 때와 일치)
+        onDelete: 'CASCADE',
     });
   }
 }
 
 module.exports = Board;
-
-

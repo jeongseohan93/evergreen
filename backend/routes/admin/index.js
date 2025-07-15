@@ -8,6 +8,7 @@ const product = require('./product');
 const userRouter = require('./user');
 const dashboard = require('./dashboard');
 const sale = require('./sale');
+const board = require('./board');
 
 const { isLoggedIn, isAdmin } = require('../../middlewares/index');
 
@@ -21,5 +22,6 @@ router.use('/product', product);
 router.use('/user', userRouter);
 router.use('/sale', sale);
 router.use('/dashboard' , dashboard);
+router.use('/board', board);
 
 module.exports = router;
