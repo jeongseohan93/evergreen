@@ -1,7 +1,11 @@
 // frontend/src/features/admin/pages/boardPage/BoardManager.jsx
 import React, { useState, useEffect } from 'react';
 import useBoardManagement from '../../components/board/hooks/useBoardManagement';
+
 import useReplyManagement from '../../components/reply/hooks/useReplyManagements';
+
+import { useAuth } from '../../../../contexts/AuthContext'; 
+
 import BoardList from './BoardList';
 import BoardForm from './BoardForm';
 
@@ -29,19 +33,24 @@ function BoardManager() {
     removeReply,
   } = useReplyManagement(selectedBoard?.board_id);
 
+  // 🚩 useAuth 훅을 사용하여 현재 로그인한 사용자 정보 가져오기
+  // useAuth 훅이 { user: { user_uuid: "...", name: "..." }, isAuthenticated: true/false, ... }
+  // 와 같은 형태로 객체를 반환한다고 가정합니다.
+  const { user: currentUser } = useAuth(); // user 객체를 currentUser로 별칭 지정
+
   const [showForm, setShowForm] = useState(false);
   const [showDetail, setShowDetail] = useState(false);
-  const [currentBoardType, setCurrentBoardType] = useState(null);
-  const [searchKeyword, setSearchKeyword] = useState('');
-
-  const [newReplyContent, setNewReplyContent] = useState('');
-  const [editingReplyId, setEditingReplyId] = useState(null);
-  const [editingReplyContent, setEditingReplyContent] = useState('');
+  const [currentBoardType, setCurrentBoardType] = useState(null); // null: 전체보기, 'review', 'free'
+  const [searchKeyword, setSearchKeyword] = useState(''); // 검색어 상태
+  const [newReplyContent, setNewReplyContent] = useState(''); // 🚩 새 댓글 내용 상태
+  const [editingReplyId, setEditingReplyId] = useState(null); // 🚩 수정 중인 댓글 ID
+  const [editingReplyContent, setEditingReplyContent] = useState(''); // 🚩 수정 중인 댓글 내용
 
   useEffect(() => {
     fetchBoards(currentBoardType, searchKeyword);
-  }, [currentBoardType, searchKeyword, fetchBoards]);
+  }, [currentBoardType, searchKeyword, fetchBoards]); // searchKeyword를 의존성 배열에 추가
 
+  // 🚩 selectedBoard가 변경될 때마다 댓글 목록을 다시 불러옴
   useEffect(() => {
     if (selectedBoard?.board_id) {
       fetchReplies();
@@ -68,7 +77,7 @@ function BoardManager() {
 
   const handleSaveBoard = async (formData) => {
     let result;
-    const dataToSend = { ...formData, enum: formData.enum || 'review' };
+    const dataToSend = { ...formData, enum: formData.enum || 'review' }; // formData.enum이 없는 경우를 대비한 안전장치
 
     if (selectedBoard) {
       result = await modifyBoard(selectedBoard.board_id, dataToSend);
@@ -80,7 +89,7 @@ function BoardManager() {
       alert(result.message);
       setShowForm(false);
       setSelectedBoard(null);
-      fetchBoards(currentBoardType, searchKeyword);
+      fetchBoards(currentBoardType, searchKeyword); // 저장 후 목록 갱신 시 searchKeyword 유지
     } else {
       alert(result.message);
     }
@@ -90,7 +99,7 @@ function BoardManager() {
     setShowForm(false);
     setShowDetail(false);
     setSelectedBoard(null);
-    fetchBoards(currentBoardType, searchKeyword);
+    fetchBoards(currentBoardType, searchKeyword); // 취소 후 목록 갱신 시 searchKeyword 유지
   };
 
   const handleDeleteBoard = async (boardId) => {
@@ -103,7 +112,7 @@ function BoardManager() {
             setShowForm(false);
             setShowDetail(false);
         }
-        fetchBoards(currentBoardType, searchKeyword);
+        fetchBoards(currentBoardType, searchKeyword); // 삭제 후 목록 갱신 시 searchKeyword 유지
       } else {
         alert(result.message);
       }
@@ -112,20 +121,23 @@ function BoardManager() {
 
   const handleChangeBoardType = (type) => {
     setCurrentBoardType(type);
-    setSearchKeyword('');
+    setSearchKeyword(''); // 게시판 타입 변경 시 검색어 초기화
     setShowForm(false);
     setShowDetail(false);
     setSelectedBoard(null);
   };
 
+  // 검색어 입력 핸들러 (상태만 업데이트)
   const handleSearchInputChange = (e) => {
     setSearchKeyword(e.target.value);
   };
 
+  // 검색 실행 핸들러 (버튼 클릭 또는 Enter 키)
   const handleSearch = () => {
-    fetchBoards(currentBoardType, searchKeyword);
+    fetchBoards(currentBoardType, searchKeyword); // 검색 버튼 클릭 시에만 fetchBoards 호출
   };
 
+  // Enter 키로 검색 실행
   const handleKeyPress = (e) => {
     if (e.key === 'Enter') {
       handleSearch();
@@ -137,10 +149,16 @@ function BoardManager() {
       alert('댓글 내용을 입력해주세요.');
       return;
     }
-    // 🚩 중요: 이 부분을 실제 데이터베이스 `users` 테이블에 존재하는 `user_uuid` 값으로 변경해야 합니다.
-    // 예시: "a1b2c3d4-e5f6-7890-1234-567890abcdef"
-    const validUserId = "2ead8476-78a0-4599-885b-dbe7a8bf3700"; // <-- 이 값을 수정해주세요!
-    const result = await addReply({ user_id: validUserId, content: newReplyContent });
+    // 🚩 수정: currentUser 객체에서 user_uuid를 가져와 사용합니다.
+    // currentUser가 null이거나 user_uuid가 없으면 댓글 작성 불가
+    const userIdToAddReply = currentUser?.user_uuid;
+
+    if (!userIdToAddReply) {
+      alert('로그인한 사용자 정보를 찾을 수 없습니다. 댓글을 작성할 수 없습니다.');
+      return;
+    }
+
+    const result = await addReply({ user_id: userIdToAddReply, content: newReplyContent });
     if (result.success) {
       setNewReplyContent('');
     } else {
@@ -221,26 +239,6 @@ function BoardManager() {
         </button>
       </div>
 
-      {/* 검색 입력 필드 및 버튼 */}
-      <div className="mb-5 flex justify-center">
-        <div className="flex items-center space-x-2 w-full max-w-lg">
-          <input
-            type="text"
-            placeholder="제목, 내용, 작성자 검색..."
-            value={searchKeyword}
-            onChange={handleSearchInputChange}
-            onKeyPress={handleKeyPress}
-            className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#306f65]"
-          />
-          <button
-            onClick={handleSearch}
-            className="px-4 py-2 cursor-pointer text-white border-none rounded transition-colors bg-[#58bcb5] hover:bg-[#4a9f99]"
-          >
-            검색
-          </button>
-        </div>
-      </div>
-
       {/* 게시글 목록 컴포넌트 */}
       {!showForm && !showDetail && (
         <>
@@ -252,6 +250,25 @@ function BoardManager() {
             onSelectBoard={handleSelectBoard}
             onRefresh={() => fetchBoards(currentBoardType, searchKeyword)}
           />
+          {/* 검색 입력 필드 및 버튼 */}
+          <div className="mt-5 flex justify-center">
+            <div className="flex items-center space-x-2 w-full max-w-lg">
+              <input
+                type="text"
+                placeholder="제목, 내용, 작성자 검색..."
+                value={searchKeyword}
+                onChange={handleSearchInputChange}
+                onKeyPress={handleKeyPress}
+                className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#306f65] focus:border-transparent"
+              />
+              <button
+                onClick={handleSearch}
+                className="px-4 py-2 cursor-pointer text-white border-none rounded transition-colors bg-[#58bcb5] hover:bg-[#4a9f99]"
+              >
+                검색
+              </button>
+            </div>
+          </div>
         </>
       )}
 
@@ -314,7 +331,7 @@ function BoardManager() {
               <span className="font-semibold">공지사항:</span> {selectedBoard.notice === 'Y' ? '예' : '아니오'}
             </div>
             <div>
-              <span className="font-semibold">타입:</span> {selectedBoard.enum === 'review' ? '사용후기' : '자유'}
+              <span className="font-semibold">게시판:</span> {selectedBoard.enum === 'review' ? '사용후기' : '자유'}
             </div>
           </div>
 

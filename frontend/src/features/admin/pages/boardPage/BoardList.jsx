@@ -27,7 +27,7 @@ function BoardList({ boards, loading, error, onDelete, onSelectBoard, onRefresh 
             <thead>
               <tr className="border-b-2 border-gray-200"> {/* ReportManage와 동일 */}
                 <th className="p-3 w-16 text-center whitespace-nowrap text-base">ID</th>
-                <th className="p-3 w-[15%] min-w-[100px] text-center whitespace-nowrap text-base">타입</th> {/* 🚩 타입 컬럼 추가 */}
+                <th className="p-3 w-[15%] min-w-[100px] text-center whitespace-nowrap text-base">게시판</th> {/* 🚩 타입 컬럼 추가 */}
                 <th className="p-3 w-2/5 min-w-[180px] text-center whitespace-nowrap text-base">제목</th>
                 <th className="p-3 w-1/5 min-w-[120px] text-center whitespace-nowrap text-base">작성자</th>
                 <th className="p-3 w-1/5 min-w-[120px] text-center whitespace-nowrap text-base">작성일</th>

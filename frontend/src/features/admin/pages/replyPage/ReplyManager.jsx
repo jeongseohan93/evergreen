@@ -1,7 +1,11 @@
 // frontend/src/features/admin/pages/boardPage/BoardManager.jsx
 import React, { useState, useEffect } from 'react';
 import useBoardManagement from '../../components/board/hooks/useBoardManagement';
-import useReplyManagement from '../../components/reply/hooks/useReplyManagement'; // 🚩 댓글 훅 import
+import useReplyManagement from '../../components/reply/hooks/useReplyManagements';
+// 🚩 AuthContext에서 useAuth 훅을 import 합니다.
+// 이 경로는 너의 AuthContext.js 파일의 실제 위치에 따라 달라질 수 있습니다.
+import { useAuth } from '../../../contexts/AuthContext'; 
+
 import BoardList from './BoardList';
 import BoardForm from './BoardForm';
 
@@ -19,7 +23,6 @@ function BoardManager() {
     setSelectedBoard,
   } = useBoardManagement();
 
-  // 🚩 댓글 관리 훅 사용 (selectedBoard.board_id가 있을 때만 활성화)
   const {
     replies,
     loading: repliesLoading,
@@ -28,7 +31,12 @@ function BoardManager() {
     addReply,
     modifyReply,
     removeReply,
-  } = useReplyManagement(selectedBoard?.board_id); // selectedBoard가 있을 때만 boardId 전달
+  } = useReplyManagement(selectedBoard?.board_id);
+
+  // 🚩 useAuth 훅을 사용하여 현재 로그인한 사용자 정보 가져오기
+  // useAuth 훅이 { user: { user_uuid: "...", name: "..." }, isAuthenticated: true/false, ... }
+  // 와 같은 형태로 객체를 반환한다고 가정합니다.
+  const { user: currentUser } = useAuth(); // user 객체를 currentUser로 별칭 지정
 
   const [showForm, setShowForm] = useState(false);
   const [showDetail, setShowDetail] = useState(false);
@@ -40,7 +48,7 @@ function BoardManager() {
 
   useEffect(() => {
     fetchBoards(currentBoardType, searchKeyword);
-  }, [currentBoardType, fetchBoards]);
+  }, [currentBoardType, searchKeyword, fetchBoards]); // searchKeyword를 의존성 배열에 추가
 
   // 🚩 selectedBoard가 변경될 때마다 댓글 목록을 다시 불러옴
   useEffect(() => {
@@ -69,7 +77,7 @@ function BoardManager() {
 
   const handleSaveBoard = async (formData) => {
     let result;
-    const dataToSend = { ...formData, enum: formData.enum || 'review' };
+    const dataToSend = { ...formData, enum: formData.enum || 'review' }; // formData.enum이 없는 경우를 대비한 안전장치
 
     if (selectedBoard) {
       result = await modifyBoard(selectedBoard.board_id, dataToSend);
@@ -81,7 +89,7 @@ function BoardManager() {
       alert(result.message);
       setShowForm(false);
       setSelectedBoard(null);
-      fetchBoards(currentBoardType, searchKeyword);
+      fetchBoards(currentBoardType, searchKeyword); // 저장 후 목록 갱신 시 searchKeyword 유지
     } else {
       alert(result.message);
     }
@@ -91,7 +99,7 @@ function BoardManager() {
     setShowForm(false);
     setShowDetail(false);
     setSelectedBoard(null);
-    fetchBoards(currentBoardType, searchKeyword);
+    fetchBoards(currentBoardType, searchKeyword); // 취소 후 목록 갱신 시 searchKeyword 유지
   };
 
   const handleDeleteBoard = async (boardId) => {
@@ -104,7 +112,7 @@ function BoardManager() {
             setShowForm(false);
             setShowDetail(false);
         }
-        fetchBoards(currentBoardType, searchKeyword);
+        fetchBoards(currentBoardType, searchKeyword); // 삭제 후 목록 갱신 시 searchKeyword 유지
       } else {
         alert(result.message);
       }
@@ -113,37 +121,46 @@ function BoardManager() {
 
   const handleChangeBoardType = (type) => {
     setCurrentBoardType(type);
-    setSearchKeyword('');
+    setSearchKeyword(''); // 게시판 타입 변경 시 검색어 초기화
     setShowForm(false);
     setShowDetail(false);
     setSelectedBoard(null);
   };
 
+  // 검색어 입력 핸들러 (상태만 업데이트)
   const handleSearchInputChange = (e) => {
     setSearchKeyword(e.target.value);
   };
 
+  // 검색 실행 핸들러 (버튼 클릭 또는 Enter 키)
   const handleSearch = () => {
-    fetchBoards(currentBoardType, searchKeyword);
+    fetchBoards(currentBoardType, searchKeyword); // 검색 버튼 클릭 시에만 fetchBoards 호출
   };
 
+  // Enter 키로 검색 실행
   const handleKeyPress = (e) => {
     if (e.key === 'Enter') {
       handleSearch();
     }
   };
 
-  // 🚩 댓글 관련 핸들러 함수들
   const handleAddReply = async () => {
     if (!newReplyContent.trim() || !selectedBoard?.board_id) {
       alert('댓글 내용을 입력해주세요.');
       return;
     }
-    // TODO: 실제 user_id를 가져오는 로직 필요 (예: 인증 컨텍스트에서)
-    const dummyUserId = "123e4567-e89b-12d3-a456-426614174000"; // 임시 user_id
-    const result = await addReply({ user_id: dummyUserId, content: newReplyContent });
+    // 🚩 수정: currentUser 객체에서 user_uuid를 가져와 사용합니다.
+    // currentUser가 null이거나 user_uuid가 없으면 댓글 작성 불가
+    const userIdToAddReply = currentUser?.user_uuid;
+
+    if (!userIdToAddReply) {
+      alert('로그인한 사용자 정보를 찾을 수 없습니다. 댓글을 작성할 수 없습니다.');
+      return;
+    }
+
+    const result = await addReply({ user_id: userIdToAddReply, content: newReplyContent });
     if (result.success) {
-      setNewReplyContent(''); // 댓글 작성 후 입력 필드 초기화
+      setNewReplyContent('');
     } else {
       alert(result.message);
     }
@@ -161,7 +178,7 @@ function BoardManager() {
     }
     const result = await modifyReply(replyId, { content: editingReplyContent });
     if (result.success) {
-      setEditingReplyId(null); // 수정 모드 종료
+      setEditingReplyId(null);
       setEditingReplyContent('');
     } else {
       alert(result.message);
