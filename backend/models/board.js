@@ -78,6 +78,13 @@ class Board extends Model {
         as: 'User', // 🚩 as: 'User' 명시 (include 할 때와 일치)
         onDelete: 'CASCADE',
     });
+   // Board는 여러 개의 Reply를 가질 수 있음 (1:N 관계)
+    db.Board.hasMany(db.Reply, {
+      foreignKey: 'board_id',
+      sourceKey: 'board_id',
+      as: 'Replies', // 게시글 상세 조회 시 댓글 목록을 가져올 때 사용할 alias
+      onDelete: 'CASCADE',
+    });
   }
 }
 

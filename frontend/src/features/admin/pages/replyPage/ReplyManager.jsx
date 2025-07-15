@@ -1,7 +1,7 @@
 // frontend/src/features/admin/pages/boardPage/BoardManager.jsx
 import React, { useState, useEffect } from 'react';
 import useBoardManagement from '../../components/board/hooks/useBoardManagement';
-import useReplyManagement from '../../components/reply/hooks/useReplyManagements';
+import useReplyManagement from '../../components/reply/hooks/useReplyManagement'; // 🚩 댓글 훅 import
 import BoardList from './BoardList';
 import BoardForm from './BoardForm';
 
@@ -19,6 +19,7 @@ function BoardManager() {
     setSelectedBoard,
   } = useBoardManagement();
 
+  // 🚩 댓글 관리 훅 사용 (selectedBoard.board_id가 있을 때만 활성화)
   const {
     replies,
     loading: repliesLoading,
@@ -27,21 +28,21 @@ function BoardManager() {
     addReply,
     modifyReply,
     removeReply,
-  } = useReplyManagement(selectedBoard?.board_id);
+  } = useReplyManagement(selectedBoard?.board_id); // selectedBoard가 있을 때만 boardId 전달
 
   const [showForm, setShowForm] = useState(false);
   const [showDetail, setShowDetail] = useState(false);
-  const [currentBoardType, setCurrentBoardType] = useState(null);
-  const [searchKeyword, setSearchKeyword] = useState('');
-
-  const [newReplyContent, setNewReplyContent] = useState('');
-  const [editingReplyId, setEditingReplyId] = useState(null);
-  const [editingReplyContent, setEditingReplyContent] = useState('');
+  const [currentBoardType, setCurrentBoardType] = useState(null); // null: 전체보기, 'review', 'free'
+  const [searchKeyword, setSearchKeyword] = useState(''); // 검색어 상태
+  const [newReplyContent, setNewReplyContent] = useState(''); // 🚩 새 댓글 내용 상태
+  const [editingReplyId, setEditingReplyId] = useState(null); // 🚩 수정 중인 댓글 ID
+  const [editingReplyContent, setEditingReplyContent] = useState(''); // 🚩 수정 중인 댓글 내용
 
   useEffect(() => {
     fetchBoards(currentBoardType, searchKeyword);
-  }, [currentBoardType, searchKeyword, fetchBoards]);
+  }, [currentBoardType, fetchBoards]);
 
+  // 🚩 selectedBoard가 변경될 때마다 댓글 목록을 다시 불러옴
   useEffect(() => {
     if (selectedBoard?.board_id) {
       fetchReplies();
@@ -132,17 +133,17 @@ function BoardManager() {
     }
   };
 
+  // 🚩 댓글 관련 핸들러 함수들
   const handleAddReply = async () => {
     if (!newReplyContent.trim() || !selectedBoard?.board_id) {
       alert('댓글 내용을 입력해주세요.');
       return;
     }
-    // 🚩 중요: 이 부분을 실제 데이터베이스 `users` 테이블에 존재하는 `user_uuid` 값으로 변경해야 합니다.
-    // 예시: "a1b2c3d4-e5f6-7890-1234-567890abcdef"
-    const validUserId = "2ead8476-78a0-4599-885b-dbe7a8bf3700"; // <-- 이 값을 수정해주세요!
-    const result = await addReply({ user_id: validUserId, content: newReplyContent });
+    // TODO: 실제 user_id를 가져오는 로직 필요 (예: 인증 컨텍스트에서)
+    const dummyUserId = "123e4567-e89b-12d3-a456-426614174000"; // 임시 user_id
+    const result = await addReply({ user_id: dummyUserId, content: newReplyContent });
     if (result.success) {
-      setNewReplyContent('');
+      setNewReplyContent(''); // 댓글 작성 후 입력 필드 초기화
     } else {
       alert(result.message);
     }
@@ -160,7 +161,7 @@ function BoardManager() {
     }
     const result = await modifyReply(replyId, { content: editingReplyContent });
     if (result.success) {
-      setEditingReplyId(null);
+      setEditingReplyId(null); // 수정 모드 종료
       setEditingReplyContent('');
     } else {
       alert(result.message);
@@ -221,26 +222,6 @@ function BoardManager() {
         </button>
       </div>
 
-      {/* 검색 입력 필드 및 버튼 */}
-      <div className="mb-5 flex justify-center">
-        <div className="flex items-center space-x-2 w-full max-w-lg">
-          <input
-            type="text"
-            placeholder="제목, 내용, 작성자 검색..."
-            value={searchKeyword}
-            onChange={handleSearchInputChange}
-            onKeyPress={handleKeyPress}
-            className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#306f65]"
-          />
-          <button
-            onClick={handleSearch}
-            className="px-4 py-2 cursor-pointer text-white border-none rounded transition-colors bg-[#58bcb5] hover:bg-[#4a9f99]"
-          >
-            검색
-          </button>
-        </div>
-      </div>
-
       {/* 게시글 목록 컴포넌트 */}
       {!showForm && !showDetail && (
         <>
@@ -252,6 +233,25 @@ function BoardManager() {
             onSelectBoard={handleSelectBoard}
             onRefresh={() => fetchBoards(currentBoardType, searchKeyword)}
           />
+          {/* 검색 입력 필드 및 버튼 */}
+          <div className="mt-5 flex justify-center">
+            <div className="flex items-center space-x-2 w-full max-w-lg">
+              <input
+                type="text"
+                placeholder="제목, 내용, 작성자 검색..."
+                value={searchKeyword}
+                onChange={handleSearchInputChange}
+                onKeyPress={handleKeyPress}
+                className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#306f65] focus:border-transparent"
+              />
+              <button
+                onClick={handleSearch}
+                className="px-4 py-2 cursor-pointer text-white border-none rounded transition-colors bg-[#58bcb5] hover:bg-[#4a9f99]"
+              >
+                검색
+              </button>
+            </div>
+          </div>
         </>
       )}
 
