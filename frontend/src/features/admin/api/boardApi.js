@@ -1,11 +1,20 @@
-// frontend/src/features/admin/api/boardApi.js
+// frontend/src/api/boardApi.js
 // 🚩 여기서는 백엔드 모델이나 Sequelize를 import 할 필요가 없어.
 import { apiService } from '@/shared'; // apiService 경로를 너의 프로젝트 구조에 맞게 확인해줘.
 
-// 모든 게시글 가져오기 (enumType 필터링 기능 추가)
-export const getAllBoards = async (enumType = '') => {
+// 모든 게시글 가져오기 (enumType 필터링 및 keyword 검색 기능 추가)
+export const getAllBoards = async (enumType = '', keyword = '') => { // 🚩 keyword 인자 추가
   try {
-    const url = enumType ? `/admin/board?enum=${enumType}` : '/admin/board';
+    // URLSearchParams를 사용하여 쿼리 파라미터를 동적으로 구성
+    const params = new URLSearchParams();
+    if (enumType) {
+      params.append('enum', enumType);
+    }
+    if (keyword) { // 🚩 keyword가 있을 경우 쿼리 파라미터에 추가
+      params.append('keyword', keyword);
+    }
+
+    const url = `/admin/board?${params.toString()}`; // 쿼리 파라미터 문자열 생성
     const response = await apiService.get(url);
     return { success: true, data: response.data || [] };
   } catch (error) {

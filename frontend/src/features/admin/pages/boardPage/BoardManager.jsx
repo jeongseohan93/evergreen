@@ -1,9 +1,7 @@
 // frontend/src/features/admin/pages/boardPage/BoardManager.jsx
 import React, { useState, useEffect } from 'react';
 import useBoardManagement from '../../components/board/hooks/useBoardManagement';
-
-import useReplyManagement from '../../components/reply/hooks/useReplyManagements';
-
+import useReplyManagement from '../../components/reply/hooks/useReplyManagements'; 
 import { useAuth } from '../../../../contexts/AuthContext'; 
 
 import BoardList from './BoardList';
@@ -33,24 +31,20 @@ function BoardManager() {
     removeReply,
   } = useReplyManagement(selectedBoard?.board_id);
 
-  // 🚩 useAuth 훅을 사용하여 현재 로그인한 사용자 정보 가져오기
-  // useAuth 훅이 { user: { user_uuid: "...", name: "..." }, isAuthenticated: true/false, ... }
-  // 와 같은 형태로 객체를 반환한다고 가정합니다.
-  const { user: currentUser } = useAuth(); // user 객체를 currentUser로 별칭 지정
+  const { user: currentUser } = useAuth(); 
 
   const [showForm, setShowForm] = useState(false);
   const [showDetail, setShowDetail] = useState(false);
-  const [currentBoardType, setCurrentBoardType] = useState(null); // null: 전체보기, 'review', 'free'
-  const [searchKeyword, setSearchKeyword] = useState(''); // 검색어 상태
-  const [newReplyContent, setNewReplyContent] = useState(''); // 🚩 새 댓글 내용 상태
-  const [editingReplyId, setEditingReplyId] = useState(null); // 🚩 수정 중인 댓글 ID
-  const [editingReplyContent, setEditingReplyContent] = useState(''); // 🚩 수정 중인 댓글 내용
+  const [currentBoardType, setCurrentBoardType] = useState(null); 
+  const [searchKeyword, setSearchKeyword] = useState(''); 
+  const [newReplyContent, setNewReplyContent] = useState(''); 
+  const [editingReplyId, setEditingReplyId] = useState(null); 
+  const [editingReplyContent, setEditingReplyContent] = useState(''); 
 
   useEffect(() => {
     fetchBoards(currentBoardType, searchKeyword);
-  }, [currentBoardType, searchKeyword, fetchBoards]); // searchKeyword를 의존성 배열에 추가
+  }, [currentBoardType, searchKeyword, fetchBoards]); 
 
-  // 🚩 selectedBoard가 변경될 때마다 댓글 목록을 다시 불러옴
   useEffect(() => {
     if (selectedBoard?.board_id) {
       fetchReplies();
@@ -77,7 +71,7 @@ function BoardManager() {
 
   const handleSaveBoard = async (formData) => {
     let result;
-    const dataToSend = { ...formData, enum: formData.enum || 'review' }; // formData.enum이 없는 경우를 대비한 안전장치
+    const dataToSend = { ...formData, enum: formData.enum || 'review' }; 
 
     if (selectedBoard) {
       result = await modifyBoard(selectedBoard.board_id, dataToSend);
@@ -89,7 +83,7 @@ function BoardManager() {
       alert(result.message);
       setShowForm(false);
       setSelectedBoard(null);
-      fetchBoards(currentBoardType, searchKeyword); // 저장 후 목록 갱신 시 searchKeyword 유지
+      fetchBoards(currentBoardType, searchKeyword); 
     } else {
       alert(result.message);
     }
@@ -99,7 +93,7 @@ function BoardManager() {
     setShowForm(false);
     setShowDetail(false);
     setSelectedBoard(null);
-    fetchBoards(currentBoardType, searchKeyword); // 취소 후 목록 갱신 시 searchKeyword 유지
+    fetchBoards(currentBoardType, searchKeyword); 
   };
 
   const handleDeleteBoard = async (boardId) => {
@@ -112,7 +106,7 @@ function BoardManager() {
             setShowForm(false);
             setShowDetail(false);
         }
-        fetchBoards(currentBoardType, searchKeyword); // 삭제 후 목록 갱신 시 searchKeyword 유지
+        fetchBoards(currentBoardType, searchKeyword); 
       } else {
         alert(result.message);
       }
@@ -121,23 +115,20 @@ function BoardManager() {
 
   const handleChangeBoardType = (type) => {
     setCurrentBoardType(type);
-    setSearchKeyword(''); // 게시판 타입 변경 시 검색어 초기화
+    setSearchKeyword(''); 
     setShowForm(false);
     setShowDetail(false);
     setSelectedBoard(null);
   };
 
-  // 검색어 입력 핸들러 (상태만 업데이트)
   const handleSearchInputChange = (e) => {
     setSearchKeyword(e.target.value);
   };
 
-  // 검색 실행 핸들러 (버튼 클릭 또는 Enter 키)
   const handleSearch = () => {
-    fetchBoards(currentBoardType, searchKeyword); // 검색 버튼 클릭 시에만 fetchBoards 호출
+    fetchBoards(currentBoardType, searchKeyword); 
   };
 
-  // Enter 키로 검색 실행
   const handleKeyPress = (e) => {
     if (e.key === 'Enter') {
       handleSearch();
@@ -149,8 +140,6 @@ function BoardManager() {
       alert('댓글 내용을 입력해주세요.');
       return;
     }
-    // 🚩 수정: currentUser 객체에서 user_uuid를 가져와 사용합니다.
-    // currentUser가 null이거나 user_uuid가 없으면 댓글 작성 불가
     const userIdToAddReply = currentUser?.user_uuid;
 
     if (!userIdToAddReply) {
@@ -440,7 +429,7 @@ function BoardManager() {
               <div className="flex justify-end mt-3">
                 <button
                   onClick={handleAddReply}
-                  className="px-4 py-2 cursor-pointer text-white border-none rounded-md transition-colors bg-[#58bcb5] hover:bg-[#4a9f99] font-medium text-sm"
+                  className="px-4 py-2 cursor-pointer text-white border-none rounded-md transition-colors bg-[#58bcb5] hover:bg-[#4a9f99]"
                 >
                   댓글 추가
                 </button>

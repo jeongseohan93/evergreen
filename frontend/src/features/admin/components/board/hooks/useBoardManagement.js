@@ -14,13 +14,15 @@ const useBoardManagement = () => {
   const [error, setError] = useState(null); // 에러 상태
   const [selectedBoard, setSelectedBoard] = useState(null); // 특정 게시글 상세 보기 시 사용
 
-  // 모든 게시글 불러오는 함수 (boardType 인자 추가)
-  // `boardType`이 'review' 또는 'free'가 될 수 있으며, 기본값은 빈 문자열로 설정하여 필터링 없음
-  const fetchBoards = useCallback(async (boardType = '') => { // 🚩 boardType 인자 추가
+  // 모든 게시글 불러오는 함수 (boardType과 keyword 인자 추가)
+  // `boardType`은 'review' 또는 'free'가 될 수 있으며, 기본값은 빈 문자열로 설정하여 필터링 없음
+  // `keyword`는 검색어이며, 기본값은 빈 문자열로 설정하여 검색 없음
+  const fetchBoards = useCallback(async (boardType = '', keyword = '') => { // 🚩 keyword 인자 추가
     setLoading(true);
     setError(null);
     try {
-      const result = await getAllBoards(boardType); // 🚩 getAllBoards에 boardType 전달
+      // 🚩 getAllBoards에 boardType과 keyword 전달
+      const result = await getAllBoards(boardType, keyword); // 🚩 getAllBoards에 keyword 전달
       if (result.success) {
         setBoards(result.data);
       } else {
@@ -32,7 +34,7 @@ const useBoardManagement = () => {
     } finally {
       setLoading(false);
     }
-  }, []); // 의존성 배열 비워둠: useCallback으로 감싸져 있으므로 인자가 변경되어도 함수 재생성 방지 (하지만 boardType은 인자이므로 상관없음)
+  }, []); // 의존성 배열 비워둠: useCallback으로 감싸져 있으므로 인자가 변경되어도 함수 재생성 방지 (하지만 boardType과 keyword는 인자이므로 상관없음)
 
   // 특정 게시글 불러오는 함수 (변경 없음)
   const fetchBoardById = useCallback(async (boardId) => {

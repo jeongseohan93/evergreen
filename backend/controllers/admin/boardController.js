@@ -7,7 +7,8 @@ const { Op } = Sequelize; // Op는 Sequelize 객체에서 가져옴
 exports.getAllBoards = async (req, res, next) => {
     try {
         // 쿼리 파라미터에서 enum 타입과 검색 키워드를 받음
-        const { enum: boardType, searchKeyword } = req.query;
+        // 🚩 'searchKeyword' 대신 프론트엔드에서 보내는 'keyword'를 사용합니다.
+        const { enum: boardType, keyword } = req.query;
         let whereConditions = {}; // Board 모델에 적용될 WHERE 조건
         let includeOptions = [{ // User 모델 포함 조건 (기본값: LEFT JOIN)
             model: User,
@@ -26,21 +27,23 @@ exports.getAllBoards = async (req, res, next) => {
         }
 
         // 2. 검색 키워드 처리 (제목, 내용, 작성자 이름)
-        if (searchKeyword) {
+        // 🚩 keyword가 존재할 경우 검색 조건 추가
+        if (keyword) {
             const searchOrConditions = []; // 제목, 내용, 작성자 이름을 OR로 묶을 조건 배열
 
             // 제목 검색 조건
-            searchOrConditions.push({ title: { [Op.like]: `%${searchKeyword}%` } });
+            searchOrConditions.push({ title: { [Op.like]: `%${keyword}%` } });
 
-            // 내용 검색 조건 (content 컬럼이 TEXT/VARCHAR 타입에 JSON 문자열이 저장된 경우 더 안전)
-            searchOrConditions.push(
-                Sequelize.literal(`CAST(Board.content AS CHAR) LIKE '%${searchKeyword}%'`)
-            );
+            // 내용 검색 조건 (content 컬럼이 TEXT/VARCHAR 타입이라고 가정)
+            // 만약 content가 JSONB 타입이고 그 안에 'text' 필드가 있다면
+            // searchOrConditions.push({ 'content.text': { [Op.like]: `%${keyword}%` } });
+            // 로 변경해야 합니다. 현재는 일반 텍스트 필드로 가정하고 수정했습니다.
+            searchOrConditions.push({ content: { [Op.like]: `%${keyword}%` } });
 
             // 작성자 이름 검색 조건
             // Sequelize.literal을 사용하여 명시적으로 SQL 컬럼을 참조 (MySQL 호환성 향상)
             searchOrConditions.push(
-                Sequelize.literal(`\`User\`.\`name\` LIKE '%${searchKeyword}%'`)
+                Sequelize.literal(`\`User\`.\`name\` LIKE '%${keyword}%'`)
             );
 
             // 기존 whereConditions (enum 조건 등)와 새로운 검색 조건들을 조합
