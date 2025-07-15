@@ -2,34 +2,68 @@
 import React, { useState, useEffect } from 'react';
 
 function BoardForm({ initialData, onSave, onCancel }) {
-  const [formData, setFormData] = useState({
-    title: initialData?.title || '',
-    content: initialData?.content?.text || '',
-    // 🚩 name 필드는 백엔드에서 user_id로 조회하여 채우므로 프론트에서 관리하지 않음
-     name: initialData?.name || '',
-    user_id: initialData?.user_id || '2ead8476-78a0-4599-885b-dbe7a8bf3700', // 임시 테스트용, 실제 구현 시 로그인 유저 ID로 교체 필요
-    notice: initialData?.notice || 'N',
-    enum: initialData?.enum || 'review', // 🚩 'TYPE1' 대신 'review'로 기본값 변경
-    reply: initialData?.reply || '',
-    like_count: initialData?.like_count || 0,
-    hate_count: initialData?.hate_count || 0,
+  // initialData에 board_id가 있는지로 수정 모드/새 작성 모드 판단
+  const isEditing = initialData && initialData.board_id;
+
+  // formData 초기 상태 설정
+  const [formData, setFormData] = useState(() => {
+    if (isEditing) {
+      return {
+        title: initialData.title || '',
+        content: initialData.content?.text || '',
+        name: initialData.User?.name || '', // initialData.User가 있을 경우 name 사용
+        user_id: initialData.user_id || '2ead8476-78a0-4599-885b-dbe7a8bf3700', // 임시 테스트용
+        notice: initialData.notice || 'N',
+        enum: initialData.enum || 'review',
+        reply: initialData.reply || '',
+        like_count: initialData.like_count || 0,
+        hate_count: initialData.hate_count || 0,
+      };
+    } else {
+      // 새 게시글 작성 시, BoardManager에서 넘겨준 enum 값을 사용
+      return {
+        title: '',
+        content: '',
+        name: '', // 새 글 작성 시 이름은 백엔드에서 채워질 예정
+        user_id: '2ead8476-78a0-4599-885b-dbe7a8bf3700', // 임시 테스트용
+        notice: 'N',
+        enum: initialData?.enum || 'review', // BoardManager에서 전달받은 enum 사용 또는 기본값 'review'
+        reply: '', // 새 글은 답변, 좋아요, 싫어요가 없음
+        like_count: 0,
+        hate_count: 0,
+      };
+    }
   });
 
-  // initialData가 변경될 때마다 폼 데이터 업데이트
+  // initialData가 변경될 때마다 폼 데이터 업데이트 (수정 모드 전환 시 등)
   useEffect(() => {
-    setFormData({
-      title: initialData?.title || '',
-      content: initialData?.content?.text || '',
-      // 🚩 name 필드는 백엔드에서 user_id로 조회하여 채우므로 프론트에서 관리하지 않음
-       name: initialData?.name || '',
-      user_id: initialData?.user_id || '2ead8476-78a0-4599-885b-dbe7a8bf3700', // 임시 테스트용, 실제 구현 시 로그인 유저 ID로 교체 필요
-      notice: initialData?.notice || 'N',
-      enum: initialData?.enum || 'review', // 🚩 'TYPE1' 대신 'review'로 초기값 변경
-      reply: initialData?.reply || '',
-      like_count: initialData?.like_count || 0,
-      hate_count: initialData?.hate_count || 0,
-    });
-  }, [initialData]); // initialData는 BoardManager에서 넘겨주는 prop이므로 의존성 배열에 추가
+    if (isEditing) {
+      setFormData({
+        title: initialData.title || '',
+        content: initialData.content?.text || '',
+        name: initialData.User?.name || '',
+        user_id: initialData.user_id || '2ead8476-78a0-4599-885b-dbe7a8bf3700',
+        notice: initialData.notice || 'N',
+        enum: initialData.enum || 'review',
+        reply: initialData.reply || '',
+        like_count: initialData.like_count || 0,
+        hate_count: initialData.hate_count || 0,
+      });
+    } else {
+      // 새 게시글 작성 모드로 전환될 때 폼 초기화
+      setFormData(prev => ({
+        ...prev, // 기존 user_id, name 등 유지
+        title: '',
+        content: '',
+        // name: '', // 새 글 작성 시 이름은 백엔드에서 채워지므로 초기화만
+        notice: 'N',
+        enum: initialData?.enum || 'review', // BoardManager에서 전달받은 enum 사용
+        reply: '',
+        like_count: 0,
+        hate_count: 0,
+      }));
+    }
+  }, [initialData, isEditing]);
 
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target;
@@ -49,11 +83,20 @@ function BoardForm({ initialData, onSave, onCancel }) {
     onSave(dataToSave);
   };
 
+  // 폼 제목 결정
+  const formTitle = isEditing ? '게시글 수정' : '새 게시글 작성';
+  // 표시될 게시판 타입 이름
+  const displayBoardType = formData.enum === 'review' ? '사용후기 게시판' : '자유 게시판';
+
   return (
     <div className="p-5 mt-5 border border-gray-200 rounded-lg shadow-sm bg-white">
-      <h2 className="text-2xl font-semibold text-gray-800 mb-5">
-        {initialData ? '게시글 수정' : '새 게시글 작성'}
+      <h2 className="text-2xl font-semibold text-gray-800 mb-2">
+        {formTitle}
       </h2>
+      {/* 🚩 추가: 게시판 타입 명시 */}
+      <p className="text-lg text-gray-600 mb-4">
+        <span className="font-semibold">게시판:</span> {displayBoardType}
+      </p>
       <form onSubmit={handleSubmit} className="flex flex-col gap-4">
         <div className="flex flex-col">
           <label htmlFor="title" className="mb-1 text-gray-700 font-medium">제목:</label>
@@ -79,21 +122,6 @@ function BoardForm({ initialData, onSave, onCancel }) {
             className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#306f65] focus:border-transparent"
           />
         </div>
-        {/* 🚩 작성자 이름 입력 필드 제거 (기존에 주석 처리되어 있었음) */}
-        {/*
-        <div className="flex flex-col">
-          <label htmlFor="name" className="mb-1 text-gray-700 font-medium">작성자 이름:</label>
-          <input
-            type="text"
-            id="name"
-            name="name"
-            value={formData.name}
-            onChange={handleChange}
-            required
-            className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#306f65] focus:border-transparent"
-          />
-        </div>
-        */}
         <div className="flex items-center gap-2">
           <input
             type="checkbox"
@@ -105,6 +133,8 @@ function BoardForm({ initialData, onSave, onCancel }) {
           />
           <label htmlFor="notice" className="text-gray-700 font-medium">공지사항</label>
         </div>
+        {/* 🚩 제거: 게시판 타입 선택 드롭다운 (자동 설정 및 명시되므로 불필요) */}
+        {/*
         <div className="flex flex-col">
           <label htmlFor="enum" className="mb-1 text-gray-700 font-medium">타입:</label>
           <select
@@ -114,13 +144,12 @@ function BoardForm({ initialData, onSave, onCancel }) {
             onChange={handleChange}
             className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#306f65] focus:border-transparent bg-white appearance-none"
           >
-            {/* 🚩 ENUM 값 변경 */}
             <option value="review">사용후기</option>
             <option value="free">자유</option>
-            {/* 필요한 다른 ENUM 값 추가 (없으면 이 두 가지로 충분) */}
           </select>
         </div>
-        {initialData && ( // 수정 모드일 때만 Reply, Like, Hate 표시
+        */}
+        {isEditing && ( // 수정 모드일 때만 답변, 좋아요, 싫어요 필드 표시
           <>
             <div className="flex flex-col">
               <label htmlFor="reply" className="mb-1 text-gray-700 font-medium">답변 (Reply):</label>
@@ -162,7 +191,7 @@ function BoardForm({ initialData, onSave, onCancel }) {
             type="submit"
             className="px-5 py-2 cursor-pointer text-white border-none rounded-md transition-colors bg-[#58bcb5] hover:bg-[#4a9f99] font-medium"
           >
-            {initialData ? '게시글 수정' : '게시글 작성'}
+            {formTitle === '게시글 수정' ? '게시글 수정' : '게시글 작성'}
           </button>
           <button
             type="button"

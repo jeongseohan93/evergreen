@@ -20,7 +20,7 @@ function BoardManager() {
 
   const [showForm, setShowForm] = useState(false);
   const [showDetail, setShowDetail] = useState(false);
-  const [currentBoardType, setCurrentBoardType] = useState(null);
+  const [currentBoardType, setCurrentBoardType] = useState(null); // null: 전체보기, 'review', 'free'
 
   useEffect(() => {
     fetchBoards(currentBoardType);
@@ -45,7 +45,7 @@ function BoardManager() {
 
   const handleSaveBoard = async (formData) => {
     let result;
-    const dataToSend = { ...formData, enum: formData.enum || 'review' };
+    const dataToSend = { ...formData, enum: formData.enum || 'review' }; // formData.enum이 없는 경우를 대비한 안전장치
 
     if (selectedBoard) {
       result = await modifyBoard(selectedBoard.board_id, dataToSend);
@@ -87,12 +87,11 @@ function BoardManager() {
     }
   };
 
-  // 🚩 게시판 타입 변경을 처리하는 통합 함수
   const handleChangeBoardType = (type) => {
-    setCurrentBoardType(type); // 타입 변경
-    setShowForm(false);        // 폼 닫기
-    setShowDetail(false);      // 상세 보기 닫기
-    setSelectedBoard(null);    // 선택된 게시글 초기화
+    setCurrentBoardType(type);
+    setShowForm(false);
+    setShowDetail(false);
+    setSelectedBoard(null);
   };
 
   return (
@@ -102,30 +101,33 @@ function BoardManager() {
           {currentBoardType === 'review' ? '사용후기 게시판 관리' :
            currentBoardType === 'free' ? '자유 게시판 관리' : '전체 게시판 관리'}
         </h1>
-        <button
-          onClick={handleNewBoardClick}
-          className="px-4 py-2 cursor-pointer text-white border-none rounded transition-colors bg-[#58bcb5] hover:bg-[#4a9f99]"
-        >
-          새 게시글 작성
-        </button>
+        {/* 🚩 수정: currentBoardType이 null이 아닐 때 (특정 게시판 선택 시)에만 버튼 렌더링 */}
+        {currentBoardType !== null && (
+          <button
+            onClick={handleNewBoardClick}
+            className="px-4 py-2 cursor-pointer text-white border-none rounded transition-colors bg-[#58bcb5] hover:bg-[#4a9f99]"
+          >
+            새 게시글 작성
+          </button>
+        )}
       </div>
 
       {/* 게시판 타입 선택 탭/버튼 */}
       <div className="mb-5 flex space-x-2">
         <button
-          onClick={() => handleChangeBoardType(null)} // 🚩 통합 함수 사용
+          onClick={() => handleChangeBoardType(null)}
           className={`px-4 py-2 rounded-md ${currentBoardType === null ? 'bg-[#58bcb5] text-white' : 'bg-gray-200 text-gray-700'} hover:bg-[#4a9f99] hover:text-white transition-colors`}
         >
           전체보기
         </button>
         <button
-          onClick={() => handleChangeBoardType('review')} // 🚩 통합 함수 사용
+          onClick={() => handleChangeBoardType('review')}
           className={`px-4 py-2 rounded-md ${currentBoardType === 'review' ? 'bg-[#58bcb5] text-white' : 'bg-gray-200 text-gray-700'} hover:bg-[#4a9f99] hover:text-white transition-colors`}
         >
           사용후기 게시판
         </button>
         <button
-          onClick={() => handleChangeBoardType('free')} // 🚩 통합 함수 사용
+          onClick={() => handleChangeBoardType('free')}
           className={`px-4 py-2 rounded-md ${currentBoardType === 'free' ? 'bg-[#58bcb5] text-white' : 'bg-gray-200 text-gray-700'} hover:bg-[#4a9f99] hover:text-white transition-colors`}
         >
           자유 게시판
@@ -147,7 +149,10 @@ function BoardManager() {
       {/* 게시글 작성/수정 폼 컴포넌트 */}
       {showForm && (
         <BoardForm
-          initialData={selectedBoard ? { ...selectedBoard, enum: selectedBoard.enum || 'review' } : { enum: 'review' }}
+          initialData={selectedBoard ?
+            { ...selectedBoard, enum: selectedBoard.enum || 'review' } :
+            { enum: currentBoardType || 'review' }
+          }
           onSave={handleSaveBoard}
           onCancel={handleCancel}
         />
@@ -200,7 +205,6 @@ function BoardManager() {
               <span className="font-semibold">공지사항:</span> {selectedBoard.notice === 'Y' ? '예' : '아니오'}
             </div>
             <div>
-              {/* 게시판 타입 표시 */}
               <span className="font-semibold">타입:</span> {selectedBoard.enum === 'review' ? '사용후기' : '자유'}
             </div>
           </div>
