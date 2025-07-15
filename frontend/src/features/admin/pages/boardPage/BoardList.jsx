@@ -66,7 +66,7 @@ function BoardList({ boards, loading, error, onDelete, onSelectBoard, onRefresh 
                         // ReportManage의 '수정' 버튼과 유사한 스타일
                         className="px-3 py-1.5 cursor-pointer text-white border-none rounded transition-colors bg-[#58bcb5] hover:bg-[#4a9f99]"
                       >
-                        상세/수정
+                        보기
                       </button>
                       <button
                         onClick={() => onDelete(board.board_id)}

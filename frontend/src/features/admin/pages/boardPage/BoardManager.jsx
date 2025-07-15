@@ -5,7 +5,7 @@ import useReplyManagement from '../../components/reply/hooks/useReplyManagements
 import { useAuth } from '../../../../contexts/AuthContext'; 
 
 import BoardList from './BoardList';
-import BoardForm from './BoardForm';
+import BoardForm from './BoardForm'; 
 
 function BoardManager() {
   const {
@@ -42,8 +42,13 @@ function BoardManager() {
   const [editingReplyContent, setEditingReplyContent] = useState(''); 
 
   useEffect(() => {
-    fetchBoards(currentBoardType, searchKeyword);
-  }, [currentBoardType, searchKeyword, fetchBoards]); 
+    // 🚩 수정: searchKeyword를 의존성 배열에서 제거하고,
+    // fetchBoards 호출 시 searchKeyword 대신 빈 문자열을 전달합니다.
+    // 이렇게 하면 게시판 타입 변경 시 또는 컴포넌트 마운트 시에만 fetchBoards가 호출되고,
+    // 검색은 handleSearch 함수를 통해서만 명시적으로 실행됩니다.
+    fetchBoards(currentBoardType, ''); // 🚩 searchKeyword 대신 빈 문자열 전달
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [currentBoardType, fetchBoards]); 
 
   useEffect(() => {
     if (selectedBoard?.board_id) {
@@ -83,6 +88,7 @@ function BoardManager() {
       alert(result.message);
       setShowForm(false);
       setSelectedBoard(null);
+      // 저장 후 목록 갱신 시 searchKeyword 유지
       fetchBoards(currentBoardType, searchKeyword); 
     } else {
       alert(result.message);
@@ -93,6 +99,7 @@ function BoardManager() {
     setShowForm(false);
     setShowDetail(false);
     setSelectedBoard(null);
+    // 취소 후 목록 갱신 시 searchKeyword 유지
     fetchBoards(currentBoardType, searchKeyword); 
   };
 
@@ -106,6 +113,7 @@ function BoardManager() {
             setShowForm(false);
             setShowDetail(false);
         }
+        // 삭제 후 목록 갱신 시 searchKeyword 유지
         fetchBoards(currentBoardType, searchKeyword); 
       } else {
         alert(result.message);
@@ -126,6 +134,7 @@ function BoardManager() {
   };
 
   const handleSearch = () => {
+    // 🚩 검색 버튼 클릭 또는 Enter 키 입력 시에만 fetchBoards 호출
     fetchBoards(currentBoardType, searchKeyword); 
   };
 
@@ -377,7 +386,7 @@ function BoardManager() {
                           </button>
                           <button
                             onClick={handleCancelEditReply}
-                            className="px-3 py-1.5 text-white bg-gray-400 rounded-md hover:bg-gray-500 transition-colors"
+                            className="px-3 py-1.5 text-white bg-gray-400 rounded-md hover:bg-[#4a9f99] transition-colors"
                           >
                             취소
                           </button>

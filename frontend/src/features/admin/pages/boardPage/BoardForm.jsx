@@ -1,69 +1,53 @@
 // frontend/src/features/admin/pages/boardPage/BoardForm.jsx
 import React, { useState, useEffect } from 'react';
+import { useAuth } from '../../../../contexts/AuthContext'; 
 
 function BoardForm({ initialData, onSave, onCancel }) {
-  // initialData에 board_id가 있는지로 수정 모드/새 작성 모드 판단
   const isEditing = initialData && initialData.board_id;
+  const { user: currentUser } = useAuth();
 
-  // formData 초기 상태 설정
   const [formData, setFormData] = useState(() => {
     if (isEditing) {
       return {
         title: initialData.title || '',
         content: initialData.content?.text || '',
-        name: initialData.User?.name || '', // initialData.User가 있을 경우 name 사용
-        user_id: initialData.user_id || '2ead8476-78a0-4599-885b-dbe7a8bf3700', // 임시 테스트용
+        name: initialData.User?.name || '',
+        user_id: initialData.user_id || currentUser?.user_id,
         notice: initialData.notice || 'N',
         enum: initialData.enum || 'review',
-        reply: initialData.reply || '',
-        like_count: initialData.like_count || 0,
-        hate_count: initialData.hate_count || 0,
       };
     } else {
-      // 새 게시글 작성 시, BoardManager에서 넘겨준 enum 값을 사용
       return {
         title: '',
         content: '',
-        name: '', // 새 글 작성 시 이름은 백엔드에서 채워질 예정
-        user_id: '2ead8476-78a0-4599-885b-dbe7a8bf3700', // 임시 테스트용
+        name: '',
+        user_id: currentUser?.user_id || '2ead8476-78a0-4599-885b-dbe7a8bf3700', // 새 글 작성 시 user_id도 currentUser에서 가져오도록 수정 또는 임시값 유지
         notice: 'N',
-        enum: initialData?.enum || 'review', // BoardManager에서 전달받은 enum 사용 또는 기본값 'review'
-        reply: '', // 새 글은 답변, 좋아요, 싫어요가 없음
-        like_count: 0,
-        hate_count: 0,
+        enum: initialData?.enum || 'review',
       };
     }
   });
 
-  // initialData가 변경될 때마다 폼 데이터 업데이트 (수정 모드 전환 시 등)
   useEffect(() => {
     if (isEditing) {
       setFormData({
         title: initialData.title || '',
         content: initialData.content?.text || '',
         name: initialData.User?.name || '',
-        user_id: initialData.user_id || '2ead8476-78a0-4599-885b-dbe7a8bf3700',
+        user_id: initialData.user_id || currentUser?.user_id,
         notice: initialData.notice || 'N',
         enum: initialData.enum || 'review',
-        reply: initialData.reply || '',
-        like_count: initialData.like_count || 0,
-        hate_count: initialData.hate_count || 0,
       });
     } else {
-      // 새 게시글 작성 모드로 전환될 때 폼 초기화
       setFormData(prev => ({
-        ...prev, // 기존 user_id, name 등 유지
+        ...prev,
         title: '',
         content: '',
-        // name: '', // 새 글 작성 시 이름은 백엔드에서 채워지므로 초기화만
         notice: 'N',
-        enum: initialData?.enum || 'review', // BoardManager에서 전달받은 enum 사용
-        reply: '',
-        like_count: 0,
-        hate_count: 0,
+        enum: initialData?.enum || 'review',
       }));
     }
-  }, [initialData, isEditing]);
+  }, [initialData, isEditing, currentUser]); 
 
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target;
@@ -78,28 +62,26 @@ function BoardForm({ initialData, onSave, onCancel }) {
     const dataToSave = {
       ...formData,
       content: { text: formData.content }
-      // 'name' 필드는 프론트에서 더 이상 받지 않고 백엔드에서 user_id로 조회하여 채움
     };
     onSave(dataToSave);
   };
 
-  // 폼 제목 결정
   const formTitle = isEditing ? '게시글 수정' : '새 게시글 작성';
-  // 표시될 게시판 타입 이름
   const displayBoardType = formData.enum === 'review' ? '사용후기 게시판' : '자유 게시판';
 
   return (
-    <div className="p-5 mt-5 border border-gray-200 rounded-lg shadow-sm bg-white">
-      <h2 className="text-2xl font-semibold text-gray-800 mb-2">
+    <div className="bg-white p-6 md:p-8 rounded-xl shadow-2xl max-w-2xl mx-auto my-12 border border-gray-100">
+      <h2 className="text-3xl font-extrabold text-gray-900 mb-2 text-center">
         {formTitle}
       </h2>
-      {/* 🚩 추가: 게시판 타입 명시 */}
-      <p className="text-lg text-gray-600 mb-4">
-        <span className="font-semibold">게시판:</span> {displayBoardType}
+      <p className="text-md text-gray-600 mb-8 text-center border-b pb-4 border-gray-100">
+        <span className="font-semibold text-indigo-700">게시판:</span> {displayBoardType}
       </p>
-      <form onSubmit={handleSubmit} className="flex flex-col gap-4">
+      
+      <form onSubmit={handleSubmit} className="flex flex-col gap-6">
+        {/* 제목 필드 */}
         <div className="flex flex-col">
-          <label htmlFor="title" className="mb-1 text-gray-700 font-medium">제목:</label>
+          <label htmlFor="title" className="mb-2 text-lg font-medium text-gray-700">제목:</label>
           <input
             type="text"
             id="title"
@@ -107,98 +89,54 @@ function BoardForm({ initialData, onSave, onCancel }) {
             value={formData.title}
             onChange={handleChange}
             required
-            className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#306f65] focus:border-transparent"
+            className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-3 focus:ring-indigo-400 focus:border-indigo-500 transition duration-300 ease-in-out text-gray-800 placeholder-gray-400 text-base"
+            placeholder="게시글의 제목을 입력해주세요."
           />
         </div>
+
+        {/* 내용 필드 */}
         <div className="flex flex-col">
-          <label htmlFor="content" className="mb-1 text-gray-700 font-medium">내용:</label>
+          <label htmlFor="content" className="mb-2 text-lg font-medium text-gray-700">내용:</label>
           <textarea
             id="content"
             name="content"
             value={formData.content}
             onChange={handleChange}
-            rows="5"
+            rows="8" 
             required
-            className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#306f65] focus:border-transparent"
+            className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-3 focus:ring-indigo-400 focus:border-indigo-500 transition duration-300 ease-in-out text-gray-800 placeholder-gray-400 text-base resize-y"
+            placeholder="게시글 내용을 작성해주세요."
           />
         </div>
-        <div className="flex items-center gap-2">
+
+        {/* 공지사항 체크박스 */}
+        <div className="flex items-center gap-3 mt-2">
           <input
             type="checkbox"
             id="notice"
             name="notice"
             checked={formData.notice === 'Y'}
             onChange={handleChange}
-            className="w-4 h-4 text-[#58bcb5] border-gray-300 rounded focus:ring-[#306f65]"
+            className="w-5 h-5 text-indigo-600 border-gray-300 rounded focus:ring-indigo-500 focus:ring-offset-2"
           />
-          <label htmlFor="notice" className="text-gray-700 font-medium">공지사항</label>
+          {/* 포커스 링 오프셋 추가 */}
+          <label htmlFor="notice" className="text-lg text-gray-800 font-medium select-none">이 게시글을 공지사항으로 설정</label>
         </div>
-        {/* 🚩 제거: 게시판 타입 선택 드롭다운 (자동 설정 및 명시되므로 불필요) */}
-        {/*
-        <div className="flex flex-col">
-          <label htmlFor="enum" className="mb-1 text-gray-700 font-medium">타입:</label>
-          <select
-            id="enum"
-            name="enum"
-            value={formData.enum}
-            onChange={handleChange}
-            className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#306f65] focus:border-transparent bg-white appearance-none"
-          >
-            <option value="review">사용후기</option>
-            <option value="free">자유</option>
-          </select>
-        </div>
-        */}
-        {isEditing && ( // 수정 모드일 때만 답변, 좋아요, 싫어요 필드 표시
-          <>
-            <div className="flex flex-col">
-              <label htmlFor="reply" className="mb-1 text-gray-700 font-medium">답변 (Reply):</label>
-              <textarea
-                id="reply"
-                name="reply"
-                value={formData.reply}
-                onChange={handleChange}
-                rows="3"
-                className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#306f65] focus:border-transparent"
-              />
-            </div>
-            <div className="flex flex-col">
-              <label htmlFor="like_count" className="mb-1 text-gray-700 font-medium">좋아요 수:</label>
-              <input
-                type="number"
-                id="like_count"
-                name="like_count"
-                value={formData.like_count}
-                onChange={handleChange}
-                className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#306f65] focus:border-transparent"
-              />
-            </div>
-            <div className="flex flex-col">
-              <label htmlFor="hate_count" className="mb-1 text-gray-700 font-medium">싫어요 수:</label>
-              <input
-                type="number"
-                id="hate_count"
-                name="hate_count"
-                value={formData.hate_count}
-                onChange={handleChange}
-                className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#306f65] focus:border-transparent"
-              />
-            </div>
-          </>
-        )}
-        <div className="mt-4 flex justify-end gap-3">
-          <button
-            type="submit"
-            className="px-5 py-2 cursor-pointer text-white border-none rounded-md transition-colors bg-[#58bcb5] hover:bg-[#4a9f99] font-medium"
-          >
-            {formTitle === '게시글 수정' ? '게시글 수정' : '게시글 작성'}
-          </button>
+        
+        {/* 버튼 그룹 */}
+        <div className="mt-8 pt-4 border-t border-gray-100 flex justify-center md:justify-end gap-4">
           <button
             type="button"
             onClick={onCancel}
-            className="px-5 py-2 cursor-pointer text-white border-none rounded-md transition-colors bg-gray-400 hover:bg-gray-500 font-medium"
+            className="px-6 py-3 bg-gray-500 hover:bg-gray-600 text-white font-semibold rounded-lg shadow-md transition-all duration-300 ease-in-out transform hover:-translate-y-0.5 focus:outline-none focus:ring-2 focus:ring-gray-400 focus:ring-opacity-75"
           >
             취소
+          </button>
+          <button
+            type="submit"
+            className="px-6 py-3 bg-indigo-600 hover:bg-indigo-700 text-white font-semibold rounded-lg shadow-md transition-all duration-300 ease-in-out transform hover:-translate-y-0.5 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-opacity-75"
+          >
+            {formTitle === '게시글 수정' ? '수정 완료' : '게시글 작성'}
           </button>
         </div>
       </form>
