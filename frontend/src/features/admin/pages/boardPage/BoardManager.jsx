@@ -1,11 +1,39 @@
-// frontend/src/features/admin/pages/boardPage/BoardManager.jsx
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react'; // useCallback 제거
 import useBoardManagement from '../../components/board/hooks/useBoardManagement';
 import useReplyManagement from '../../components/reply/hooks/useReplyManagements'; 
-import { useAuth } from '../../../../contexts/AuthContext'; 
+import { useAuth } from '../../../authentication/hooks/useAuth'; 
 
 import BoardList from './BoardList';
-import BoardForm from './BoardForm'; 
+import BoardForm from './BoardForm'; // BoardForm의 경로를 현재 파일에서 상대 경로로 확인해줘.
+
+// Custom message box component (alert, confirm 대신 사용)
+const MessageBox = ({ message, onConfirm, onCancel, type = 'alert' }) => {
+  if (!message) return null;
+
+  return (
+    <div className="fixed inset-0 bg-gray-600 bg-opacity-50 flex items-center justify-center z-50">
+      <div className="bg-white p-6 rounded-lg shadow-xl max-w-sm w-full text-center">
+        <p className="text-lg font-semibold mb-4">{message}</p>
+        <div className="flex justify-center space-x-4">
+          {type === 'confirm' && (
+            <button
+              onClick={onCancel}
+              className="px-4 py-2 bg-gray-300 text-gray-800 rounded-md hover:bg-gray-400 transition-colors duration-200 font-medium shadow-sm hover:shadow-md"
+            >
+              취소
+            </button>
+          )}
+          <button
+            onClick={onConfirm}
+            className="px-4 py-2 bg-[#306f65] text-white rounded-md hover:bg-[#58bcb5] transition-colors duration-200 font-medium shadow-sm hover:shadow-md"
+          >
+            확인
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+};
 
 function BoardManager() {
   const {
@@ -31,7 +59,7 @@ function BoardManager() {
     removeReply,
   } = useReplyManagement(selectedBoard?.board_id);
 
-  const { user: currentUser } = useAuth(); 
+  const { user: currentUser } = useAuth(); // 현재 로그인된 사용자 정보 (user_uuid, name 등 포함)
 
   const [showForm, setShowForm] = useState(false);
   const [showDetail, setShowDetail] = useState(false);
@@ -41,12 +69,28 @@ function BoardManager() {
   const [editingReplyId, setEditingReplyId] = useState(null); 
   const [editingReplyContent, setEditingReplyContent] = useState(''); 
 
+  // 메시지 박스 상태 관리
+  const [messageBox, setMessageBox] = useState({
+    show: false,
+    message: '',
+    type: 'alert', // 'alert' or 'confirm'
+    onConfirm: () => {},
+    onCancel: () => {}
+  });
+
+  // 메시지 박스 표시 함수
+  const showMessageBox = (message, type = 'alert', onConfirm = () => {}, onCancel = () => {}) => {
+    setMessageBox({ show: true, message, type, onConfirm, onCancel });
+  };
+
+  // 메시지 박스 닫기 함수
+  const hideMessageBox = () => {
+    setMessageBox({ show: false, message: '', type: 'alert', onConfirm: () => {}, onCancel: () => {} });
+  };
+
+
   useEffect(() => {
-    // 🚩 수정: searchKeyword를 의존성 배열에서 제거하고,
-    // fetchBoards 호출 시 searchKeyword 대신 빈 문자열을 전달합니다.
-    // 이렇게 하면 게시판 타입 변경 시 또는 컴포넌트 마운트 시에만 fetchBoards가 호출되고,
-    // 검색은 handleSearch 함수를 통해서만 명시적으로 실행됩니다.
-    fetchBoards(currentBoardType, ''); // 🚩 searchKeyword 대신 빈 문자열 전달
+    fetchBoards(currentBoardType, ''); 
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [currentBoardType, fetchBoards]); 
 
@@ -58,7 +102,7 @@ function BoardManager() {
 
 
   const handleNewBoardClick = () => {
-    setSelectedBoard(null);
+    setSelectedBoard(null); // 새 게시글 작성 시 selectedBoard를 null로 설정
     setShowForm(true);
     setShowDetail(false);
   };
@@ -75,8 +119,18 @@ function BoardManager() {
   };
 
   const handleSaveBoard = async (formData) => {
+    // 새 게시글 작성 시 user_id 유효성 검사 추가 (이미 BoardForm에서 처리되지만, 이중 확인)
+    if (!selectedBoard && !currentUser?.user_uuid) {
+      showMessageBox('로그인한 사용자 정보를 찾을 수 없습니다. 게시글을 작성할 수 없습니다.', 'alert', hideMessageBox);
+      return;
+    }
+
     let result;
     const dataToSend = { ...formData, enum: formData.enum || 'review' }; 
+
+    // 게시글 저장 시 전송될 데이터 확인 (프론트엔드에서 최종적으로 보내는 데이터)
+    console.log("[BoardManager] handleSaveBoard - 전송될 데이터:", dataToSend); 
+    console.log("[BoardManager] handleSaveBoard - user_id:", dataToSend.user_id);
 
     if (selectedBoard) {
       result = await modifyBoard(selectedBoard.board_id, dataToSend);
@@ -85,13 +139,14 @@ function BoardManager() {
     }
 
     if (result.success) {
-      alert(result.message);
-      setShowForm(false);
-      setSelectedBoard(null);
-      // 저장 후 목록 갱신 시 searchKeyword 유지
-      fetchBoards(currentBoardType, searchKeyword); 
+      showMessageBox(result.message, 'alert', () => {
+        hideMessageBox();
+        setShowForm(false);
+        setSelectedBoard(null);
+        fetchBoards(currentBoardType, searchKeyword); 
+      });
     } else {
-      alert(result.message);
+      showMessageBox(result.message);
     }
   };
 
@@ -99,26 +154,27 @@ function BoardManager() {
     setShowForm(false);
     setShowDetail(false);
     setSelectedBoard(null);
-    // 취소 후 목록 갱신 시 searchKeyword 유지
     fetchBoards(currentBoardType, searchKeyword); 
   };
 
   const handleDeleteBoard = async (boardId) => {
-    if (window.confirm('정말로 이 게시글을 삭제하시겠습니까?')) {
+    showMessageBox('정말로 이 게시글을 삭제하시겠습니까?', 'confirm', async () => {
+      hideMessageBox();
       const result = await removeBoard(boardId);
       if (result.success) {
-        alert(result.message);
-        if (selectedBoard && selectedBoard.board_id === boardId) {
-            setSelectedBoard(null);
-            setShowForm(false);
-            setShowDetail(false);
-        }
-        // 삭제 후 목록 갱신 시 searchKeyword 유지
-        fetchBoards(currentBoardType, searchKeyword); 
+        showMessageBox(result.message, 'alert', () => {
+          hideMessageBox();
+          if (selectedBoard && selectedBoard.board_id === boardId) {
+              setSelectedBoard(null);
+              setShowForm(false);
+              setShowDetail(false);
+          }
+          fetchBoards(currentBoardType, searchKeyword); 
+        });
       } else {
-        alert(result.message);
+        showMessageBox(result.message);
       }
-    }
+    }, hideMessageBox);
   };
 
   const handleChangeBoardType = (type) => {
@@ -134,7 +190,6 @@ function BoardManager() {
   };
 
   const handleSearch = () => {
-    // 🚩 검색 버튼 클릭 또는 Enter 키 입력 시에만 fetchBoards 호출
     fetchBoards(currentBoardType, searchKeyword); 
   };
 
@@ -146,13 +201,13 @@ function BoardManager() {
 
   const handleAddReply = async () => {
     if (!newReplyContent.trim() || !selectedBoard?.board_id) {
-      alert('댓글 내용을 입력해주세요.');
+      showMessageBox('댓글 내용을 입력해주세요.');
       return;
     }
     const userIdToAddReply = currentUser?.user_uuid;
 
     if (!userIdToAddReply) {
-      alert('로그인한 사용자 정보를 찾을 수 없습니다. 댓글을 작성할 수 없습니다.');
+      showMessageBox('로그인한 사용자 정보를 찾을 수 없습니다. 댓글을 작성할 수 없습니다.');
       return;
     }
 
@@ -160,7 +215,7 @@ function BoardManager() {
     if (result.success) {
       setNewReplyContent('');
     } else {
-      alert(result.message);
+      showMessageBox(result.message);
     }
   };
 
@@ -171,7 +226,7 @@ function BoardManager() {
 
   const handleSaveEditedReply = async (replyId) => {
     if (!editingReplyContent.trim()) {
-      alert('수정할 댓글 내용을 입력해주세요.');
+      showMessageBox('수정할 댓글 내용을 입력해주세요.');
       return;
     }
     const result = await modifyReply(replyId, { content: editingReplyContent });
@@ -179,7 +234,7 @@ function BoardManager() {
       setEditingReplyId(null);
       setEditingReplyContent('');
     } else {
-      alert(result.message);
+      showMessageBox(result.message);
     }
   };
 
@@ -189,12 +244,13 @@ function BoardManager() {
   };
 
   const handleDeleteReply = async (replyId) => {
-    if (window.confirm('정말로 이 댓글을 삭제하시겠습니까?')) {
+    showMessageBox('정말로 이 댓글을 삭제하시겠습니까?', 'confirm', async () => {
+      hideMessageBox();
       const result = await removeReply(replyId);
       if (!result.success) {
-        alert(result.message);
+        showMessageBox(result.message);
       }
-    }
+    }, hideMessageBox);
   };
 
 
@@ -208,7 +264,7 @@ function BoardManager() {
         {currentBoardType !== null && (
           <button
             onClick={handleNewBoardClick}
-            className="px-4 py-2 cursor-pointer text-white border-none rounded transition-colors bg-[#58bcb5] hover:bg-[#4a9f99]"
+            className="px-6 py-2 bg-[#306f65] text-white rounded-md hover:bg-[#58bcb5] transition-colors duration-200 font-medium shadow-md hover:shadow-lg"
           >
             새 게시글 작성
           </button>
@@ -219,19 +275,19 @@ function BoardManager() {
       <div className="mb-5 flex space-x-2">
         <button
           onClick={() => handleChangeBoardType(null)}
-          className={`px-4 py-2 rounded-md ${currentBoardType === null ? 'bg-[#58bcb5] text-white' : 'bg-gray-200 text-gray-700'} hover:bg-[#4a9f99] hover:text-white transition-colors`}
+          className={`px-4 py-2 rounded-md transition-colors duration-200 font-medium shadow-sm hover:shadow-md ${currentBoardType === null ? 'bg-[#306f65] text-white' : 'bg-gray-200 text-gray-700 hover:bg-gray-300'}`}
         >
           전체보기
         </button>
         <button
           onClick={() => handleChangeBoardType('review')}
-          className={`px-4 py-2 rounded-md ${currentBoardType === 'review' ? 'bg-[#58bcb5] text-white' : 'bg-gray-200 text-gray-700'} hover:bg-[#4a9f99] hover:text-white transition-colors`}
+          className={`px-4 py-2 rounded-md transition-colors duration-200 font-medium shadow-sm hover:shadow-md ${currentBoardType === 'review' ? 'bg-[#306f65] text-white' : 'bg-gray-200 text-gray-700 hover:bg-gray-300'}`}
         >
           사용후기 게시판
         </button>
         <button
           onClick={() => handleChangeBoardType('free')}
-          className={`px-4 py-2 rounded-md ${currentBoardType === 'free' ? 'bg-[#58bcb5] text-white' : 'bg-gray-200 text-gray-700'} hover:bg-[#4a9f99] hover:hover:text-white transition-colors`}
+          className={`px-4 py-2 rounded-md transition-colors duration-200 font-medium shadow-sm hover:shadow-md ${currentBoardType === 'free' ? 'bg-[#306f65] text-white' : 'bg-gray-200 text-gray-700 hover:bg-gray-300'}`}
         >
           자유 게시판
         </button>
@@ -257,11 +313,11 @@ function BoardManager() {
                 value={searchKeyword}
                 onChange={handleSearchInputChange}
                 onKeyPress={handleKeyPress}
-                className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#306f65] focus:border-transparent"
+                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#306f65]"
               />
               <button
                 onClick={handleSearch}
-                className="px-4 py-2 cursor-pointer text-white border-none rounded transition-colors bg-[#58bcb5] hover:bg-[#4a9f99]"
+                className="px-6 py-2 bg-[#306f65] text-white rounded-md hover:bg-[#58bcb5] transition-colors duration-200 font-medium shadow-md hover:shadow-lg"
               >
                 검색
               </button>
@@ -272,14 +328,19 @@ function BoardManager() {
 
       {/* 게시글 작성/수정 폼 컴포넌트 */}
       {showForm && (
-        <BoardForm
-          initialData={selectedBoard ?
-            { ...selectedBoard, enum: selectedBoard.enum || 'review' } :
-            { enum: currentBoardType || 'review' }
-          }
-          onSave={handleSaveBoard}
-          onCancel={handleCancel}
-        />
+        <>
+          {/* ✨ BoardForm 렌더링 직전에 currentUserId 값 확인 */}
+          {console.log("[BoardManager] BoardForm으로 전달되는 currentUserId:", currentUser?.user_uuid)}
+          <BoardForm
+            // selectedBoard가 null이면 새 게시글 작성 모드이므로 initialData를 null로 전달
+            initialData={selectedBoard || null} 
+            onSave={handleSaveBoard}
+            onCancel={handleCancel}
+            currentUserId={currentUser?.user_uuid}
+            // currentBoardType 프롭 전달. 주석을 별도의 줄로 분리하여 SyntaxError 해결
+            currentBoardType={currentBoardType} 
+          />
+        </>
       )}
 
       {/* 게시글 상세 보기 컴포넌트 (댓글 기능 추가) */}
@@ -336,26 +397,26 @@ function BoardManager() {
           <div className="mt-6 flex justify-end space-x-3">
             <button
               onClick={handleEditBoardClick}
-              className="px-4 py-2 cursor-pointer text-white border-none rounded-md transition-colors bg-[#58bcb5] hover:bg-[#4a9f99] font-medium text-sm"
+              className="px-6 py-2 bg-[#306f65] text-white rounded-md hover:bg-[#58bcb5] transition-colors duration-200 font-medium shadow-md hover:shadow-lg"
             >
               수정
             </button>
             <button
               onClick={() => handleDeleteBoard(selectedBoard.board_id)}
-              className="px-4 py-2 cursor-pointer bg-red-500 text-white border-none rounded-md hover:bg-red-600 transition-colors font-medium text-sm"
+              className="px-6 py-2 bg-red-500 text-white rounded-md hover:bg-red-600 transition-colors duration-200 font-medium shadow-md hover:shadow-lg"
             >
               삭제
             </button>
             <button
               type="button"
               onClick={handleCancel}
-              className="px-4 py-2 cursor-pointer text-white border-none rounded-md transition-colors bg-gray-400 hover:bg-gray-500 font-medium text-sm"
+              className="px-6 py-2 bg-gray-400 text-white rounded-md hover:bg-gray-500 transition-colors duration-200 font-medium shadow-md hover:shadow-lg"
             >
               목록으로
             </button>
           </div>
 
-          {/* 🚩 댓글 섹션 추가 */}
+          {/* 댓글 섹션 추가 */}
           <div className="mt-8 pt-6 border-t border-gray-200">
             <h3 className="text-xl font-semibold text-gray-800 mb-4">댓글</h3>
             {repliesLoading ? (
@@ -380,13 +441,13 @@ function BoardManager() {
                         <div className="flex justify-end space-x-2">
                           <button
                             onClick={() => handleSaveEditedReply(reply.reply_id)}
-                            className="px-3 py-1.5 text-white bg-[#58bcb5] rounded-md hover:bg-[#4a9f99] transition-colors"
+                            className="px-4 py-2 bg-[#306f65] text-white rounded-md hover:bg-[#58bcb5] transition-colors duration-200 font-medium shadow-sm hover:shadow-md"
                           >
                             저장
                           </button>
                           <button
                             onClick={handleCancelEditReply}
-                            className="px-3 py-1.5 text-white bg-gray-400 rounded-md hover:bg-[#4a9f99] transition-colors"
+                            className="px-4 py-2 bg-gray-400 text-white rounded-md hover:bg-gray-500 transition-colors duration-200 font-medium shadow-sm hover:shadow-md"
                           >
                             취소
                           </button>
@@ -407,13 +468,13 @@ function BoardManager() {
                         <div className="flex justify-end space-x-2 mt-2">
                           <button
                             onClick={() => handleEditReply(reply)}
-                            className="text-[#58bcb5] hover:text-[#4a9f99] text-xs"
+                            className="px-3 py-1.5 text-[#58bcb5] hover:text-[#306f65] text-xs font-medium"
                           >
                             수정
                           </button>
                           <button
                             onClick={() => handleDeleteReply(reply.reply_id)}
-                            className="text-red-500 hover:text-red-700 text-xs"
+                            className="px-3 py-1.5 text-red-500 hover:text-red-700 text-xs font-medium"
                           >
                             삭제
                           </button>
@@ -438,7 +499,7 @@ function BoardManager() {
               <div className="flex justify-end mt-3">
                 <button
                   onClick={handleAddReply}
-                  className="px-4 py-2 cursor-pointer text-white border-none rounded-md transition-colors bg-[#58bcb5] hover:bg-[#4a9f99]"
+                  className="px-6 py-2 bg-[#306f65] text-white rounded-md hover:bg-[#58bcb5] transition-colors duration-200 font-medium shadow-md hover:shadow-lg"
                 >
                   댓글 추가
                 </button>
@@ -446,6 +507,16 @@ function BoardManager() {
             </div>
           </div>
         </div>
+      )}
+
+      {/* 전역 메시지 박스 렌더링 */}
+      {messageBox.show && (
+        <MessageBox
+          message={messageBox.message}
+          type={messageBox.type}
+          onConfirm={messageBox.onConfirm}
+          onCancel={messageBox.onCancel}
+        />
       )}
     </div>
   );

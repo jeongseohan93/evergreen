@@ -1,4 +1,3 @@
-// backend/controllers/admin/boardController.js
 const { Board, User } = require('../../models'); // Board, User 모델만 가져옴
 const Sequelize = require('sequelize'); // Sequelize 라이브러리를 직접 import
 const { Op } = Sequelize; // Op는 Sequelize 객체에서 가져옴
@@ -7,7 +6,7 @@ const { Op } = Sequelize; // Op는 Sequelize 객체에서 가져옴
 exports.getAllBoards = async (req, res, next) => {
     try {
         // 쿼리 파라미터에서 enum 타입과 검색 키워드를 받음
-        // 🚩 'searchKeyword' 대신 프론트엔드에서 보내는 'keyword'를 사용합니다.
+        // 'searchKeyword' 대신 프론트엔드에서 보내는 'keyword'를 사용합니다.
         const { enum: boardType, keyword } = req.query;
         let whereConditions = {}; // Board 모델에 적용될 WHERE 조건
         let includeOptions = [{ // User 모델 포함 조건 (기본값: LEFT JOIN)
@@ -27,7 +26,7 @@ exports.getAllBoards = async (req, res, next) => {
         }
 
         // 2. 검색 키워드 처리 (제목, 내용, 작성자 이름)
-        // 🚩 keyword가 존재할 경우 검색 조건 추가
+        // keyword가 존재할 경우 검색 조건 추가
         if (keyword) {
             const searchOrConditions = []; // 제목, 내용, 작성자 이름을 OR로 묶을 조건 배열
 
@@ -41,7 +40,7 @@ exports.getAllBoards = async (req, res, next) => {
             searchOrConditions.push({ content: { [Op.like]: `%${keyword}%` } });
 
             // 작성자 이름 검색 조건
-            // Sequelize.literal을 사용하여 명시적으로 SQL 컬럼을 참조 (MySQL 호환성 향상)
+            // Sequelize.literal를 사용하여 명시적으로 SQL 컬럼을 참조 (MySQL 호환성 향상)
             searchOrConditions.push(
                 Sequelize.literal(`\`User\`.\`name\` LIKE '%${keyword}%'`)
             );
@@ -66,7 +65,7 @@ exports.getAllBoards = async (req, res, next) => {
 
         const posts = await Board.findAll({
             where: whereConditions, // 최종 WHERE 조건 적용
-            // 🚩 공지사항(notice)을 최상단에, 그 다음 생성일(created_at)로 정렬
+            // 공지사항(notice)을 최상단에, 그 다음 생성일(created_at)로 정렬
             order: [
                 // notice가 'Y'이면 0, 'N'이면 1로 매핑하여 ASC (오름차순) 정렬
                 // 이렇게 하면 'Y'가 항상 'N'보다 먼저 오게 됨
@@ -120,31 +119,52 @@ exports.getBoardById = async (req, res, next) => {
 exports.createBoard = async (req, res, next) => {
     const { user_id, title, content, notice, enum: enumValue } = req.body;
     try {
+        // ✨ 1. 수신된 데이터 확인 (가장 중요!)
+        console.log("[createBoard] 수신된 req.body:", req.body);
+        console.log("[createBoard] 수신된 user_id:", user_id); 
+        console.log("[createBoard] 수신된 title:", title);
+        console.log("[createBoard] 수신된 content:", content); // content의 실제 값과 타입을 확인하세요.
+        console.log("[createBoard] 수신된 notice:", notice);
+        console.log("[createBoard] 수신된 enumValue:", enumValue);
+
         const validEnumTypes = ['review', 'free'];
         if (!validEnumTypes.includes(enumValue)) {
+            console.log("[createBoard] 유효하지 않은 게시판 타입:", enumValue); // ✨ 로그 추가
             return res.status(400).json({ message: '유효하지 않은 게시판 타입입니다.' });
         }
 
         const user = await User.findOne({ where: { user_uuid: user_id } });
+        // ✨ 2. User 조회 결과 확인
+        console.log("[createBoard] User.findOne 결과:", user); 
         if (!user) {
+            console.log("[createBoard] 사용자 ID를 찾을 수 없음:", user_id); // ✨ 로그 추가
             return res.status(400).json({ message: '유효하지 않은 사용자 ID입니다.' });
         }
         const userName = user.name;
+        console.log("[createBoard] 찾은 사용자 이름:", userName); // ✨ 로그 추가
 
         const newPost = await Board.create({
             user_id: user_id,
             title,
-            content,
+            content, // content가 JSON 타입이어야 함
             name: userName,
             notice: notice || 'N',
             enum: enumValue,
             created_at: new Date(),
             updated_at: new Date(),
         });
+        console.log("[createBoard] 게시글 생성 성공:", newPost); // ✨ 로그 추가
         res.status(201).json(newPost);
     } catch (error) {
-        console.error(error);
-        next(error);
+        // ✨ 3. 에러 발생 시 상세 정보 로깅 (가장 중요!)
+        console.error("Error in createBoard:", error); 
+        if (error.original) {
+            console.error("Database error details (createBoard):", error.original);
+        }
+        if (error.sql) {
+            console.error("SQL query that caused error (createBoard):", error.sql);
+        }
+        next(error); // 에러 핸들링 미들웨어로 전달
     }
 };
 

@@ -11,7 +11,9 @@ export const useAuth = () => {
     const role = useSelector(selectRole);
     const status = useSelector(selectStatus);
     const error = useSelector(selectError);
-
+ console.log("[useAuth Hook] user object from Redux:", user);
+    console.log("[useAuth Hook] user_uuid from Redux user object:", user?.user_uuid);
+     
     const handleLogin = async (loginInfo) => {
         if (status === "loading") return;
     

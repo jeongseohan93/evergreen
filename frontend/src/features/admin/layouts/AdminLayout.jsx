@@ -2,7 +2,7 @@
 
 import React, { useState } from 'react';
 import { HomeIcon, ShoppingBagIcon, UsersIcon, ChartBarIcon, CogIcon, FoldersIcon, FileTextIcon, PackageIcon ,List } from 'lucide-react';
-import { AuthProvider } from '../../../contexts/AuthContext'; 
+
 // === Import 경로 재수정 ===
 // CategoryManager의 실제 위치에 맞게 경로를 설정 (pages/categoryPage 폴더 안에 있음)
 import CategoryManager from '../pages/categoryPage/CategoryManager'; // <-- 이 경로가 맞습니다!
@@ -238,9 +238,9 @@ const AdminLayout = () => {
   const CurrentComponent = ComponentMap[activeComponentKey] || <AdminDashboardPage />;
 
   return (
-    <AuthProvider>
+ 
     <div className="min-h-screen flex flex-col bg-gray-100 font-sans">
-      {/* AdminHeader는 의도적으로 아무것도 렌더링하지 않습니다. */}
+  
       <AdminHeader onGoDashboard={handleGoDashboard} /> 
 
       <div className="flex flex-1">
@@ -252,7 +252,7 @@ const AdminLayout = () => {
         </main>
       </div>
     </div>
-    </AuthProvider>
+   
   );
 };
 
