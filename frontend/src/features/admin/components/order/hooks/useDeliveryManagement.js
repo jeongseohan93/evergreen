@@ -6,8 +6,6 @@ const useDeliveryManagement = () => {
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState('');
     const [editingDelivery, setEditingDelivery] = useState({});
-    const [trackingInfo, setTrackingInfo] = useState(null);
-    const [showTrackingModal, setShowTrackingModal] = useState(false);
     const [showDelayedOnly, setShowDelayedOnly] = useState(false);
     const [showDateFilter, setShowDateFilter] = useState(false);
     const [selectedDate, setSelectedDate] = useState('');
@@ -48,59 +46,7 @@ const useDeliveryManagement = () => {
         }
     }, []);
 
-    const handleDeliveryStatusUpdate = useCallback(async (orderId, status, trackingNumber, deliveryCompany) => {
-        setLoading(true);
-        setError('');
-        try {
-            const response = await orderApi.updateDeliveryStatus(orderId, status, trackingNumber, deliveryCompany);
-            if (response.success) {
-                setDeliveries(prevDeliveries => 
-                    prevDeliveries.map(delivery => 
-                        delivery.order_id === orderId 
-                            ? { 
-                                ...delivery, 
-                                status: status,
-                                tracking_number: trackingNumber,
-                                delivery_company: deliveryCompany
-                              }
-                            : delivery
-                    )
-                );
-                setEditingDelivery(prev => ({ ...prev, [orderId]: false }));
-            } else {
-                setError(response.message || '배송 상태 업데이트에 실패했습니다.');
-            }
-        } catch (err) {
-            console.error('배송 상태 업데이트 오류:', err);
-            setError('배송 상태 업데이트 중 오류가 발생했습니다.');
-        } finally {
-            setLoading(false);
-        }
-    }, []);
-
-    const handleTrackParcel = useCallback(async (trackingNumber, carrier = 'korea-post') => {
-        if (!trackingNumber) {
-            setError('운송장 번호를 입력하세요');
-            return;
-        }
-
-        setLoading(true);
-        setError('');
-        try {
-            const response = await orderApi.trackParcel(trackingNumber, carrier);
-            if (response.success) {
-                setTrackingInfo(response.data);
-                setShowTrackingModal(true);
-            } else {
-                setError(response.message || '택배 추적에 실패했습니다.');
-            }
-        } catch (err) {
-            console.error('택배 추적 오류:', err);
-            setError('택배 추적 중 오류가 발생했습니다.');
-        } finally {
-            setLoading(false);
-        }
-    }, []);
+    // --- API 호출 함수들 중 handleDeliveryStatusUpdate 삭제됨 ---
 
     const handleCompleteDelivery = useCallback(async (orderId) => {
         if (!window.confirm('배송을 완료 처리하시겠습니까?')) {
@@ -168,6 +114,16 @@ const useDeliveryManagement = () => {
         }
     }, []);
 
+    // 배송 정보 수정 API 호출 함수
+    const updateDeliveryInfo = useCallback(async (deliveryId, data) => {
+        try {
+            const result = await orderApi.updateDeliveryInfo(deliveryId, data);
+            return result;
+        } catch (err) {
+            return { success: false, error: err.message };
+        }
+    }, []);
+
     // --- 데이터 가공/필터링 함수들 ---
     const getStatusText = useCallback((status) => {
         const statusMap = {
@@ -215,15 +171,25 @@ const useDeliveryManagement = () => {
         });
     }, [selectedDate]);
 
-    const getFilteredDeliveries = useCallback(() => {
+    const getFilteredDeliveries = useCallback((searchKeyword = '') => {
         let filtered = deliveries;
-        
         filtered = getDateFilteredDeliveries(filtered);
-        
         if (showDelayedOnly) {
             filtered = filtered.filter(delivery => delivery.isDelayed);
         }
-        
+        if (searchKeyword && searchKeyword.trim() !== '') {
+            const keyword = searchKeyword.trim().toLowerCase();
+            filtered = filtered.filter(delivery => {
+                const name = delivery.User?.name?.toLowerCase() || '';
+                const phone = delivery.User?.phone?.toLowerCase() || '';
+                const tracking = delivery.tracking_number?.toLowerCase() || '';
+                return (
+                    name.includes(keyword) ||
+                    phone.includes(keyword) ||
+                    tracking.includes(keyword)
+                );
+            });
+        }
         return filtered;
     }, [deliveries, getDateFilteredDeliveries, showDelayedOnly]);
 
@@ -265,16 +231,12 @@ const useDeliveryManagement = () => {
         loading,
         error,
         editingDelivery,
-        trackingInfo,
-        showTrackingModal,
         showDelayedOnly,
         showDateFilter,
         selectedDate,
 
         // 함수들
         fetchAllDeliveries, // 필요시 컴포넌트에서 강제 새로고침 시 사용
-        handleDeliveryStatusUpdate,
-        handleTrackParcel,
         handleCompleteDelivery,
         handleCancelDelivery,
         toggleDeliveryEdit,
@@ -286,7 +248,7 @@ const useDeliveryManagement = () => {
         toggleDateFilter,
         handleDateChange,
         clearDateFilter,
-        setShowTrackingModal // 모달 닫기 위해
+        updateDeliveryInfo // 추가
     };
 };
 

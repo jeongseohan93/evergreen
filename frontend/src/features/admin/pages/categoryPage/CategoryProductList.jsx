@@ -176,9 +176,9 @@ const CategoryProductList = ({ categoryId }) => {
     }
 
     return (
-        <div className="p-6">
+        <div className="bg-white p-6 rounded-lg border border-[#306f65]">
             <h2 className="text-4xl font-bold font-aggro text-gray-800 mb-6">
-                카테고리 '{currentCategoryName}' 상품 목록
+                카테고리 <span className="text-[#306f65]">{currentCategoryName}</span> 상품 목록
             </h2>
 
             {products.length === 0 ? (

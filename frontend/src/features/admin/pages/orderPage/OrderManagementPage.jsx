@@ -1,24 +1,20 @@
 // src/features/admin/pages/orderPage/OrderManagementPage.jsx
 
-import React from 'react';
+import React, { useState } from 'react';
 import useDeliveryManagement from '../../components/order/hooks/useDeliveryManagement'; 
-
-// 새로 만들 컴포넌트들을 임포트합니다.
 import DeliveryFilterSection from '../../pages/orderPage/DeliveryFilterSection';
 import DeliveryList from '../../pages/orderPage/DeliveryList';
-import TrackingModal from '../../pages/orderPage/TrackingModal';
+import DeliveryModifyForm from '../../pages/orderPage/DeliveryModifyForm';
+import * as userApi from '../../api/userApi';
 
 const OrderManagementPage = () => {
     const {
         loading,
         error,
-        editingDelivery,
-        trackingInfo,
-        showTrackingModal,
+        editingDelivery: editingDeliveryMap,
         showDelayedOnly,
         showDateFilter,
         selectedDate,
-        
         handleDeliveryStatusUpdate,
         handleTrackParcel,
         handleCompleteDelivery,
@@ -32,21 +28,61 @@ const OrderManagementPage = () => {
         toggleDateFilter,
         handleDateChange,
         clearDateFilter,
-        setShowTrackingModal
+        fetchAllDeliveries, // 추가
     } = useDeliveryManagement();
 
-    const delayStats = getDelayStats(); // 지연 통계는 필터 섹션과 목록 모두에 필요할 수 있으니 여기서 계산
-    const filteredDeliveries = getFilteredDeliveries(); // 필터링된 배송 목록
+    const delayStats = getDelayStats();
+    const [searchInput, setSearchInput] = useState('');
+    const [searchKeyword, setSearchKeyword] = useState('');
+    const [editingDelivery, setEditingDelivery] = useState(null);
+
+    const handleSearchKeywordChange = (e) => setSearchInput(e.target.value);
+    const handleSearch = () => {
+        setSearchKeyword(searchInput.trim());
+    };
+    const handleClearSearch = () => {
+        setSearchInput('');
+        setSearchKeyword('');
+    };
+
+    const filteredDeliveries = getFilteredDeliveries(searchKeyword);
+
+    const handleEditClick = async (delivery) => {
+        // user_uuid로 사용자 정보 조회
+        let userInfo = null;
+        try {
+            if (delivery.user_uuid) {
+                const userRes = await userApi.getUserById(delivery.user_uuid);
+                userInfo = userRes?.user || userRes; // userRes.user 또는 userRes 자체
+            }
+        } catch (e) {
+            userInfo = null;
+        }
+        setEditingDelivery({ ...delivery, User: userInfo });
+    };
+    const handleEditCancel = () => setEditingDelivery(null);
+    const handleEditSuccess = () => {
+        setEditingDelivery(null);
+        fetchAllDeliveries();
+    };
+
+    // 상태 기반 조건부 렌더링
+    if (editingDelivery) {
+        return (
+            <DeliveryModifyForm
+                delivery={editingDelivery}
+                onCancel={handleEditCancel}
+                onSuccess={handleEditSuccess}
+            />
+        );
+    }
 
     return (
         <div style={{ padding: '20px', maxWidth: '1200px', margin: '0 auto' }}>
             {loading && <p>로딩 중...</p>}
             {error && <p className="error-message">{error}</p>}
-
             <div className="delivery-section">
                 <h2 className="font-aggro text-4xl font-bold">배송 관리</h2>
-                
-                {/* 필터 섹션 컴포넌트 */}
                 <DeliveryFilterSection
                     delayStats={delayStats}
                     showDelayedOnly={showDelayedOnly}
@@ -56,30 +92,24 @@ const OrderManagementPage = () => {
                     toggleDateFilter={toggleDateFilter}
                     handleDateChange={handleDateChange}
                     clearDateFilter={clearDateFilter}
+                    searchKeyword={searchInput}
+                    onSearchKeywordChange={handleSearchKeywordChange}
+                    onSearch={handleSearch}
+                    onClearSearch={handleClearSearch}
                 />
-
-                {/* 배송 목록 컴포넌트 */}
                 <DeliveryList
                     filteredDeliveries={filteredDeliveries}
                     showDelayedOnly={showDelayedOnly}
                     selectedDate={selectedDate}
-                    editingDelivery={editingDelivery}
+                    editingDelivery={editingDeliveryMap}
                     getStatusText={getStatusText}
                     getStatusClass={getStatusClass}
                     handleDeliveryStatusUpdate={handleDeliveryStatusUpdate}
-                    handleTrackParcel={handleTrackParcel}
                     handleCompleteDelivery={handleCompleteDelivery}
                     handleCancelDelivery={handleCancelDelivery}
-                    toggleDeliveryEdit={toggleDeliveryEdit}
+                    onEditClick={handleEditClick}
                 />
             </div>
-
-            {/* 추적 모달 컴포넌트 */}
-            <TrackingModal
-                showTrackingModal={showTrackingModal}
-                trackingInfo={trackingInfo}
-                setShowTrackingModal={setShowTrackingModal}
-            />
         </div>
     );
 };

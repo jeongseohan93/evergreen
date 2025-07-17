@@ -1,6 +1,6 @@
 // src/features/admin/components/order/DeliveryFilterSection.jsx
 
-import React from 'react';
+import React, { useState } from 'react';
 
 const DeliveryFilterSection = ({
     delayStats,
@@ -10,7 +10,11 @@ const DeliveryFilterSection = ({
     toggleDelayedFilter,
     toggleDateFilter,
     handleDateChange,
-    clearDateFilter
+    clearDateFilter,
+    searchKeyword, // 추가
+    onSearchKeywordChange, // 추가
+    onSearch, // 추가
+    onClearSearch // 추가
 }) => {
     return (
         <>
@@ -45,34 +49,56 @@ const DeliveryFilterSection = ({
                                 : 'bg-[#306f65] text-white hover:bg-[#58bcb5]'}
                         `}
                     >
-                        {showDateFilter ? '날짜 필터 닫기' : '+ 날짜별 조회'}
+                        {showDateFilter ? '검색 필터 닫기' : '+ 배송 검색'}
                     </button>
                     <div className={`transition-all duration-300 overflow-hidden ${showDateFilter ? 'max-h-[500px] opacity-100' : 'max-h-0 opacity-0'}`}>
                         {showDateFilter && (
-                            <div className="mb-5 text-center p-4 bg-gray-50 rounded-lg mt-4">
-                                <label htmlFor="dateFilter" className="mr-3 font-bold">주문일 선택:</label>
-                                <input
-                                    type="date"
-                                    id="dateFilter"
-                                    value={selectedDate}
-                                    onChange={handleDateChange}
-                                    className="px-3 py-2 border border-gray-300 rounded mr-2 focus:outline-none focus:border-[#306f65]"
-                                />
-                                {selectedDate && (
-                                    <button 
-                                        onClick={clearDateFilter}
-                                        className="px-3 py-2 bg-gray-400 text-white rounded hover:bg-gray-500 ml-2"
+                            <div className="mb-5 text-center p-4 bg-gray-50 rounded-lg mt-4 flex flex-row items-center justify-center gap-4">
+                                {/* 배송 검색 UI */}
+                                <div className="flex gap-2 w-full max-w-lg items-center">
+                                    <input
+                                        type="text"
+                                        placeholder="받는 분, 운송번호, 고객 전화번호 등 입력"
+                                        className="flex-1 px-4 py-2 border border-gray-300 rounded focus:outline-none focus:border-[#306f65]"
+                                        value={searchKeyword}
+                                        onChange={onSearchKeywordChange}
+                                        onKeyDown={e => { if (e.key === 'Enter') onSearch(); }}
+                                    />
+                                    <button
+                                        className="px-4 py-2 cursor-pointer text-white border-none rounded transition-colors bg-[#58bcb5]"
+                                        onClick={onSearch}
+                                    >
+                                        검색
+                                    </button>
+                                    <button
+                                        className="px-4 py-2 cursor-pointer text-white border-none rounded transition-colors bg-gray-400 hover:bg-gray-500"
+                                        onClick={onClearSearch}
                                     >
                                         초기화
                                     </button>
-                                )}
-                                {selectedDate && (
-                                    <div className="mt-10 text-gray-600">
-                                        📅 {selectedDate} 주문건 조회
-                                    </div>
-                                )}
+                                </div>
+                                {/* 주문일 선택 UI */}
+                                <div className="flex items-center ml-4">
+                                    <label htmlFor="dateFilter" className="mr-3 font-bold">주문일 선택:</label>
+                                    <input
+                                        type="date"
+                                        id="dateFilter"
+                                        value={selectedDate}
+                                        onChange={handleDateChange}
+                                        className="px-3 py-2 border border-gray-300 rounded mr-2 focus:outline-none focus:border-[#306f65]"
+                                    />
+                                    {selectedDate && (
+                                        <button 
+                                            onClick={clearDateFilter}
+                                            className="px-3 py-2 bg-gray-400 text-white rounded hover:bg-gray-500 ml-2"
+                                        >
+                                            초기화
+                                        </button>
+                                    )}
+                                </div>
                             </div>
                         )}
+                        <div className="w-full text-center text-sm text-gray-400 mt-2">제명된 회원의 주문은 조회되지 않습니다.</div>
                     </div>
                 </div>
             </div>

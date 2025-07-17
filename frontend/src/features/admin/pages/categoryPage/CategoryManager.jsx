@@ -56,7 +56,7 @@ const CategoryManager = () => {
       <div>
         <button
           onClick={handleBackToCategoryManager}
-          className="mb-4 px-4 py-2 bg-gray-200 text-gray-700 rounded-md hover:bg-gray-300"
+          className="mb-4 px-4 py-2 bg-[#306f65] text-white rounded-md hover:bg-white hover:text-[#306f65] border hover:border-[#306f65]"
         >
           ← 돌아가기
         </button>
