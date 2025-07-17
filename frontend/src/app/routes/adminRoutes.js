@@ -1,6 +1,9 @@
 // src/app/routes/adminRoutes.js
+
 import { Outlet } from 'react-router-dom';
 import AdminOutlet from './adminOutlet'
+
+
 import DashboardPage from '@/features/admin/pages/DashBoardPage';
 import { PrivateRoute } from '@/shared';
 import UserManage from '@/features/admin/pages/userPage/UserManage.jsx';

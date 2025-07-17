@@ -1,7 +1,7 @@
 // src/features/admin/layouts/AdminLayout.jsx
 
 import React, { useState } from 'react';
-import { HomeIcon, ShoppingBagIcon, UsersIcon, ChartBarIcon, CogIcon, FoldersIcon, FileTextIcon, PackageIcon } from 'lucide-react';
+import { HomeIcon, ShoppingBagIcon, UsersIcon, ChartBarIcon, CogIcon, FoldersIcon, FileTextIcon, PackageIcon ,List } from 'lucide-react';
 
 // === Import 경로 재수정 ===
 // CategoryManager의 실제 위치에 맞게 경로를 설정 (pages/categoryPage 폴더 안에 있음)
@@ -20,7 +20,7 @@ import ReportEdit from '../pages/reportPage/ReportEdit.jsx';
 import ReportWrite from '../pages/reportPage/ReportWrite.jsx';
 import DashBoardPage from '../pages/dashboardPage/DashBoardPage';
 import BannerManager from '../pages/bannerPage/BannerManager';
-
+import BoardManager from '../pages/boardPage/BoardManager';
 
 import sh from '../../../assets/image/sh.png';
 
@@ -77,6 +77,12 @@ const OrderPage = () => (
   </div>
 );
 
+const BoardPage = () => (
+  <div className="min-h-[400px]">
+ <BoardManager />
+ </div>
+);
+
 // === Header 컴포넌트 === (수정됨: 의도적으로 아무것도 렌더링하지 않음)
 const AdminHeader = ({ onGoDashboard }) => {
   // AdminHeader는 의도적으로 아무것도 렌더링하지 않습니다.
@@ -94,6 +100,7 @@ const AdminSidebar = ({ activeKey, setActiveKey, onGoDashboard, onLogout }) => {
     { name: '회원 관리', icon: UsersIcon, key: 'users' },
     { name: '매출 관리', icon: ChartBarIcon, key: 'sale' },
     { name: '리포트 관리', icon: FileTextIcon, key: 'reports' },
+    { name: '게시판', icon: List, key: 'board' },
     { name: '배너 관리', icon: CogIcon, key: 'settings' },
   ];
 
@@ -222,6 +229,7 @@ const AdminLayout = () => {
     'reportDetail': <ReportDetail reportId={reportDetailId} onCancel={handleCancelReport} />,
     'reportEdit': <ReportEdit reportId={reportEditId} onCancel={handleCancelReport} />,
     'reportWrite': <ReportWrite onCancel={handleCancelReport} />,
+    'board' : <BoardPage />,
     'settings': <BannerManagerPage />,
     // ⭐ 삭제: 'categoryProducts' 항목 제거 ⭐
     // 'categoryProducts': <CategoryProductList categoryId={selectedCategoryIdForProductList} />,
@@ -230,8 +238,9 @@ const AdminLayout = () => {
   const CurrentComponent = ComponentMap[activeComponentKey] || <AdminDashboardPage />;
 
   return (
+ 
     <div className="min-h-screen flex flex-col bg-gray-100 font-sans">
-      {/* AdminHeader는 의도적으로 아무것도 렌더링하지 않습니다. */}
+  
       <AdminHeader onGoDashboard={handleGoDashboard} /> 
 
       <div className="flex flex-1">
@@ -243,6 +252,7 @@ const AdminLayout = () => {
         </main>
       </div>
     </div>
+   
   );
 };
 

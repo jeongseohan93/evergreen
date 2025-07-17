@@ -57,7 +57,7 @@ router.post('/me', async (req, res) => { // async 추가
       // 토큰에 저장된 정보로 사용자 데이터를 DB에서 조회
       const user = await User.findOne({ 
         where: { user_uuid: decoded.user_uuid }, // 토큰 생성 시 넣었던 값으로 조회
-        attributes: ['name', 'email', 'role'] // 필요한 정보만 선택
+        attributes: ['name', 'user_uuid' , 'email', 'role'] // 필요한 정보만 선택
       });
 
       if (!user) {
@@ -69,6 +69,7 @@ router.post('/me', async (req, res) => { // async 추가
       return res.status(200).json({
         isLoggedIn: true,
         user: {
+           user_uuid: user.user_uuid,
             name: user.name,
             email: user.email,
             role: user.role
