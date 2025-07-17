@@ -15,9 +15,13 @@ export const loginAsync = createAsyncThunk(
   async (loginInfo, { rejectWithValue }) => {
     try{
       const response = await loginUser(loginInfo);
+      // 서버 응답에서 user_uuid와 role을 직접 추출
+      const { user_uuid, role, message } = response; 
+      
+      // user 객체를 수동으로 구성하여 반환
+      const user = { user_uuid, role }; // user_uuid를 포함한 user 객체 생성
 
-    const { user, role } = response;
-    return { user, role };
+      return { user, role, message }; // message도 함께 반환할 수 있음
     } catch (error) {
       if (error.response && error.response.data && error.response.data.message) {
         return rejectWithValue({ message: error.response.data.message });
@@ -72,11 +76,13 @@ const authSlice = createSlice({
         state.status = "loading";
       })
       .addCase(loginAsync.fulfilled, (state, action) => {
+        console.log("[authSlice] 로그인 성공 후 payload:", action.payload); // payload 전체 확인
+        console.log("[authSlice] 로그인 성공 후 user:", action.payload.user); // user 객체 확인
         console.log("[authSlice] 로그인 성공 후 role:", action.payload.role);
 
         state.status = "succeeded";
         state.isLoggedIn = true;
-        state.user = action.payload.user;
+        state.user = action.payload.user; // 이제 user_uuid가 포함된 user 객체가 할당됨
         state.role = action.payload.role;
         state.error = null;
       })
@@ -123,4 +129,4 @@ export const selectIsLoggedIn = (state) => state.auth.isLoggedIn;
 export const selectUser = (state) => state.auth.user;
 export const selectRole = (state) => state.auth.role;
 export const selectStatus = (state) => state.auth.status;
-export const selectError = (state) => state.auth.error; 
+export const selectError = (state) => state.auth.error;
