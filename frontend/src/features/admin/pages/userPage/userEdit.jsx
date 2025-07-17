@@ -3,7 +3,6 @@ import { useUsers } from '../../components/user/hooks/UseUser';
 
 const UserEdit = ({ userUuid, onCancel }) => {
   const {
-    selectedUser,
     userDetailLoading,
     userDetailError,
     fetchUserById,
