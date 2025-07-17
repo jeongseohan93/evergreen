@@ -320,12 +320,12 @@ const ProductList = ({
                             {/* 액션 버튼 */}
                             <td className="border border-gray-300 px-3 py-2 text-sm w-28 text-center">
                                 {isEditingRow(product.product_id) ? (
-                                    <div className="flex flex-col gap-1">
+                                    <div className="flex flex-col gap-1 items-center justify-center">
                                         <button
                                             onClick={() => handleUpdateProduct(product.product_id, editingProduct)}
                                             // ⭐ 수정: 이미지 업로드 중일 때 저장 버튼 비활성화 ⭐
                                             disabled={uploadingEditSmallImage || uploadingEditLargeImage}
-                                            className="px-5 py-1 text-xs bg-[#306f65] text-white rounded hover:bg-[#58bcb5] transition-colors duration-200 mb-1 disabled:opacity-50 disabled:cursor-not-allowed"
+                                            className="px-5 py-1 text-xs bg-[#306f65] text-white rounded hover:bg-[#58bcb5] transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
                                         >
                                             {(uploadingEditSmallImage || uploadingEditLargeImage) ? '업로드 중...' : '저장'}
                                         </button>
@@ -337,16 +337,16 @@ const ProductList = ({
                                         </button>
                                     </div>
                                 ) : (
-                                    <div className="flex flex-col gap-1">
+                                    <div className="flex flex-col gap-1 items-center justify-center">
                                         <button
                                             onClick={() => toggleEditMode(product)}
-                                            className="px-3 py-1 text-xs bg-[#306f65] text-white rounded hover:bg-[#58bcb5] transition-colors duration-200"
+                                            className="px-5 py-1 text-xs bg-[#306f65] text-white rounded hover:bg-[#58bcb5] transition-colors duration-200"
                                         >
                                             수정
                                         </button>
                                         <button
                                             onClick={() => handleDeleteProduct(product.product_id)}
-                                            className="px-3 py-1 text-xs bg-red-600 text-white rounded hover:bg-red-700 transition-colors duration-200 mt-1"
+                                            className="px-5 py-1 text-xs bg-red-600 text-white rounded hover:bg-red-700 transition-colors duration-200"
                                         >
                                             삭제
                                         </button>

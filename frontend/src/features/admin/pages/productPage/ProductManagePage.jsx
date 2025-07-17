@@ -48,38 +48,42 @@ const ProductManagePage = () => {
     const listTitle = isSearching ? `검색 결과 (${searchResults.length}개)` : '전체 상품 목록';
 
     return (
-        <div style={{ padding: '20px', maxWidth: '1200px', margin: '0 auto' }}>
+        <div style={{ padding: '20px', maxWidth: '1400px', margin: '0 auto' }}>
             <h1 className="text-4xl font-aggro font-bold mb-4 text-black">상품 관리</h1>
 
             <ProductErrorDisplay error={error} />
 
-            <ProductAddForm
-                showAddForm={showAddForm}
-                toggleAddForm={toggleAddForm}
-                newProduct={newProduct}
-                handleInputChange={handleInputChange}
-                handleAddProduct={handleAddProduct}
-                categories={categories}
-                // ⭐ ProductAddForm에 새 상품용 핸들러 및 상태, 그리고 error/loading 전달 ⭐
-                handleNewProductSmallFileChange={handleNewProductSmallFileChange} // ⭐ 올바른 prop 이름으로 전달 ⭐
-                handleNewProductLargeFileChange={handleNewProductLargeFileChange} // ⭐ 올바른 prop 이름으로 전달 ⭐
-                uploadingSmallImage={uploadingSmallImage}
-                uploadingLargeImage={uploadingLargeImage}
-                smallImageUploadMessage={smallImageUploadMessage}
-                largeImageUploadMessage={largeImageUploadMessage}
-                error={error}   // ⭐ error 전달 ⭐
-                loading={loading} // ⭐ loading 전달 ⭐
-            />
+            <div style={{maxWidth: '1400px', margin: '0 auto'}}>
+                <ProductAddForm
+                    showAddForm={showAddForm}
+                    toggleAddForm={toggleAddForm}
+                    newProduct={newProduct}
+                    handleInputChange={handleInputChange}
+                    handleAddProduct={handleAddProduct}
+                    categories={categories}
+                    // ⭐ ProductAddForm에 새 상품용 핸들러 및 상태, 그리고 error/loading 전달 ⭐
+                    handleNewProductSmallFileChange={handleNewProductSmallFileChange} // ⭐ 올바른 prop 이름으로 전달 ⭐
+                    handleNewProductLargeFileChange={handleNewProductLargeFileChange} // ⭐ 올바른 prop 이름으로 전달 ⭐
+                    uploadingSmallImage={uploadingSmallImage}
+                    uploadingLargeImage={uploadingLargeImage}
+                    smallImageUploadMessage={smallImageUploadMessage}
+                    largeImageUploadMessage={largeImageUploadMessage}
+                    error={error}   // ⭐ error 전달 ⭐
+                    loading={loading} // ⭐ loading 전달 ⭐
+                />
+            </div>
 
-            <ProductSearch
-                searchKeyword={searchKeyword}
-                setSearchKeyword={setSearchKeyword}
-                handleSearch={handleSearch}
-                clearSearch={clearSearch}
-                isSearching={isSearching}
-            />
+            <div style={{maxWidth: '1400px', margin: '0 auto'}}>
+                <ProductSearch
+                    searchKeyword={searchKeyword}
+                    setSearchKeyword={setSearchKeyword}
+                    handleSearch={handleSearch}
+                    clearSearch={clearSearch}
+                    isSearching={isSearching}
+                />
+            </div>
 
-            <div className="mt-30 mb-6 p-6 bg-white rounded-lg border border-[#306f65]">
+            <div className="mt-30 mb-6 p-6 bg-white rounded-lg border border-[#306f65]" style={{maxWidth: '1400px', margin: '0 auto'}}>
                 <h2 className="text-2xl font-aggro font-bold mb-4 text-black">{listTitle}</h2>
                 {loading ? (
                     <ProductLoadingSpinner loading={loading} />
