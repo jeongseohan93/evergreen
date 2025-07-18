@@ -24,7 +24,7 @@ import ProductDetailPage from '@/features/product/pages/ProductDetailPage';
 
 import CategorySearchPage from '@/features/product/pages/CategorySearchPage';
 
-
+import BoardPlaceholderPage from '@/features/board/pages/BoardPlaceholderPage';
 
 
 const publicRoutes = [
@@ -60,6 +60,17 @@ const publicRoutes = [
       { path: 'review', element: <ReviewListPage /> },
       { path: 'support', element: <SupportListPage /> },
       { path: 'event', element: <EventPage />},
+    ],
+  },
+
+  {
+    path: '/board',
+    children: [
+      { path: 'notice', element: <BoardPlaceholderPage title="공지사항" /> },
+      { path: 'qna', element: <BoardPlaceholderPage title="Q&A" /> },
+      { path: 'review', element: <BoardPlaceholderPage title="리뷰" /> },
+      { path: 'free', element: <BoardPlaceholderPage title="자유게시판" /> },
+      { path: 'trip', element: <BoardPlaceholderPage title="조행기게시판" /> },
     ],
   },
 

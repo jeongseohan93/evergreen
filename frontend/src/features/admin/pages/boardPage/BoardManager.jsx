@@ -12,9 +12,15 @@ const MessageBox = ({ message, onConfirm, onCancel, type = 'alert' }) => {
 
   return (
     <div className="fixed inset-0 bg-gray-600 bg-opacity-50 flex items-center justify-center z-50">
-      <div className="bg-white p-6 rounded-lg shadow-xl max-w-sm w-full text-center">
+      <div className="bg-white p-6 rounded-lg max-w-sm w-full text-center border border-[#306f65]">
         <p className="text-lg font-semibold mb-4">{message}</p>
         <div className="flex justify-center space-x-4">
+          <button
+            onClick={onConfirm}
+            className="px-4 py-2 bg-[#306f65] text-white rounded-md hover:bg-[#58bcb5] transition-colors duration-200 font-medium shadow-sm hover:shadow-md"
+          >
+            확인
+          </button>
           {type === 'confirm' && (
             <button
               onClick={onCancel}
@@ -23,12 +29,6 @@ const MessageBox = ({ message, onConfirm, onCancel, type = 'alert' }) => {
               취소
             </button>
           )}
-          <button
-            onClick={onConfirm}
-            className="px-4 py-2 bg-[#306f65] text-white rounded-md hover:bg-[#58bcb5] transition-colors duration-200 font-medium shadow-sm hover:shadow-md"
-          >
-            확인
-          </button>
         </div>
       </div>
     </div>
@@ -86,6 +86,12 @@ function BoardManager() {
   // 메시지 박스 닫기 함수
   const hideMessageBox = () => {
     setMessageBox({ show: false, message: '', type: 'alert', onConfirm: () => {}, onCancel: () => {} });
+  };
+
+  // 검색 입력 초기화 함수 (검색창을 빈칸으로 만들고 전체 게시글 보여주기)
+  const handleResetSearch = () => {
+    setSearchKeyword('');
+    fetchBoards(currentBoardType, '');
   };
 
 
@@ -264,7 +270,7 @@ function BoardManager() {
         {currentBoardType !== null && (
           <button
             onClick={handleNewBoardClick}
-            className="px-6 py-2 bg-[#306f65] text-white rounded-md hover:bg-[#58bcb5] transition-colors duration-200 font-medium shadow-md hover:shadow-lg"
+            className="px-6 py-2 bg-[#306f65] text-white rounded-md hover:bg-[#58bcb5] transition-colors duration-200 font-medium"
           >
             새 게시글 작성
           </button>
@@ -275,19 +281,19 @@ function BoardManager() {
       <div className="mb-5 flex space-x-2">
         <button
           onClick={() => handleChangeBoardType(null)}
-          className={`px-4 py-2 rounded-md transition-colors duration-200 font-medium shadow-sm hover:shadow-md ${currentBoardType === null ? 'bg-[#306f65] text-white' : 'bg-gray-200 text-gray-700 hover:bg-gray-300'}`}
+          className={`px-4 py-2 rounded-md transition-colors duration-200 font-medium shadow-sm ${currentBoardType === null ? 'bg-[#306f65] text-white' : 'bg-gray-200 text-gray-700 hover:bg-gray-300'}`}
         >
           전체보기
         </button>
         <button
           onClick={() => handleChangeBoardType('review')}
-          className={`px-4 py-2 rounded-md transition-colors duration-200 font-medium shadow-sm hover:shadow-md ${currentBoardType === 'review' ? 'bg-[#306f65] text-white' : 'bg-gray-200 text-gray-700 hover:bg-gray-300'}`}
+          className={`px-4 py-2 rounded-md transition-colors duration-200 font-medium shadow-sm ${currentBoardType === 'review' ? 'bg-[#306f65] text-white' : 'bg-gray-200 text-gray-700 hover:bg-gray-300'}`}
         >
           사용후기 게시판
         </button>
         <button
           onClick={() => handleChangeBoardType('free')}
-          className={`px-4 py-2 rounded-md transition-colors duration-200 font-medium shadow-sm hover:shadow-md ${currentBoardType === 'free' ? 'bg-[#306f65] text-white' : 'bg-gray-200 text-gray-700 hover:bg-gray-300'}`}
+          className={`px-4 py-2 rounded-md transition-colors duration-200 font-medium shadow-sm ${currentBoardType === 'free' ? 'bg-[#306f65] text-white' : 'bg-gray-200 text-gray-700 hover:bg-gray-300'}`}
         >
           자유 게시판
         </button>
@@ -303,26 +309,12 @@ function BoardManager() {
             onDelete={handleDeleteBoard}
             onSelectBoard={handleSelectBoard}
             onRefresh={() => fetchBoards(currentBoardType, searchKeyword)}
+            searchKeyword={searchKeyword}
+            onSearchInputChange={handleSearchInputChange}
+            onSearch={handleSearch}
+            onSearchKeyPress={handleKeyPress}
+            onResetSearch={handleResetSearch}
           />
-          {/* 검색 입력 필드 및 버튼 */}
-          <div className="mt-5 flex justify-center">
-            <div className="flex items-center space-x-2 w-full max-w-lg">
-              <input
-                type="text"
-                placeholder="제목, 내용, 작성자 검색..."
-                value={searchKeyword}
-                onChange={handleSearchInputChange}
-                onKeyPress={handleKeyPress}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#306f65]"
-              />
-              <button
-                onClick={handleSearch}
-                className="px-6 py-2 bg-[#306f65] text-white rounded-md hover:bg-[#58bcb5] transition-colors duration-200 font-medium shadow-md hover:shadow-lg"
-              >
-                검색
-              </button>
-            </div>
-          </div>
         </>
       )}
 
@@ -345,7 +337,7 @@ function BoardManager() {
 
       {/* 게시글 상세 보기 컴포넌트 (댓글 기능 추가) */}
       {showDetail && selectedBoard && (
-        <div className="p-6 mt-5 border border-gray-200 rounded-lg shadow-md bg-white max-w-xl mx-auto">
+        <div className="p-6 mt-5 border border-gray-200 rounded-lg shadow-md bg-white max-w-7xl mx-auto">
           <h2 className="text-2xl font-semibold text-gray-800 mb-4">{selectedBoard.title}</h2>
           <div className="mb-3 text-gray-700 flex items-center space-x-4">
             <div className="flex items-center space-x-1">

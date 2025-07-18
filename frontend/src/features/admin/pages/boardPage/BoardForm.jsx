@@ -58,7 +58,7 @@ function BoardForm({ initialData, onSave, onCancel, currentUserId, currentBoardT
   };
 
   return (
-    <div className="p-6 mt-5 border border-gray-200 rounded-lg shadow-md bg-white max-w-xl mx-auto">
+    <div className="p-6 mt-5 border border-[#306f65] rounded-lg bg-white max-w-7xl mx-auto">
       <h2 className="text-2xl font-semibold text-gray-800 mb-4">{initialData ? '게시글 수정' : '새 게시글 작성'}</h2>
       <form onSubmit={handleSubmit}>
         <div className="mb-4">
