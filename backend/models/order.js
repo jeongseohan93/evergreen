@@ -18,6 +18,10 @@ class Order extends Model {
         type: DataTypes.INTEGER,
         allowNull: false,
       },
+           order_address: {
+        type: DataTypes.STRING(500), 
+        allowNull: false, // 주문시 주소 필수
+      },
       status: {
         //.ENUM:이넘(열거형) => 대기 / 완료 / 취소
         //type: DataTypes.STRING(20), <= ENUM제약없이 상태값 넣고 싶을때는 이렇게 하면 됨.대신 검증은 코드로 해야 함. 
