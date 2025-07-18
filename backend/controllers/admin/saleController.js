@@ -564,3 +564,4 @@ exports.getSaleByDate = async (req, res) => {
         });
     }
 };
+

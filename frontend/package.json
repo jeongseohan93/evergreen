@@ -9,7 +9,9 @@
     "test": "craco test",
     "eject": "react-scripts eject"
   },
+  
   "dependencies": {
+    "@tosspayments/tosspayments-sdk": "^2.2.0",
     "@craco/craco": "^7.1.0",
     "@fortawesome/fontawesome-svg-core": "^6.7.2",
     "@fortawesome/free-solid-svg-icons": "^6.7.2",
@@ -46,6 +48,7 @@
       "react-app/jest"
     ]
   },
+  
   "browserslist": {
     "production": [
       ">0.2%",
