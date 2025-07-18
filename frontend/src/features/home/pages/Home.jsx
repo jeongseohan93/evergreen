@@ -5,7 +5,7 @@ import MenuBar from '@/shared/components/layouts/MenuBar/MenuBar';
 import HomeHeader from '../components/ui/HomeHeader';
 import ReviewBundle from '../components/Review/ReviewBundle';
 import CardBundle from '../components/CardBundle/CardBundle';
-import useProduct from '../hooks/useProduct';
+
 
 const Home = () => {
 
@@ -17,18 +17,8 @@ const Home = () => {
             <BannerSlider />
             
             <HomeHeader title = '인기상품' />
-
-       
-
-            <HomeHeader title = '신상품' />
-            
-
-            <HomeHeader title = '재입고상품' />
-            
-
-            <HomeHeader title = '추천상품' />
+            <CardBundle />
         
-    
             <HomeHeader title = '리뷰' />
             <ReviewBundle />
 

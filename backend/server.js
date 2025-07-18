@@ -9,6 +9,8 @@ const auth = require('./routes/auth'); // 사용자 인증 관련 라우터 (로
 const admin = require('./routes/admin'); // 관리자 인증 관련 라우터
 const homeRouter = require('./routes/product');
 const reportRouter = require('./routes/admin/report');
+const cartRouter = require('./routes/cart');
+const userRouter = require('./routes/user');
 const passportConfig = require('./passport'); // Passport 설정 파일 불러오기 (전략 등록, 시리얼라이즈/디시리얼라이즈 등 설정 포함)
 const { notFound, errorHandler } = require('./middlewares/error'); // 404/500 에러 처리 미들웨어
 const path = require('path');
@@ -106,6 +108,8 @@ app.use('/auth', auth); // auth → 인증 관련 라우터
 app.use('/admin', admin); //admin -> 관리자 인증 관련 라우터
 app.use('/adminReport', reportRouter);
 app.use('/products', homeRouter )
+app.use('/cart', cartRouter);
+app.use('/users', userRouter);
 //정적 파일 서빙: 이미지 미리보기를 위해 작성
 // ⭐ 이 라인은 위에 중복되었으므로 주석 처리하거나 삭제해야 합니다. ⭐
 // app.use('/adminImages', express.static(path.join(__dirname, 'public/adminImages')));

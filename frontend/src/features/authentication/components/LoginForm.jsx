@@ -68,7 +68,7 @@ const LoginForm = () => {
       </form>
 
       <div className="flex justify-between mt-4 text-sm">
-        <Link to = '/register' className="hover:underline">
+        <Link to = '/signagree' className="hover:underline">
           회원가입
         </Link>
 

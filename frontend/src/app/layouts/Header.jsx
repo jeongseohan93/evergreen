@@ -42,7 +42,7 @@ function Header() {
         <Link to='/login' className="text-white hover:text-blue-400 transition-colors duration-200">로그인</Link>
       </li>
       <li>  
-        <Link to='/signup' className="text-white hover:text-blue-400 transition-colors duration-200">회원가입</Link>
+        <Link to='/signagree' className="text-white hover:text-blue-400 transition-colors duration-200">회원가입</Link>
       </li>
     </>
   ) : (

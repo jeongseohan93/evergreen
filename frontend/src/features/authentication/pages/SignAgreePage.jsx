@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { Header, SubHeader, Footer } from '@/app';
-import SignAgree from '@/features/authentication/components/signupagree/signupagress';
+import SignAgree from '@/features/authentication/components/signupagree/Signupagree';
 
 
 

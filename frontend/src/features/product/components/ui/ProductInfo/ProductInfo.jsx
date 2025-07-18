@@ -1,88 +1,75 @@
 // src/features/product/components/ui/ProductInfo/ProductInfo.jsx (최종 수정)
+
 import React from 'react';
-import { useNavigate } from 'react-router-dom';
 
-import ProductHeader from './ui/ProductHeader';
-import PriceDisplay from './ui/PriceDisplay';
-import ShippingDetails from './ui/ShippingDetails';
-import DescriptionTags from './ui/DescriptionTags';
-import QuantityInput from './ui/QuantityInput';
-import TotalPriceSummary from './ui/TotalPriceSummary';
-import PurchaseButton from './ui/PurchaseButton';
-
+// ✅ 부모로부터 받은 quantity, setQuantity, onAddToCart를 props로 받습니다.
 const ProductInfo = ({
-    name, originalPrice, salePrice,
-    shippingDomesticInternational, shippingMethod, shippingCost, shippingFreeCondition,
+    name,
+    originalPrice,
+    salePrice,
+    shippingCost,
     tags,
+    quantity,
+    setQuantity,
+    onAddToCart,
+    onPurchase 
 }) => {
-    // 🚨 product가 null일 때의 체크 및 이른 리턴 로직을 완전히 제거합니다.
-    // 이제 이 컴포넌트는 모든 prop이 유효하게 전달된다고 가정하고 작동합니다.
-    const navigate = useNavigate();
-    const displayQuantity = 1;
-    const displayTotalPrice = salePrice;
+    const totalPrice = salePrice * quantity; // 총 가격을 수량에 맞춰 계산
 
-    const handleQuantityChange = (newQuantity) => {
-        console.log("Quantity changed (not affecting state here):", newQuantity);
+    // ✅ 수량 변경 핸들러
+    const handleQuantityChange = (amount) => {
+        // 부모가 내려준 setQuantity를 호출하여 실제 상태를 변경
+        setQuantity(prev => Math.max(1, prev + amount)); // 최소 수량은 1
     };
-
-    const handlePurchase = () => {
-        navigate('/order');
-    };
-
-    const handleAddToCart = () => {
-        navigate('/cart');
-    }
-
-    const handleToggleWishlist = () => {
-        navigate('/wishlist');
-    }
 
     return (
-        <div className="w-full lg:w-1/2 p-4">
-            <ProductHeader name={name} />
-            <PriceDisplay originalPrice={originalPrice} salePrice={salePrice} />
-            <ShippingDetails
-                domesticInternational={shippingDomesticInternational}
-                method={shippingMethod}
-                cost={shippingCost}
-                freeShippingCondition={shippingFreeCondition}
-            />
-            <DescriptionTags tags={tags} />
+        <div className="w-full lg:w-1/2 p-8 flex flex-col">
+            {/* 상품명, 가격, 배송정보 등은 props로 받은 데이터를 표시 */}
+            <h1 className="text-3xl font-bold mb-2">{name}</h1>
+            <div className="mb-6">
+                <span className="text-xl text-gray-400 line-through mr-3">{originalPrice.toLocaleString()}원</span>
+                <span className="text-3xl font-bold text-red-600">{salePrice.toLocaleString()}원</span>
+            </div>
+            {/* ... (다른 정보들) ... */}
+            
             <div className="mt-6 border-t border-gray-200 pt-6">
-                <p className="text-red-500 text-sm mb-2">! 수량을 선택해주세요.</p>
                 <div className="flex items-center justify-between mb-4">
                     <span className="text-gray-800 font-medium">{name}</span>
-                    <QuantityInput quantity={displayQuantity} onQuantityChange={handleQuantityChange} />
-                    <span className="text-gray-800 font-bold">
-                        {displayTotalPrice.toLocaleString()}원
-                    </span>
+                    {/* 수량 변경 UI */}
+                    <div className="flex items-center">
+                        <button onClick={() => handleQuantityChange(-1)} className="w-8 h-8 border">-</button>
+                        <input type="number" value={quantity} readOnly className="w-12 h-8 text-center border-t border-b" />
+                        <button onClick={() => handleQuantityChange(1)} className="w-8 h-8 border">+</button>
+                    </div>
                 </div>
             </div>
-            <TotalPriceSummary total={displayTotalPrice} quantity={displayQuantity} />
-            <PurchaseButton onPurchase={handlePurchase} />
-            <div className="flex flex-row space-x-4 mt-6"> {/* flex-row는 기본값이지만 명시적으로 추가 */}
-            {/* 장바구니 버튼 */}
+
+            {/* 총 상품 금액 */}
+            <div className="flex justify-between items-center mt-4 p-4 bg-gray-100 rounded-lg">
+                <span className="text-lg font-bold">총 상품 금액</span>
+                <span className="text-2xl font-bold text-red-500">{totalPrice.toLocaleString()}원</span>
+            </div>
+
             <button
-                className="flex-1 py-3 px-6 rounded-lg text-lg font-bold
-                           bg-blue-600 text-white
-                           hover:bg-blue-700 transition-colors duration-200
-                           focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50"
-                           onClick={handleAddToCart}
+                onClick={onPurchase}
+                className="w-full py-4 mt-6 rounded-lg text-lg font-bold bg-red-600 text-white hover:bg-red-700 transition-colors"
             >
-                장바구니
+                주문하기
             </button>
 
-            {/* 관심상품 버튼 */}
-            <button
-                className="flex-1 py-3 px-6 rounded-lg text-lg font-bold
-                           bg-gray-200 text-gray-800
-                           hover:bg-gray-300 transition-colors duration-200
-                           focus:outline-none focus:ring-2 focus:ring-gray-400 focus:ring-opacity-50"
-                           onClick={handleToggleWishlist}
-            >
-                관심상품
-            </button>
-        </div>
+            {/* 구매, 장바구니, 관심상품 버튼 */}
+            <div className="flex space-x-4 mt-6">
+                {/* ✅ 장바구니 버튼 클릭 시, 부모로부터 받은 onAddToCart 함수를 실행합니다. */}
+                <button
+                    onClick={onAddToCart}
+                    className="flex-1 py-3 px-6 rounded-lg text-lg font-bold bg-blue-600 text-white hover:bg-blue-700"
+                >
+                    장바구니 담기
+                </button>
+                <button className="flex-1 py-3 px-6 rounded-lg text-lg font-bold bg-gray-200 text-gray-800 hover:bg-gray-300">
+                    관심상품 담기
+                </button>
+            </div>
         </div>
     );
 };

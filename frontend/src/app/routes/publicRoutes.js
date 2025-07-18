@@ -29,7 +29,8 @@ import BoardPlaceholderPage from '@/features/board/pages/BoardPlaceholderPage';
 
 const publicRoutes = [
   { path: '/login', element: <LoginPage /> },
-  { path: '/signup', element: <SignAgreePage />},
+  { path: '/signagree', element: <SignAgreePage />},
+  { path: '/signup', element: <SignPage/>},
   { path: '/findid', element: <FindIdPage /> },
   { path: "/findid/result", element: <FindIdResultPage />}, 
   { path: '/findpassword', element: <FindPasswordPage /> },
@@ -51,7 +52,7 @@ const publicRoutes = [
   },
   
   { path: '/search', element: <SearchPage /> },
-  { path: '/productdetail', element: <ProductDetailPage /> },
+  { path: "/products/:productId", element: <ProductDetailPage /> },
 
   {
     path: '/community',
