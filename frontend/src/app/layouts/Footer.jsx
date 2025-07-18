@@ -1,6 +1,6 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { footerLinks, footerCommunity } from '@/shared';
+import { footerLinks, footerCommunity, footerBoard } from '@/shared';
 
 function Footer() {
   return (
@@ -58,6 +58,18 @@ function Footer() {
           <h3 className="font-bold text-lg text-black mb-4">COMMUNITY</h3>
           <ul className="space-y-2 text-sm">
             {footerCommunity.map((item, index) => (
+              <li key={index}>
+                <Link to={item.path} className="hover:underline">
+                  {item.name}
+                </Link>
+              </li>
+            ))}
+          </ul>
+
+          {/* BOARD 섹션 추가 */}
+          <h3 className="font-bold text-lg text-black mb-4 mt-8">BOARD</h3>
+          <ul className="space-y-2 text-sm">
+            {footerBoard.map((item, index) => (
               <li key={index}>
                 <Link to={item.path} className="hover:underline">
                   {item.name}

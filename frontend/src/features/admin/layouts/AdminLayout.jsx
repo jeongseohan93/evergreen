@@ -1,7 +1,7 @@
 // src/features/admin/layouts/AdminLayout.jsx
 
 import React, { useState } from 'react';
-import { HomeIcon, ShoppingBagIcon, UsersIcon, ChartBarIcon, CogIcon, FoldersIcon, FileTextIcon, PackageIcon ,List } from 'lucide-react';
+import { HomeIcon, ShoppingBagIcon, UsersIcon, ChartBarIcon, CogIcon, FoldersIcon, FileTextIcon, PackageIcon ,List, Image as ImageIcon } from 'lucide-react';
 
 // === Import 경로 재수정 ===
 // CategoryManager의 실제 위치에 맞게 경로를 설정 (pages/categoryPage 폴더 안에 있음)
@@ -101,7 +101,7 @@ const AdminSidebar = ({ activeKey, setActiveKey, onGoDashboard, onLogout }) => {
     { name: '매출 관리', icon: ChartBarIcon, key: 'sale' },
     { name: '리포트 관리', icon: FileTextIcon, key: 'reports' },
     { name: '게시판', icon: List, key: 'board' },
-    { name: '배너 관리', icon: CogIcon, key: 'settings' },
+    { name: '배너 관리', icon: ImageIcon, key: 'settings' },
   ];
 
   const handleClick = (key) => {
