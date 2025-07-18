@@ -66,7 +66,7 @@ const FindPasswordPage = () => {
             <main className="flex flex-col items-center justify-center w-full px-4 py-16 bg-white">
                 <div className="w-full max-w-2xl">
                     <div className="flex border-b border-gray-300">
-                        <button className="py-3 px-6 text-lg font-semibold text-gray-500 hover:text-blue-600" onClick={() => navigate('/find-id')}>
+                        <button className="py-3 px-6 text-lg font-semibold text-gray-500 hover:text-blue-600" onClick={() => navigate('/findid')}>
                             아이디 찾기 
                         </button>
                         <button className="py-3 px-6 text-lg font-semibold text-blue-600 border-b-2 border-blue-600">

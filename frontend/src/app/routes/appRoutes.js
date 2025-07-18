@@ -44,8 +44,8 @@ const appRoutes = [
     ],
   },
 
-      { path: 'cart', element: <CartPage />},
-      { path: 'order', element: <OrderPage />}
+      { path: 'cart', element:  <PrivateRoute><CartPage /></PrivateRoute>},
+      { path: 'order', element: <PrivateRoute><OrderPage /></PrivateRoute>}
 ];
 
 export default appRoutes;
