@@ -68,7 +68,7 @@ const ReportEdit = ({ reportId, onCancel }) => {
             {error}
           </div>
         )}
-        <div className="bg-white p-8 rounded-lg shadow">
+        <div className="bg-white p-8 rounded-lg border border-[#306f65]">
           <form onSubmit={e => {
             e.preventDefault();
             // 변경사항 비교

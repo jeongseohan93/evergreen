@@ -17,14 +17,14 @@ const MessageBox = ({ message, onConfirm, onCancel, type = 'alert' }) => {
         <div className="flex justify-center space-x-4">
           <button
             onClick={onConfirm}
-            className="px-4 py-2 bg-[#306f65] text-white rounded-md hover:bg-[#58bcb5] transition-colors duration-200 font-medium shadow-sm hover:shadow-md"
+            className="px-4 py-2 bg-[#306f65] text-white rounded-md hover:bg-[#58bcb5] transition-colors duration-200 font-medium"
           >
             확인
           </button>
           {type === 'confirm' && (
             <button
               onClick={onCancel}
-              className="px-4 py-2 bg-gray-300 text-gray-800 rounded-md hover:bg-gray-400 transition-colors duration-200 font-medium shadow-sm hover:shadow-md"
+              className="px-4 py-2 bg-gray-300 text-gray-800 rounded-md hover:bg-gray-400 transition-colors duration-200 font-medium"
             >
               취소
             </button>
@@ -337,8 +337,18 @@ function BoardManager() {
 
       {/* 게시글 상세 보기 컴포넌트 (댓글 기능 추가) */}
       {showDetail && selectedBoard && (
-        <div className="p-6 mt-5 border border-gray-200 rounded-lg shadow-md bg-white max-w-7xl mx-auto">
-          <h2 className="text-2xl font-semibold text-gray-800 mb-4">{selectedBoard.title}</h2>
+        <div className="p-6 mt-5 border border-[#306f65] rounded-lg bg-white max-w-7xl mx-auto">
+          <div className="flex justify-between items-start mb-4">
+            <h2 className="text-2xl font-bold text-[#306f65] font-aggro mb-0">{selectedBoard.title}</h2>
+            <div className="flex flex-col items-end space-y-1">
+              <span className="px-3 py-1 rounded-full text-xs font-bold bg-gray-200 text-gray-700">
+                {selectedBoard.notice === 'Y' ? '공지사항' : '일반글'}
+              </span>
+              <span className="px-3 py-1 rounded-full text-xs font-bold bg-[#58bcb5] text-white">
+                {selectedBoard.enum === 'review' ? '사용후기 게시글' : '자유 게시글'}
+              </span>
+            </div>
+          </div>
           <div className="mb-3 text-gray-700 flex items-center space-x-4">
             <div className="flex items-center space-x-1">
               <svg className="h-5 w-5 text-gray-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -354,7 +364,7 @@ function BoardManager() {
             </div>
           </div>
           <div className="mb-4 text-gray-700">
-            <p className="font-semibold mb-1">내용:</p>
+            <p className="font-bold text-[#306f65] text-base mb-1 mt-10">내용</p>
             <div className="p-4 border border-gray-300 rounded-md bg-gray-50 whitespace-pre-wrap">{selectedBoard.content?.text || '내용 없음'}</div>
           </div>
 
@@ -365,52 +375,31 @@ function BoardManager() {
             </div>
           )}
 
-          <div className="mb-3 text-gray-700 flex items-center space-x-4">
-            <div className="flex items-center space-x-1">
-              <svg className="h-5 w-5 text-gray-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14 10h.01M12 11c1.666 0 3-1.5 3-3S13.666 5 12 5s-3 1.5-3 3 1.334 3 3 3zM19 8a7 7 0 01-7 7 7 7 0 01-7-7 7 7 0 017-7 7 7 0 017 7zm-2 9v2m-6 2v2m-2-2h10a2 2 0 012 2v3a2 2 0 01-2 2H8a2 2 0 01-2-2v-3a2 2 0 012-2h10z" />
-              </svg>
-              <span>좋아요: {selectedBoard.like_count}</span>
-            </div>
-            <div className="flex items-center space-x-1">
-              <svg className="h-5 w-5 text-gray-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 14H5m5-4h.01M9 10h.01M3 12l3 3m-3-3l6 6m-3-3h10a2 2 0 012-2v-6a2 2 0 00-2-2H3a2 2 0 00-2 2v6a2 2 0 002 2z" />
-              </svg>
-              <span>싫어요: {selectedBoard.hate_count}</span>
-            </div>
-            <div>
-              <span className="font-semibold">공지사항:</span> {selectedBoard.notice === 'Y' ? '예' : '아니오'}
-            </div>
-            <div>
-              <span className="font-semibold">게시판:</span> {selectedBoard.enum === 'review' ? '사용후기' : '자유'}
-            </div>
-          </div>
-
-          <div className="mt-6 flex justify-end space-x-3">
+          <div className="flex justify-end space-x-3">
             <button
               onClick={handleEditBoardClick}
-              className="px-6 py-2 bg-[#306f65] text-white rounded-md hover:bg-[#58bcb5] transition-colors duration-200 font-medium shadow-md hover:shadow-lg"
+              className="px-3 py-2 bg-[#306f65] text-white rounded-md hover:bg-[#58bcb5] transition-colors duration-200 font-medium"
             >
-              수정
+              게시글 수정
             </button>
             <button
               onClick={() => handleDeleteBoard(selectedBoard.board_id)}
-              className="px-6 py-2 bg-red-500 text-white rounded-md hover:bg-red-600 transition-colors duration-200 font-medium shadow-md hover:shadow-lg"
+              className="px-3 py-2 bg-red-500 text-white rounded-md hover:bg-red-600 transition-colors duration-200 font-medium"
             >
-              삭제
+              게시글 삭제
             </button>
             <button
               type="button"
               onClick={handleCancel}
-              className="px-6 py-2 bg-gray-400 text-white rounded-md hover:bg-gray-500 transition-colors duration-200 font-medium shadow-md hover:shadow-lg"
+              className="px-3 py-2 bg-gray-400 text-white rounded-md hover:bg-gray-500 transition-colors duration-200 font-medium"
             >
               목록으로
             </button>
           </div>
 
           {/* 댓글 섹션 추가 */}
-          <div className="mt-8 pt-6 border-t border-gray-200">
-            <h3 className="text-xl font-semibold text-gray-800 mb-4">댓글</h3>
+          <div className="mt-5 pt-6 border-t border-gray-200">
+            <h3 className="text-xl font-bold text-[#58bcb5] font-aggro mb-4">댓글</h3>
             {repliesLoading ? (
               <div className="text-center text-gray-600">댓글 로딩 중...</div>
             ) : repliesError ? (
@@ -420,14 +409,14 @@ function BoardManager() {
             ) : (
               <div className="space-y-4">
                 {replies.map((reply) => (
-                  <div key={reply.reply_id} className="p-4 border border-gray-200 rounded-md bg-gray-50">
+                  <div key={reply.reply_id} className="p-4 border border-gray-200 rounded-md bg-gray-100">
                     {editingReplyId === reply.reply_id ? (
                       // 댓글 수정 폼
                       <div className="flex flex-col space-y-2">
                         <textarea
                           value={editingReplyContent}
                           onChange={(e) => setEditingReplyContent(e.target.value)}
-                          className="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#306f65]"
+                          className="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-[#306f65] resize-none"
                           rows="3"
                         ></textarea>
                         <div className="flex justify-end space-x-2">
@@ -448,25 +437,26 @@ function BoardManager() {
                     ) : (
                       // 일반 댓글 표시
                       <>
-                        <div className="flex justify-between items-center mb-2">
+                        <div className="flex items-center mb-2">
                           <span className="font-semibold text-gray-700">
                             {reply.User ? reply.User.name : '알 수 없음'}
                           </span>
-                          <span className="text-xs text-gray-500">
+                          <span className="ml-2 text-xs text-gray-500">
                             {new Date(reply.created_at).toLocaleString()}
                           </span>
                         </div>
                         <p className="text-gray-800 whitespace-pre-wrap">{reply.content}</p>
-                        <div className="flex justify-end space-x-2 mt-2">
+                        <div className="flex items-center justify-start space-x-2 mt-5">
                           <button
                             onClick={() => handleEditReply(reply)}
-                            className="px-3 py-1.5 text-[#58bcb5] hover:text-[#306f65] text-xs font-medium"
+                            className="py-1.5 text-[#58bcb5] text-sm font-medium"
                           >
-                            수정
+                            수정 
                           </button>
+                          <span>|</span>
                           <button
                             onClick={() => handleDeleteReply(reply.reply_id)}
-                            className="px-3 py-1.5 text-red-500 hover:text-red-700 text-xs font-medium"
+                            className="py-1.5 text-red-500 text-sm font-medium"
                           >
                             삭제
                           </button>
@@ -480,18 +470,18 @@ function BoardManager() {
 
             {/* 댓글 작성 폼 */}
             <div className="mt-6 p-4 border border-gray-200 rounded-md bg-white shadow-sm">
-              <h4 className="font-semibold mb-2">댓글 작성</h4>
+              <h4 className="font-bold text-[#306f65] text-base mb-2">댓글 작성</h4>
               <textarea
                 value={newReplyContent}
                 onChange={(e) => setNewReplyContent(e.target.value)}
                 placeholder="댓글을 입력하세요..."
-                className="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#306f65]"
+                className="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-[#306f65] resize-none"
                 rows="4"
               ></textarea>
               <div className="flex justify-end mt-3">
                 <button
                   onClick={handleAddReply}
-                  className="px-6 py-2 bg-[#306f65] text-white rounded-md hover:bg-[#58bcb5] transition-colors duration-200 font-medium shadow-md hover:shadow-lg"
+                  className="px-6 py-2 bg-[#306f65] text-white rounded-md hover:bg-[#58bcb5] transition-colors duration-200 font-medium"
                 >
                   댓글 추가
                 </button>

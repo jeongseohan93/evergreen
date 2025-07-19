@@ -65,18 +65,6 @@ function Footer() {
               </li>
             ))}
           </ul>
-
-          {/* BOARD 섹션 추가 */}
-          <h3 className="font-bold text-lg text-black mb-4 mt-8">BOARD</h3>
-          <ul className="space-y-2 text-sm">
-            {footerBoard.map((item, index) => (
-              <li key={index}>
-                <Link to={item.path} className="hover:underline">
-                  {item.name}
-                </Link>
-              </li>
-            ))}
-          </ul>
         </div>
 
         {/* 4열: ABOUT US */}

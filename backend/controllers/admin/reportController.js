@@ -6,7 +6,7 @@ exports.createReport = async (req, res) => {
   try {
     const { title, contents } = req.body;
     // 임시로 하드코딩된 admin_uuid 사용
-    const admin_uuid = 'admin-uuid'; // TODO: 실제 인증 구현 후 수정 필요
+    const admin_uuid = 'Evergreenfish'; // 강제 할당
 
     // 제목과 내용이 비어있는지 확인
     if (!title || !contents) {

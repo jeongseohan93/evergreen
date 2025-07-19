@@ -44,7 +44,7 @@ const ReportWrite = ({ onCancel }) => {
             목록으로 돌아가기
           </button>
         </div>
-        <form onSubmit={e => { e.preventDefault(); handleCreate(null, onCancel); }} className="bg-white p-5 rounded-lg shadow">
+        <form onSubmit={e => { e.preventDefault(); handleCreate(null, onCancel); }} className="bg-white p-5 rounded-lg border border-[#306f65]">
           <div className="mb-5">
             <label className="block mb-2 font-bold text-base text-[#306f65]">제목</label>
             <input

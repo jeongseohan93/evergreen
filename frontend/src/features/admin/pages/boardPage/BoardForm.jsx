@@ -59,36 +59,36 @@ function BoardForm({ initialData, onSave, onCancel, currentUserId, currentBoardT
 
   return (
     <div className="p-6 mt-5 border border-[#306f65] rounded-lg bg-white max-w-7xl mx-auto">
-      <h2 className="text-2xl font-semibold text-gray-800 mb-4">{initialData ? '게시글 수정' : '새 게시글 작성'}</h2>
+      <h2 className="text-2xl font-bold font-aggro text-gray-800 mb-4">{initialData ? '게시글 수정' : '새 게시글 작성'}</h2>
       <form onSubmit={handleSubmit}>
         <div className="mb-4">
-          <label htmlFor="title" className="block text-gray-700 text-sm font-bold mb-2">제목:</label>
+          <label htmlFor="title" className="block text-[#306f65] text-base font-bold mb-2">제목</label>
           <input
             type="text"
             id="title"
             name="title"
             value={formData.title}
             onChange={handleChange}
-            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#306f65]"
+            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-[#306f65]"
             placeholder="제목을 입력하세요"
             required
           />
         </div>
         <div className="mb-4">
-          <label htmlFor="content" className="block text-gray-700 text-sm font-bold mb-2">내용:</label>
+          <label htmlFor="content" className="block text-[#306f65] text-base font-bold mb-2">내용</label>
           <textarea
             id="content"
             name="content"
             value={formData.content}
             onChange={handleChange}
             rows="6"
-            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#306f65]"
+            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-[#306f65]"
             placeholder="내용을 입력하세요"
             required
           ></textarea>
         </div>
         <div className="mb-4">
-          <label htmlFor="enum" className="block text-gray-700 text-sm font-bold mb-2">게시판 타입:</label>
+          <label htmlFor="enum" className="block text-[#306f65] text-base font-bold mb-2">게시판 타입</label>
           {/* 새 게시글 작성 모드이고, 특정 게시판이 선택된 경우 */}
           {(!initialData && (currentBoardType === 'review' || currentBoardType === 'free')) ? (
             <input
@@ -97,7 +97,7 @@ function BoardForm({ initialData, onSave, onCancel, currentUserId, currentBoardT
               name="enum"
               value={getBoardTypeText(formData.enum)} // 텍스트로 변환하여 표시
               readOnly // 읽기 전용
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#306f65] bg-gray-100 cursor-not-allowed"
+              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-[#306f65] bg-gray-100 cursor-not-allowed"
             />
           ) : (
             // 게시글 수정 모드이거나, '전체보기'에서 새 게시글 작성 시 (select 허용)
@@ -129,14 +129,14 @@ function BoardForm({ initialData, onSave, onCancel, currentUserId, currentBoardT
         <div className="flex justify-end space-x-3 mt-6">
           <button
             type="submit"
-            className="px-6 py-2 bg-[#306f65] text-white rounded-md hover:bg-[#58bcb5] transition-colors duration-200 font-medium shadow-md hover:shadow-lg"
+            className="px-6 py-2 bg-[#306f65] text-white rounded-md hover:bg-[#58bcb5] transition-colors duration-200 font-medium"
           >
             {initialData ? '수정하기' : '작성하기'}
           </button>
           <button
             type="button"
             onClick={onCancel}
-            className="px-6 py-2 bg-gray-400 text-white rounded-md hover:bg-gray-500 transition-colors duration-200 font-medium shadow-md hover:shadow-lg"
+            className="px-6 py-2 bg-gray-400 text-white rounded-md hover:bg-gray-500 transition-colors duration-200 font-medium"
           >
             취소
           </button>

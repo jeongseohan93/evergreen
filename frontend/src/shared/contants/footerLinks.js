@@ -8,15 +8,8 @@ export const footerLinks = [
 export const footerCommunity = [
     { name: '공지사항', path: '/community/notice' },
     { name: '이벤트', path: '/community/event' },
-    { name: 'FAQ', path: '/community/support' },
-    { name: 'REVIEW', path: '/community/review' },
-];
-
-// 게시판 관련 링크 (공지사항, Q&A, 리뷰, 자유게시판, 조행기게시판)
-export const footerBoard = [
-    { name: '공지사항', path: '/board/notice' },
-    { name: 'Q&A', path: '/board/qna' },
-    { name: '리뷰', path: '/board/review' },
+    { name: 'Q&A', path: '/community/support' },
+    { name: '리뷰', path: '/community/review' },
     { name: '자유게시판', path: '/board/free' },
     { name: '조행기게시판', path: '/board/trip' },
 ];
