@@ -11,6 +11,8 @@ const homeRouter = require('./routes/product');
 const reportRouter = require('./routes/admin/report');
 const cartRouter = require('./routes/cart');
 const userRouter = require('./routes/user');
+const tossRouter = require('./routes/toss');
+const orderRouter = require('./routes/order');
 const passportConfig = require('./passport'); // Passport 설정 파일 불러오기 (전략 등록, 시리얼라이즈/디시리얼라이즈 등 설정 포함)
 const { notFound, errorHandler } = require('./middlewares/error'); // 404/500 에러 처리 미들웨어
 const path = require('path');
@@ -64,7 +66,7 @@ app.use(cookieParser()); // Express 앱에 cookie-parser 미들웨어를 적용�
 // 쿠키(세션) 기반 인증을 쓰면 credentials: true, 그리고 origin은 반드시 정확히 매칭해야 함
 app.use(cors({
   origin: 'http://localhost:3000',  // 허용할 프론트엔드 주소 (React 개발 서버 도메인)
-  methods: ['GET','POST','PUT','DELETE','OPTIONS' , 'PATCH'], // 허용할 HTTP 메서드 목록
+  methods: ['GET','POST','PUT','DELETE','OPTIONS' , 'PATCH' ], // 허용할 HTTP 메서드 목록
   allowedHeaders: ['Content-Type','Authorization'], // 클라이언트에서 사용할 수 있는 요청 헤더
   credentials: true // 인증 정보(쿠키, 헤더 등) 포함 여부 - false일 경우 쿠키 전송 안 됨
 }));
@@ -110,6 +112,8 @@ app.use('/adminReport', reportRouter);
 app.use('/products', homeRouter )
 app.use('/cart', cartRouter);
 app.use('/users', userRouter);
+app.use('/order', orderRouter);
+app.use('/toss', tossRouter);
 //정적 파일 서빙: 이미지 미리보기를 위해 작성
 // ⭐ 이 라인은 위에 중복되었으므로 주석 처리하거나 삭제해야 합니다. ⭐
 // app.use('/adminImages', express.static(path.join(__dirname, 'public/adminImages')));

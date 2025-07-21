@@ -78,7 +78,7 @@ const ProductDetailPage = () => {
                         name: product.name,
                         price: product.price,
                         quantity: quantity,
-                        small_photo: product.small_photo
+                   
                     }
                 ] 
             } 

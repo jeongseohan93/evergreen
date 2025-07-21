@@ -17,23 +17,31 @@ exports.getDashboardSummary = async (req, res) => {
         // 1. 총 상품 수 계산
         const totalProducts = await Product.count();
 
-        // 2. 오늘의 주문 수 계산
+        // 2. 오늘의 주문 수 계산 (payment_key가 NULL이 아닌 경우만)
         const todayOrders = await Order.count({
             where: {
                 created_at: { // Order 모델은 created_at 사용
                     [Op.gte]: today,
                     [Op.lt]: tomorrow
+                },
+                // payment_key가 NULL이 아닌 경우만 필터링
+                payment_key: {
+                    [Op.ne]: null // Op.ne는 'not equal'을 의미
                 }
             }
         });
 
-        // 3. 오늘의 매출 계산
+        // 3. 오늘의 매출 계산 (payment_key가 NULL이 아닌 경우만)
         const todaySales = await Order.sum('total_amount', {
             where: {
                 created_at: { // Order 모델은 created_at 사용
                     [Op.gte]: today,
                     [Op.lt]: tomorrow
                 },
+                // payment_key가 NULL이 아닌 경우만 필터링
+                payment_key: {
+                    [Op.ne]: null
+                }
             }
         });
 
@@ -44,8 +52,6 @@ exports.getDashboardSummary = async (req, res) => {
                 totalProducts: totalProducts,
                 todayOrders: todayOrders,
                 todaySales: todaySales || 0,
-                // 신규 회원 데이터는 더 이상 반환하지 않습니다.
-                // newMembers: newMembers, 
             },
             message: '대시보드 통계 데이터를 성공적으로 불러왔습니다.'
         });

@@ -25,7 +25,9 @@ import ProductDetailPage from '@/features/product/pages/ProductDetailPage';
 import CategorySearchPage from '@/features/product/pages/CategorySearchPage';
 
 import BoardPlaceholderPage from '@/features/board/pages/BoardPlaceholderPage';
-
+import {CheckoutPage} from '@/features/order/pages/Checkout';
+import {FailPage} from '@/features/order/pages/Fail';
+import {SuccessPage} from '@/features/order/pages/Success';
 
 const publicRoutes = [
   { path: '/login', element: <LoginPage /> },
@@ -34,6 +36,10 @@ const publicRoutes = [
   { path: '/findid', element: <FindIdPage /> },
   { path: "/findid/result", element: <FindIdResultPage />}, 
   { path: '/findpassword', element: <FindPasswordPage /> },
+   { path: '/order/toss', element: <CheckoutPage /> },
+  { path: '/toss/pay/fail', element: <FailPage /> },
+  { path: '/toss/success', element: <SuccessPage /> },
+
 
   {
     path: '/about',
