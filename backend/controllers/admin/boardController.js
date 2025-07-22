@@ -18,11 +18,16 @@ exports.getAllBoards = async (req, res, next) => {
 
         // 1. enum 타입 필터링
         if (boardType) {
-            const validEnumTypes = ['review', 'free']; // 모델에 정의된 유효한 enum 값들
+            const validEnumTypes = ['review', 'free', 'qna']; // 모델에 정의된 유효한 enum 값들
             if (!validEnumTypes.includes(boardType)) {
                 return res.status(400).json({ message: '유효하지 않은 게시판 타입입니다.' });
             }
             whereConditions.enum = boardType;
+        }
+
+        // notice 파라미터 처리 (공지사항 필터링)
+        if (req.query.notice) {
+            whereConditions.notice = req.query.notice;
         }
 
         // 2. 검색 키워드 처리 (제목, 내용, 작성자 이름)
@@ -127,7 +132,7 @@ exports.createBoard = async (req, res, next) => {
         console.log("[createBoard] 수신된 notice:", notice);
         console.log("[createBoard] 수신된 enumValue:", enumValue);
 
-        const validEnumTypes = ['review', 'free'];
+        const validEnumTypes = ['review', 'free', 'qna'];
         if (!validEnumTypes.includes(enumValue)) {
             console.log("[createBoard] 유효하지 않은 게시판 타입:", enumValue); // ✨ 로그 추가
             return res.status(400).json({ message: '유효하지 않은 게시판 타입입니다.' });
@@ -174,7 +179,7 @@ exports.updateBoard = async (req, res, next) => {
     const boardId = req.params.id;
 
     try {
-        const validEnumTypes = ['review', 'free'];
+        const validEnumTypes = ['review', 'free', 'qna'];
         if (!validEnumTypes.includes(enumValue)) {
             return res.status(400).json({ message: '유효하지 않은 게시판 타입입니다.' });
         }

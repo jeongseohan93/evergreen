@@ -3,7 +3,7 @@
 import { apiService } from '@/shared'; // apiService 경로를 너의 프로젝트 구조에 맞게 확인해줘.
 
 // 모든 게시글 가져오기 (enumType 필터링 및 keyword 검색 기능 추가)
-export const getAllBoards = async (enumType = '', keyword = '') => { // 🚩 keyword 인자 추가
+export const getAllBoards = async (enumType = '', keyword = '', notice = '') => { // notice 인자 추가
   try {
     // URLSearchParams를 사용하여 쿼리 파라미터를 동적으로 구성
     const params = new URLSearchParams();
@@ -12,6 +12,9 @@ export const getAllBoards = async (enumType = '', keyword = '') => { // 🚩 key
     }
     if (keyword) { // 🚩 keyword가 있을 경우 쿼리 파라미터에 추가
       params.append('keyword', keyword);
+    }
+    if (notice) {
+      params.append('notice', notice); // 추가
     }
 
     const url = `/admin/board?${params.toString()}`; // 쿼리 파라미터 문자열 생성

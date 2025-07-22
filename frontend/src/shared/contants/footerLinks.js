@@ -6,10 +6,9 @@ export const footerLinks = [
 ];
 
 export const footerCommunity = [
-    { name: '공지사항', path: '/community/notice' },
-    { name: '이벤트', path: '/community/event' },
-    { name: 'Q&A', path: '/community/support' },
-    { name: '리뷰', path: '/community/review' },
+    { name: '공지사항', path: '/board/notice' },
+    { name: '리뷰(사용후기)', path: '/board/review' },
     { name: '자유게시판', path: '/board/free' },
-    { name: '조행기게시판', path: '/board/trip' },
+    { name: '질문게시판', path: '/board/qna' },
+    { name: '조행기게시판', path: '/board/report' },
 ];

@@ -20,7 +20,7 @@ import ReportEdit from '../pages/reportPage/ReportEdit.jsx';
 import ReportWrite from '../pages/reportPage/ReportWrite.jsx';
 import DashBoardPage from '../pages/dashboardPage/DashBoardPage';
 import BannerManager from '../pages/bannerPage/BannerManager';
-import BoardManager from '../pages/boardPage/BoardManager';
+import BoardManager from '../pages/boardPage/BoardManage';
 
 import sh from '../../../assets/image/sh.png';
 

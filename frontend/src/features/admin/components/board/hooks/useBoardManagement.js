@@ -17,12 +17,11 @@ const useBoardManagement = () => {
   // 모든 게시글 불러오는 함수 (boardType과 keyword 인자 추가)
   // `boardType`은 'review' 또는 'free'가 될 수 있으며, 기본값은 빈 문자열로 설정하여 필터링 없음
   // `keyword`는 검색어이며, 기본값은 빈 문자열로 설정하여 검색 없음
-  const fetchBoards = useCallback(async (boardType = '', keyword = '') => { // 🚩 keyword 인자 추가
+  const fetchBoards = useCallback(async (boardType = '', keyword = '', notice = '') => { // notice 인자 추가
     setLoading(true);
     setError(null);
     try {
-      // 🚩 getAllBoards에 boardType과 keyword 전달
-      const result = await getAllBoards(boardType, keyword); // 🚩 getAllBoards에 keyword 전달
+      const result = await getAllBoards(boardType, keyword, notice); // notice 인자 전달
       if (result.success) {
         setBoards(result.data);
       } else {
@@ -64,9 +63,6 @@ const useBoardManagement = () => {
     try {
       const result = await createBoard(newBoardData);
       if (result.success) {
-        // 성공적으로 추가되면 목록을 새로고침 (fetchBoards 호출 시 현재 boardType을 알아야 함)
-        // 이 부분은 BoardManager.jsx에서 addBoard 호출 후 fetchBoards(currentBoardType)를 호출하는 것이 더 명확
-        // await fetchBoards(); // 🚩 이 부분 대신 BoardManager.jsx에서 처리
         return { success: true, message: result.message };
       } else {
         setError(result.message);

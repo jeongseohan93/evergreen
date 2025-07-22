@@ -13,19 +13,17 @@ import TermsPage from '@/features/policies/pages/TermsPage';
 
 import AboutPage from "@/features/about/pages/AboutPage";
 
-import NoticeListPage from '@/features/community/pages/notice/NoticeListPage';
-import EventPage from '@/features/community/pages/event/EventPage';
-import SupportListPage from '@/features/community/pages/support/SupportListPage'; 
-import ReviewListPage from '@/features/community/pages/review/ReviewListPage';
-
 import SearchPage from '@/features/product/pages/SearchPage';
 
 import ProductDetailPage from '@/features/product/pages/ProductDetailPage';
 
 import CategorySearchPage from '@/features/product/pages/CategorySearchPage';
 
-import BoardPlaceholderPage from '@/features/board/pages/BoardPlaceholderPage';
-
+import NoticeListPage from '@/features/community/pages/NoticeListPage'; //공지사항 목록
+import ReviewListPage from '@/features/community/pages/ReviewListPage'; //리뷰(사용후기) 목록
+import FreeListPage from '@/features/community/pages/FreeListPage'; //자유게시판 목록
+import QnaListPage from '@/features/community/pages/QnaListPage'; //질문게시판 목록
+import ReportListPage from '@/features/community/pages/ReportListPage'; //조행기게시판 목록
 
 const publicRoutes = [
   { path: '/login', element: <LoginPage /> },
@@ -51,30 +49,19 @@ const publicRoutes = [
     ],
   },
   
-  { path: '/search', element: <SearchPage /> },
-  { path: "/products/:productId", element: <ProductDetailPage /> },
-
-  {
-    path: '/community',
-    children: [
-      { path: 'notice', element: <NoticeListPage /> },
-      { path: 'review', element: <ReviewListPage /> },
-      { path: 'support', element: <SupportListPage /> },
-      { path: 'event', element: <EventPage />},
-    ],
-  },
-
   {
     path: '/board',
     children: [
-      { path: 'notice', element: <BoardPlaceholderPage title="공지사항" /> },
-      { path: 'qna', element: <BoardPlaceholderPage title="Q&A" /> },
-      { path: 'review', element: <BoardPlaceholderPage title="리뷰" /> },
-      { path: 'free', element: <BoardPlaceholderPage title="자유게시판" /> },
-      { path: 'trip', element: <BoardPlaceholderPage title="조행기게시판" /> },
+      { path: 'notice', element: <NoticeListPage /> },
+      { path: 'review', element: <ReviewListPage /> },
+      { path: 'free', element: <FreeListPage /> },
+      { path: 'qna', element: <QnaListPage />},
+      { path: 'report', element: <ReportListPage />}, // 조행기게시판: /board/report
     ],
   },
 
+  { path: '/search', element: <SearchPage /> },
+  { path: "/products/:productId", element: <ProductDetailPage /> },
   {path: '/categorysearch', element: <CategorySearchPage />},
 
 ];

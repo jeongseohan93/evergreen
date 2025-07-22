@@ -57,7 +57,7 @@ class Board extends Model {
         defaultValue: 'N',
       },
       enum: {
-        type: DataTypes.ENUM('review', 'free'),
+        type: DataTypes.ENUM('review', 'free', 'qna'),
         allowNull: false,
       },
     }, {
