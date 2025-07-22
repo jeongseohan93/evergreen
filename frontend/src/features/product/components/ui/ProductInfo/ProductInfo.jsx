@@ -12,7 +12,8 @@ const ProductInfo = ({
     quantity,
     setQuantity,
     onAddToCart,
-    onPurchase 
+    onPurchase,
+    onAddWishList
 }) => {
     const totalPrice = salePrice * quantity; // 총 가격을 수량에 맞춰 계산
 
@@ -66,7 +67,9 @@ const ProductInfo = ({
                 >
                     장바구니 담기
                 </button>
-                <button className="flex-1 py-3 px-6 rounded-lg text-lg font-bold bg-gray-200 text-gray-800 hover:bg-gray-300">
+                <button 
+                    onClick={onAddWishList}
+                    className="flex-1 py-3 px-6 rounded-lg text-lg font-bold bg-gray-200 text-gray-800 hover:bg-gray-300">
                     관심상품 담기
                 </button>
             </div>

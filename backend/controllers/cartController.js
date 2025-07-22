@@ -4,6 +4,7 @@ const { Cart, Product } = require('../models');
  * 1. 장바구니에 상품 추가 (POST /cart) - 수정된 버전
  */
 exports.addToCart = async (req, res) => {
+    // ⭐️ 1. 함수 시작 시 로그
     console.log("--- POST /cart 요청 시작 ---");
     console.log("요청 본문 (req.body):", req.body); // 프론트에서 보낸 데이터 확인
 
@@ -11,30 +12,46 @@ exports.addToCart = async (req, res) => {
         const { productId, quantity } = req.body;
         const user_uuid = 'temp-user-uuid'; // 임시 ID 고정
 
+        // ⭐️ 2. 유효성 검사 직전 로그
+        console.log(`유효성 검사: productId=${productId}, quantity=${quantity}`);
         // 요청 데이터 유효성 검사
         if (!productId || !quantity || quantity < 1) {
-            console.error("오류: productId 또는 quantity가 유효하지 않습니다.");
+            console.error("오류: productId 또는 quantity가 유효하지 않습니다. (400 응답)");
             return res.status(400).json({ success: false, message: "상품 ID와 수량이 올바르게 전달되어야 합니다." });
         }
 
+        // ⭐️ 3. 상품 정보 조회 직전 로그
+        console.log(`Product 모델에서 productId=${productId} 상품 조회 시도...`);
         // DB에서 해당 상품 정보 조회
         const product = await Product.findByPk(productId);
+        // ⭐️ 4. 상품 정보 조회 결과 로그
+        console.log("Product.findByPk 결과:", product ? product.toJSON() : "상품 없음");
+
         if (!product) {
-            console.error(`오류: ID가 ${productId}인 상품을 DB에서 찾을 수 없습니다.`);
+            console.error(`오류: ID가 ${productId}인 상품을 DB에서 찾을 수 없습니다. (404 응답)`);
             return res.status(404).json({ success: false, message: "존재하지 않는 상품입니다." });
         }
         
+        // ⭐️ 5. 기존 장바구니 항목 확인 직전 로그
+        console.log(`장바구니에서 user_uuid=${user_uuid}, product_id=${productId} 항목 확인 시도...`);
         // 장바구니에 이미 있는지 확인
         const existingItem = await Cart.findOne({ where: { user_uuid, product_id: productId } });
+        // ⭐️ 6. 기존 장바구니 항목 확인 결과 로그
+        console.log("Cart.findOne 결과 (기존 항목):", existingItem ? existingItem.toJSON() : "기존 항목 없음");
+
 
         if (existingItem) {
-            // 있으면 수량만 더하기
+            // ⭐️ 7. 기존 항목 있을 경우 수량 업데이트 로직 진입 로그
+            console.log(`기존 장바구니 항목 발견. 수량 업데이트 (현재: ${existingItem.quantity}, 추가: ${quantity})`);
             existingItem.quantity += quantity;
             await existingItem.save();
+            // ⭐️ 8. 업데이트 성공 후 응답 전 로그
             console.log(`DB 업데이트 완료: cart_id ${existingItem.cart_id}의 수량이 ${existingItem.quantity}로 변경됨`);
+            console.log("200 OK 응답 전송 (수량 업데이트 성공)");
             res.status(200).json({ success: true, message: '장바구니 수량이 업데이트되었습니다.', data: existingItem });
         } else {
-            // 없으면 새로 만들기
+            // ⭐️ 9. 기존 항목 없을 경우 새로 생성 로직 진입 로그
+            console.log("기존 장바구니 항목 없음. 새 항목 생성 시도...");
             const newItem = await Cart.create({
                 user_uuid,
                 product_id: productId,
@@ -43,13 +60,22 @@ exports.addToCart = async (req, res) => {
                 price: product.price,
                 small_photo: product.small_photo,
             });
+            // ⭐️ 10. 생성 성공 후 응답 전 로그
             console.log(`DB 생성 완료: 새 cart_id ${newItem.cart_id} 생성됨`);
+            console.log("201 Created 응답 전송 (새 항목 추가 성공)");
             res.status(201).json({ success: true, message: '장바구니에 상품이 추가되었습니다.', data: newItem });
         }
 
     } catch (error) {
-        console.error('💥 장바구니 추가 컨트롤러에서 심각한 오류 발생:', error);
+        // ⭐️ 11. catch 블록 진입 시 로그 (가장 중요!)
+        console.error('💥 장바구니 추가 컨트롤러에서 심각한 오류 발생 (catch 블록 진입):', error);
+        console.error('오류 메시지:', error.message);
+        console.error('오류 이름:', error.name);
+        console.error('오류 스택:', error.stack); // 상세 스택 트레이스 확인
         res.status(500).json({ success: false, message: '서버 내부 오류가 발생했습니다.' });
+    } finally {
+        // ⭐️ 12. 함수 종료 시 로그
+        console.log("--- POST /cart 요청 종료 ---");
     }
 };
 

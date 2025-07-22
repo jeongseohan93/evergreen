@@ -3,8 +3,8 @@
 import React, { useState, useEffect } from 'react';
 // ✅ useNavigate 훅을 추가로 import 합니다.
 import { useParams, useNavigate } from 'react-router-dom';
-import { getProductByIdApi  } from '../api/ProductApi';
-import {addToCartApi} from '../../cart/api/cartApi'
+import { getProductByIdApi, addWishList  } from '../api/ProductApi';
+import { addToCartApi } from '../../cart/api/cartApi'
 import { Header, Footer, SubHeader } from '@/app';
 import DetailPageHeader from "../components/ui/DetailPageHeader/DetailPageHeader";
 import ImageGallery from "../components/ui/ImageGallery/ImageGallery";
@@ -12,7 +12,7 @@ import ProductInfo from "../components/ui/ProductInfo/ProductInfo";
 import ProductDetailTabs from "../components/ui/ProductInfo/ui/ProductDetailTab/ProductDetailTab";
 
 const ProductDetailPage = () => {
-    const { productId } = useParams();
+    const { productId } = useParams(); 
     // ✅ navigate 함수를 사용할 수 있도록 선언합니다.
     const navigate = useNavigate(); 
     
@@ -67,7 +67,7 @@ const ProductDetailPage = () => {
     if (!product) return <div>상품 정보가 없습니다.</div>;
 
     const handlePurchase = () => {
-        console.log('주문하기 클릭!', { productId, quantity });
+        console.log('주문하기 클릭!',{ productId, quantity });
         // 실제로는 주문에 필요한 정보를 가지고 주문 페이지로 이동합니다.
         // navigate의 state 옵션을 사용하면 데이터를 안전하게 전달할 수 있습니다.
         navigate('/order', { 
@@ -83,6 +83,24 @@ const ProductDetailPage = () => {
             } 
         });
     };
+
+    const handleWishlist = async() => {
+        try {
+            const response = await addWishList(productId);
+            if (response.success) {
+                alert(response.message || '관심 상품에 성공적으로 추가되었습니다!');
+            } else {
+                alert(`관심 상품 추가 실패: ${response.message || '알 수 없는 오류'}`);
+            }
+        }catch (error) {
+            console.error("관심 상품 추가 오류:", error.response?.data || error.message);
+            alert('관심 상품 추가 중 오류가 발생했습니다.');
+            if (error.response?.status === 401) {
+                alert('로그인이 필요합니다.');
+                // navigate('/login'); // 로그인 페이지로 리다이렉트
+            }
+        }
+    }
 
     return (
         <>
@@ -101,6 +119,7 @@ const ProductDetailPage = () => {
                     setQuantity={setQuantity}
                     onAddToCart={handleAddToCart}
                     onPurchase={handlePurchase}
+                    onAddWishList={handleWishlist}
                 />
             </div>
             <ProductDetailTabs />
