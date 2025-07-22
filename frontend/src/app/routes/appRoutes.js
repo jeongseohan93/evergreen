@@ -13,6 +13,7 @@ import BoardPage from '@/features/mypage/pages/PostManagementPage';
 import AddressPage from '@/features/mypage/pages/AddressBookPage';
 import CartPage from '@/features/cart/pages/CartPage';
 import OrderPage from '@/features/order/pages/OrderPage';
+import ShippingForm from '@/features/mypage/pages/AddressBookForm';
 
 
 const appRoutes = [
@@ -41,6 +42,14 @@ const appRoutes = [
       { path: 'mileage', element: <MileagePage /> },     // -> /mypage/mileage
       { path: 'board', element: <BoardPage /> },         // -> /mypage/board
       { path: 'addresses', element: <AddressPage /> },   // -> /mypage/addresses
+      // 🚨 이곳을 수정합니다.
+      // 'addresses' 라우트의 자식으로 'shippingform'을 추가합니다.
+      // 이렇게 하면 경로가 '/mypage/addresses/shippingform'이 됩니다.
+      { 
+        path: 'addresses/shippingform', // 'addresses'의 자식으로 'shippingform' 추가
+        element: <ShippingForm />
+      },
+      // { path: 'shipingform', element: <ShippingForm />}, // 기존의 이 라인은 삭제하거나 주석 처리합니다.
     ],
   },
 

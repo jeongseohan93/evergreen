@@ -12,12 +12,12 @@ import ProductManagePage from '../pages/productPage/ProductManagePage';
 import SaleManagerPage from '../pages/salePage/SaleManagerPage';
 import OrderManagementPage from '../pages/orderPage/OrderManagementPage';
 
-import UserManage from '../pages/userPage/UserManage.jsx';
-import UserEdit from '../pages/userPage/UserEdit.jsx';
-import ReportManage from '../pages/reportPage/ReportManage.jsx';
-import ReportDetail from '../pages/reportPage/ReportDetail.jsx';
-import ReportEdit from '../pages/reportPage/ReportEdit.jsx';
-import ReportWrite from '../pages/reportPage/ReportWrite.jsx';
+import UserManage from '../pages/userPage/userManage.jsx';
+import UserEdit from '../pages/userPage/userEdit.jsx';
+import ReportManage from '../pages/reportPage/reportManage.jsx';
+import ReportDetail from '../pages/reportPage/reportDetail.jsx';
+import ReportEdit from '../pages/reportPage/reportEdit.jsx';
+import ReportWrite from '../pages/reportPage/reportWrite.jsx';
 import DashBoardPage from '../pages/dashboardPage/DashBoardPage';
 import BannerManager from '../pages/bannerPage/BannerManager';
 import BoardManager from '../pages/boardPage/BoardManager';

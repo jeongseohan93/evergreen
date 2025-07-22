@@ -20,7 +20,12 @@ class Category extends Model {
           type: DataTypes.STRING(50),
           allowNull: false,
         },
+        parent_category_id: {
+          type: DataTypes.INTEGER,
+          allowNull: true, 
+        },
       },
+      
       {
         sequelize,
         modelName: 'Category',

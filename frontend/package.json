@@ -9,9 +9,7 @@
     "test": "craco test",
     "eject": "react-scripts eject"
   },
-  
   "dependencies": {
-    "@tosspayments/tosspayments-sdk": "^2.2.0",
     "@craco/craco": "^7.1.0",
     "@fortawesome/fontawesome-svg-core": "^6.7.2",
     "@fortawesome/free-solid-svg-icons": "^6.7.2",
@@ -22,6 +20,7 @@
     "@testing-library/jest-dom": "^6.6.3",
     "@testing-library/react": "^16.3.0",
     "@testing-library/user-event": "^13.5.0",
+    "@tosspayments/tosspayments-sdk": "^2.2.0",
     "axios": "^1.9.0",
     "jwt-decode": "^4.0.0",
     "lucide-react": "^0.523.0",
@@ -32,6 +31,7 @@
     "react-router-dom": "^7.6.0",
     "react-scripts": "^5.0.1",
     "react-slick": "^0.30.3",
+    "react-toastify": "^11.0.5",
     "slick-carousel": "^1.8.1",
     "web-vitals": "^2.1.4"
   },
@@ -48,7 +48,6 @@
       "react-app/jest"
     ]
   },
-  
   "browserslist": {
     "production": [
       ">0.2%",

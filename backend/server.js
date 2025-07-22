@@ -11,6 +11,7 @@ const homeRouter = require('./routes/product');
 const reportRouter = require('./routes/admin/report');
 const cartRouter = require('./routes/cart');
 const userRouter = require('./routes/user');
+const juso = require('./routes/juso');
 const passportConfig = require('./passport'); // Passport 설정 파일 불러오기 (전략 등록, 시리얼라이즈/디시리얼라이즈 등 설정 포함)
 const { notFound, errorHandler } = require('./middlewares/error'); // 404/500 에러 처리 미들웨어
 const path = require('path');
@@ -57,7 +58,9 @@ sequelize.sync() // 모델 정의와 실제 DB 테이블을 동기화 (필요시
 // ======================
 app.use(morgan('dev')); // http 요청 로그를 콘솔에 출력해주는 미들웨어 (개발 중 요청/응답 정보 확인용), 'dev' 모드는 간단하게 로그로 출력
 app.use(express.json()); // 클라이언트에서 보내는 JSON 형식의 요청(body)을 파싱하여 req.body로 사용할 수 있게 함
+app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser()); // Express 앱에 cookie-parser 미들웨어를 적용합니다. 이로써 모든 요청에서 자동으로 쿠키를 파싱할 수 있게 됩니다.
+
 
 
 // JWT 토큰만 사용하는 경우 credentials: false
@@ -92,6 +95,7 @@ console.log('Express가 /images/ 요청에 사용할 실제 Images 폴더 경로
 app.use('/images', express.static(imagesDirPath));
 
 
+
 // 3. 기존 adminImages 정적 파일 서빙 설정 (public/adminImages가 backend 폴더와 같은 레벨에 있을 때)
 const adminImagesDirPath = path.join(__dirname, 'public', 'adminImages');
 console.log('Express가 /adminImages/ 요청에 사용할 실제 AdminImages 폴더 경로:', adminImagesDirPath);
@@ -110,6 +114,7 @@ app.use('/adminReport', reportRouter);
 app.use('/products', homeRouter )
 app.use('/cart', cartRouter);
 app.use('/users', userRouter);
+app.use('/mypage', juso);
 //정적 파일 서빙: 이미지 미리보기를 위해 작성
 // ⭐ 이 라인은 위에 중복되었으므로 주석 처리하거나 삭제해야 합니다. ⭐
 // app.use('/adminImages', express.static(path.join(__dirname, 'public/adminImages')));

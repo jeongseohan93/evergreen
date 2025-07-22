@@ -1,4 +1,3 @@
-
 // Product models를 위한 준비
 
 // Product에는 category_id, lineup_id를 외래키로 둘 예정이나 
@@ -22,15 +21,15 @@ class Product extends Model {
         primaryKey: true,
         autoIncrement: true,
       },
-      category_id: {
+      category_id: { // 2단계 카테고리 ID
         type: DataTypes.INTEGER,
         allowNull: false,
       },
-      lineup_id: {
+      lineup_id: { // 1단계 카테고리 ID
         type: DataTypes.INTEGER,
         allowNull: true,
       },
-      name: {
+      name: { // 상품명
         type: DataTypes.STRING(100),
         allowNull: false,
       },
@@ -45,9 +44,14 @@ class Product extends Model {
         type: DataTypes.STRING(100), // 예: '대한민국', '중국', '일본' 등
         allowNull: true,
       },
-      model_name: {
-        type: DataTypes.STRING(100), // 예: 'ABC-1234'
+      model_name: { // ⭐️ 기존 모델명 컬럼 (3단계 카테고리 아님)
+        type: DataTypes.STRING(100), 
         allowNull: true,
+      },
+      // ⭐️ 3단계 카테고리 이름을 저장할 새로운 컬럼 추가
+      sub2_category_name: { 
+        type: DataTypes.STRING(100), 
+        allowNull: true, // 3단계 카테고리가 없는 상품도 있을 수 있으므로
       },
       small_photo: {
         type: DataTypes.STRING(255),
@@ -63,7 +67,7 @@ class Product extends Model {
         type: DataTypes.STRING(100),
       },
       pick: {
-        type: DataTypes.ENUM('best', 'recommend', 'nothing'), // 필요 시 수정
+        type: DataTypes.ENUM('best', 'recommend', 'nothing'), 
         defaultValue: 'nothing',
       },
       created_at: {
@@ -78,28 +82,12 @@ class Product extends Model {
       sequelize,
       modelName: 'Product',
       tableName: 'products',
-      timestamps: false, // 직접 created_at, updated_at 필드를 쓸 경우 false로
-      underscored: false, // created_at → createdAt 매핑 피하려면 true
+      timestamps: false, 
+      underscored: false, 
     });
   }
 
-  /* static associate(db) {
-    // 1. products.category_id → categories.product_id
-    db.Product.belongsTo(db.Category, {
-      foreignKey: 'category_id',
-      //카테고리의 삭제 => 그 카테고리에 속한 모든 상품 삭제
-      onDelete: 'CASCADE', 
-    });
-
-    // 2. products.lineup_id → lineups.lineup_id
-    db.Product.belongsTo(db.Lineup, {
-      foreignKey: 'lineup_id',
-      //라인업의 삭제 => 그걸 참조하던 상품의 lineup_id를 Null로 설정(상품은 유지)
-      onDelete: 'SET NULL', 
-    });
-  }  */
+ 
 }
 
-//내보내는 방식도 여러가지 있음. 이 방식으로 일단 index.js에서 오류가 없으니 사용.
 module.exports = Product;
-
