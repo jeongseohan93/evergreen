@@ -13,6 +13,7 @@ const cartRouter = require('./routes/cart');
 const userRouter = require('./routes/user');
 const tossRouter = require('./routes/toss');
 const orderRouter = require('./routes/order');
+const mypageRouter = require('./routes/mypage');
 const passportConfig = require('./passport'); // Passport 설정 파일 불러오기 (전략 등록, 시리얼라이즈/디시리얼라이즈 등 설정 포함)
 const { notFound, errorHandler } = require('./middlewares/error'); // 404/500 에러 처리 미들웨어
 const path = require('path');
@@ -114,6 +115,7 @@ app.use('/cart', cartRouter);
 app.use('/users', userRouter);
 app.use('/order', orderRouter);
 app.use('/toss', tossRouter);
+app.use('/mypage', mypageRouter);
 //정적 파일 서빙: 이미지 미리보기를 위해 작성
 // ⭐ 이 라인은 위에 중복되었으므로 주석 처리하거나 삭제해야 합니다. ⭐
 // app.use('/adminImages', express.static(path.join(__dirname, 'public/adminImages')));

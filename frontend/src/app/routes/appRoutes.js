@@ -1,4 +1,3 @@
-// src/app/routes/appRoutes.js
 import Home from '@/features/home/pages/Home';
 
 import { PrivateRoute } from '@/shared';
@@ -12,14 +11,13 @@ import MileagePage from '@/features/mypage/pages/PointsPage';
 import BoardPage from '@/features/mypage/pages/PostManagementPage';
 import AddressPage from '@/features/mypage/pages/AddressBookPage';
 import CartPage from '@/features/cart/pages/CartPage';
-import OrderPage from '@/features/order/pages/OrderPage';
-
+import OrderDetailPage from '@/features/mypage/pages/OrderDetailPage';
+import OrderHistoryPage from '@/features/mypage/pages/OrderHistoryPage';
+import OrderPage from '@/features/order/pages/OrderPage'; // ⭐ 주문하기 페이지 컴포넌트를 import
 
 const appRoutes = [
   // 일반 사용자 및 관리자 모두 접근 가능한 로그인 후 페이지
   { path: '/', element: <Home />},
-  // { path: '/profile', component: MyProfilePage, exact: true, requiresAuth: true, roles: ['user', 'admin'] },
-  
   
   {
     path: '/403',
@@ -35,7 +33,8 @@ const appRoutes = [
     ),
     children: [
       { index: true, element: <MyPage /> },
-      { path: 'orders', element: <OrderPage /> },       // -> /mypage/orders
+      { path: 'orders', element: <OrderHistoryPage /> },     // -> /mypage/orders (주문 내역)
+      { path: 'orders/:orderId', element: <OrderDetailPage /> }, // -> /mypage/orders/:orderId (주문 상세)
       { path: 'profile', element: <ProfilePage /> },     // -> /mypage/profile
       { path: 'wishlist', element: <WishlistPage /> },   // -> /mypage/wishlist
       { path: 'mileage', element: <MileagePage /> },     // -> /mypage/mileage
@@ -44,8 +43,10 @@ const appRoutes = [
     ],
   },
 
-      { path: 'cart', element:  <PrivateRoute><CartPage /></PrivateRoute>},
-      { path: 'order', element: <PrivateRoute><OrderPage /></PrivateRoute>}
+  // MyPage와 별개로 최상위 경로에 정의되는 라우트들
+  { path: 'cart', element:  <PrivateRoute><CartPage /></PrivateRoute>},
+  { path: 'order', element: <PrivateRoute><OrderPage /></PrivateRoute> }, // ⭐ /order (주문하기 페이지) 라우트 추가
+    
 ];
 
 export default appRoutes;
