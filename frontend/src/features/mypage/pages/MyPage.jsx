@@ -10,7 +10,7 @@ const MyPage = () => {
 
     return (
         <>
-            {/* MyPageNavGrid가 제거되었습니다. */}
+           
             <MyPageHeader />
             <MyPointSummary
                 availablePoints={userData.availablePoints}

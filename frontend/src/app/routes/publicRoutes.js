@@ -19,11 +19,17 @@ import ProductDetailPage from '@/features/product/pages/ProductDetailPage';
 
 import CategorySearchPage from '@/features/product/pages/CategorySearchPage';
 
+
 import NoticeListPage from '@/features/community/pages/NoticeListPage'; //공지사항 목록
 import ReviewListPage from '@/features/community/pages/ReviewListPage'; //리뷰(사용후기) 목록
 import FreeListPage from '@/features/community/pages/FreeListPage'; //자유게시판 목록
 import QnaListPage from '@/features/community/pages/QnaListPage'; //질문게시판 목록
 import ReportListPage from '@/features/community/pages/ReportListPage'; //조행기게시판 목록
+
+import BoardPlaceholderPage from '@/features/board/pages/BoardPlaceholderPage';
+import {CheckoutPage} from '@/features/order/pages/Checkout';
+import {FailPage} from '@/features/order/pages/Fail';
+import {SuccessPage} from '@/features/order/pages/Success';
 
 const publicRoutes = [
   { path: '/login', element: <LoginPage /> },
@@ -32,6 +38,10 @@ const publicRoutes = [
   { path: '/findid', element: <FindIdPage /> },
   { path: "/findid/result", element: <FindIdResultPage />}, 
   { path: '/findpassword', element: <FindPasswordPage /> },
+   { path: '/order/toss', element: <CheckoutPage /> },
+  { path: '/toss/pay/fail', element: <FailPage /> },
+  { path: '/toss/success', element: <SuccessPage /> },
+
 
   {
     path: '/about',
@@ -49,6 +59,10 @@ const publicRoutes = [
     ],
   },
   
+
+  { path: '/search', element: <SearchPage /> },
+  { path: "/products/:productId", element: <ProductDetailPage /> },
+
   {
     path: '/board',
     children: [
@@ -60,8 +74,21 @@ const publicRoutes = [
     ],
   },
 
+
   { path: '/search', element: <SearchPage /> },
   { path: "/products/:productId", element: <ProductDetailPage /> },
+
+  {
+    path: '/board',
+    children: [
+      { path: 'notice', element: <BoardPlaceholderPage title="공지사항" /> },
+      { path: 'qna', element: <BoardPlaceholderPage title="Q&A" /> },
+      { path: 'review', element: <BoardPlaceholderPage title="리뷰" /> },
+      { path: 'free', element: <BoardPlaceholderPage title="자유게시판" /> },
+      { path: 'trip', element: <BoardPlaceholderPage title="조행기게시판" /> },
+    ],
+  },
+
   {path: '/categorysearch', element: <CategorySearchPage />},
 
 ];

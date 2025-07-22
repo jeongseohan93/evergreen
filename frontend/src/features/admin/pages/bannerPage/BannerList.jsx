@@ -1,5 +1,5 @@
 // frontend/src/features/admin/components/banner/BannerList.jsx
-import React, { useState } from 'react';
+import React from 'react'; // useState는 이 컴포넌트에서 사용되지 않으므로 제거
 
 function BannerList({ banners, onDelete, onToggleActive, onChangeOrder, editingId, editData, onEditClick, onCancel, onInputChange, onSave, previewUrl }) {
     return (
@@ -38,7 +38,8 @@ function BannerList({ banners, onDelete, onToggleActive, onChangeOrder, editingI
                                                     />
                                                 ) : banner.image_url && (
                                                     <img
-                                                        src={`http://localhost:3000${banner.image_url}`}
+                                                        // 이미지가 package.json의 proxy 설정을 통해 올바르게 로드되도록 변경됨
+                                                        src={`${banner.image_url}`}
                                                         alt={banner.title || '배너 이미지'}
                                                         className="w-full max-w-xs h-28 object-contain rounded mb-1"
                                                         onError={(e) => { e.target.onerror = null; e.target.src = 'https://placehold.co/96x96/e0e0e0/ffffff?text=No+Image'; }}
@@ -54,7 +55,8 @@ function BannerList({ banners, onDelete, onToggleActive, onChangeOrder, editingI
                                         ) : (
                                             banner.image_url && (
                                                 <img
-                                                    src={`http://localhost:3000${banner.image_url}`}
+                                                    // 이미지가 package.json의 proxy 설정을 통해 올바르게 로드되도록 변경됨
+                                                    src={`${banner.image_url}`}
                                                     alt={banner.title || '배너 이미지'}
                                                     className="w-full max-w-xs h-28 object-contain rounded-md"
                                                     onError={(e) => { e.target.onerror = null; e.target.src = 'https://placehold.co/96x96/e0e0e0/ffffff?text=No+Image'; }}

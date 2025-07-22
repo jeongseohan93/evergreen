@@ -12,3 +12,4 @@ export const footerCommunity = [
     { name: '질문게시판', path: '/board/qna' },
     { name: '조행기게시판', path: '/board/report' },
 ];
+
