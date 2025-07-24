@@ -1,7 +1,10 @@
 // src/features/admin/layouts/AdminLayout.jsx
 
 import React, { useState } from 'react';
-import { HomeIcon, ShoppingBagIcon, UsersIcon, ChartBarIcon, CogIcon, FoldersIcon, FileTextIcon, PackageIcon ,List, Image as ImageIcon } from 'lucide-react';
+// ⭐ 수정: CogIcon은 사용되지 않으므로 제거했습니다. ⭐
+import { HomeIcon, ShoppingBagIcon, UsersIcon, ChartBarIcon, FoldersIcon, FileTextIcon, PackageIcon ,List, Image as ImageIcon } from 'lucide-react';
+// ⭐ Logo 컴포넌트가 default export이므로 중괄호 없이 import 합니다. ⭐
+import Logo from '../../../shared/components/layouts/Header/Logo'; // Logo 컴포넌트 경로 확인
 
 // === Import 경로 재수정 ===
 // CategoryManager의 실제 위치에 맞게 경로를 설정 (pages/categoryPage 폴더 안에 있음)
@@ -30,11 +33,14 @@ import sh from '../../../assets/image/sh.png';
 
 
 import { logoutAsync } from '@/features/authentication/authSlice';
-import { useNavigate } from 'react-router-dom'; // <-- 여기를 수정했습니다!
+import { useNavigate } from 'react-router-dom';
 import { useDispatch } from 'react-redux';
 
 
 // === 임시 페이지 컴포넌트들 ===
+
+
+
 const AdminDashboardPage = () => (
   <div className="bg-white p-6 rounded-lg shadow-md min-h-[400px]">
      <div style={{ display: 'flex', alignItems: 'center', gap: '20px' }}>
@@ -83,14 +89,20 @@ const BoardPage = () => (
  </div>
 );
 
-// === Header 컴포넌트 === (수정됨: 의도적으로 아무것도 렌더링하지 않음)
+// === Header 컴포넌트 ===
 const AdminHeader = ({ onGoDashboard }) => {
-  // AdminHeader는 의도적으로 아무것도 렌더링하지 않습니다.
-  // 필요한 경우 여기에 JSX를 추가하여 헤더를 표시할 수 있습니다.
-  return null; 
+  return (
+    // ⭐ 색상 변경: 메인 콘텐츠 배경색과 동일한 bg-[#f2f2e8]로 변경 ⭐
+    <header className="flex items-center justify-center p-4 bg-[#f2f2e8] text-gray-800 shadow-md"> 
+   
+      <Logo /> 
+      
+     
+    </header>
+  );
 };
 
-// === Sidebar 컴포넌트 === (이전과 동일)
+// === Sidebar 컴포넌트 ===
 const AdminSidebar = ({ activeKey, setActiveKey, onGoDashboard, onLogout }) => {
   const menuItems = [
     { name: '대시보드', icon: HomeIcon, key: 'dashboard' },
@@ -110,9 +122,10 @@ const AdminSidebar = ({ activeKey, setActiveKey, onGoDashboard, onLogout }) => {
 
   return (
     <aside
-      className="flex-col bg-[#306f65] text-white w-64 p-5 z-30"
+      className="flex-col bg-[#306f65] text-white w-64 p-5 z-30 rounded-lg"
     >
       <div className="flex items-center justify-between pb-6 border-b border-white mb-6">
+        {/* ⭐ "Admin Panel" 텍스트 유지 ⭐ */}
         <h2
           className="text-2xl text-[#f2f2e8] font-aggro font-bold cursor-pointer hover:text-[#58bcb5]"
           onClick={onGoDashboard}
@@ -128,8 +141,10 @@ const AdminSidebar = ({ activeKey, setActiveKey, onGoDashboard, onLogout }) => {
                 onClick={() => handleClick(item.key)}
                 className={`flex items-center p-3 rounded-md transition duration-200 ease-in-out w-full text-left
                   ${activeKey === item.key
-                    ? 'bg-[#f2f2e8] text-black text-xl font-aggro font-bold'
-                    : 'text-gray-300 hover:bg-[#58bcb5] hover:text-white'
+                    // ⭐ 활성화된 메뉴 색상 변경: bg-[#f2f2e8] text-[#306f65] (기존 유지) ⭐
+                    ? 'bg-[#f2f2e8] text-[#306f65] text-xl font-aggro font-bold' 
+                    // ⭐ 호버 색상 변경: hover:bg-[#4a8a80] (기존 유지) ⭐
+                    : 'text-gray-300 hover:bg-[#4a8a80] hover:text-white'
                   }`
                 }
               >
@@ -178,16 +193,6 @@ const AdminLayout = () => {
     navigate('/login');
   };
 
-  // ⭐ 삭제: selectedCategoryIdForProductList 상태 제거 ⭐
-  // const [selectedCategoryIdForProductList, setSelectedCategoryIdForProductList] = useState(null);
-
-
-  // ⭐ 삭제: handleCategoryItemClick 함수 제거 ⭐
-  // const handleCategoryItemClick = (categoryId) => {
-  //   setSelectedCategoryIdForProductList(categoryId);
-  //   setActiveComponentKey('categoryProducts');
-  // };
-
   const handleEditUser = (userUuid) => {
     setUserEditId(userUuid);
     setActiveComponentKey('userEdit');
@@ -219,7 +224,7 @@ const AdminLayout = () => {
 
   const ComponentMap = {
     'dashboard': <AdminDashboardPage />,
-    'categories': <AdminCategoriesPage />, // ⭐ 수정: onCategoryClick prop 제거 ⭐
+    'categories': <AdminCategoriesPage />,
     'products': <AdminProductsPage />,
     'orders': <OrderPage />,
     'sale': <SalePage/>,
@@ -231,8 +236,6 @@ const AdminLayout = () => {
     'reportWrite': <ReportWrite onCancel={handleCancelReport} />,
     'board' : <BoardPage />,
     'settings': <BannerManagerPage />,
-    // ⭐ 삭제: 'categoryProducts' 항목 제거 ⭐
-    // 'categoryProducts': <CategoryProductList categoryId={selectedCategoryIdForProductList} />,
   };
 
   const CurrentComponent = ComponentMap[activeComponentKey] || <AdminDashboardPage />;
