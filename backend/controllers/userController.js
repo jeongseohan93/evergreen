@@ -19,7 +19,7 @@ exports.userinfor = async (req, res) => {
 
         const user = await User.findOne({
             where: { user_uuid: decoded.user_uuid },
-            attributes: { exclude: ['password', 'createdAt', 'updatedAt'] } // 비밀번호 제외
+            attributes: ['user_uuid', 'email', 'name', 'phone', 'zipCode', 'addressMain', 'addressDetail', 'role'] // 비밀번호 제외
         });
 
         if (!user) {
@@ -53,7 +53,7 @@ exports.updateMyInfo = async (req, res) => {
         
         const decoded = jwt.verify(token, process.env.JWT_SECRET);
         const { user_uuid } = decoded; 
-        const { name, phone, address } = req.body;
+        const { name, phone, zipCode, addressMain, addressDetail } = req.body;
 
         if (!user_uuid) {
             return res.status(401).json({ success: false, message: '토큰에 사용자 ID 정보가 없습니다.' });
@@ -66,7 +66,9 @@ exports.updateMyInfo = async (req, res) => {
 
         user.name = name;
         user.phone = phone;
-        user.address = address;
+        user.zipCode = zipCode;
+        user.addressMain = addressMain;
+        user.addressDetail = addressDetail;
         await user.save();
 
         res.status(200).json({ success: true, message: '회원 정보가 성공적으로 수정되었습니다.' });
