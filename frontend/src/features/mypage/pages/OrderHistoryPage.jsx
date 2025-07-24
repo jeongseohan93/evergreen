@@ -55,8 +55,8 @@ function OrderHistoryPage() {
         // Fragment로 감싸는 것은 유지
         <>
             {/* <MyPageNavGrid /> ⭐ 이 부분도 삭제! MyPageLayout에서 처리된다고 가정 */}
-            <div className="p-6 bg-white rounded-lg shadow-md">
-                <h2 className="text-2xl font-bold text-[#306f65] mb-6 text-center">나의 주문 내역</h2>
+            <div className="p-6 bg-white rounded-lg border border-[#306f65]">
+                <h2 className="text-2xl font-bold font-aggro mb-6 text-center">나의 주문 내역</h2>
                 {orders.length === 0 ? (
                     <p className="text-center text-gray-600">아직 주문 내역이 없습니다.</p>
                 ) : (

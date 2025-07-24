@@ -63,18 +63,18 @@ function OrderHistorySummary({ order }) {
     };
 
     return (
-        <div className="border border-gray-200 rounded-lg p-4 mb-4 shadow-sm">
-            <div className="flex justify-between items-center mb-3">
-                <h3 className="text-lg font-semibold text-[#306f65]">주문 번호: {order_id}</h3>
+        <div className="border border-[#58bcb5] rounded-lg p-4 mb-4">
+            <div className="flex justify-between items-center">
+                <h3 className="text-xl font-semibold text-gray-700">주문 번호: <span className='text-[#306f65]'>{order_id}</span></h3>
                 <span className={`px-2 py-1 rounded-full text-sm font-medium ${getStatusClassName(status)}`}>
                     {getStatusInKorean(status)} {/* 한글로 변환된 상태 표시 */}
                 </span>
             </div>
-            <p className="text-gray-600 mb-2">주문일: {formattedDate}</p>
+            <p className="text-sm text-gray-600 mb-3">주문일: <span className='text-[#58bcb5]'>{formattedDate}</span></p>
             <p className="text-gray-700 font-bold mb-3">총 결제 금액: {total_amount.toLocaleString()}원</p>
 
             {representative_product ? (
-                <div className="flex items-center space-x-4 border-t border-gray-200 pt-3 mt-3">
+                <div className="flex items-center space-x-4 border-t border-gray-300 pt-3 mt-3">
                     {representative_product.product_thumbnail && (
                         <img 
                             src={representative_product.product_thumbnail} 
@@ -83,7 +83,7 @@ function OrderHistorySummary({ order }) {
                         />
                     )}
                     <div>
-                        <p className="text-gray-800 font-medium">{representative_product.product_name}</p>
+                        <p className="text-gray-800 font-medium font-aggro">{representative_product.product_name}</p>
                         {representative_product.total_product_types > 1 && (
                             <p className="text-gray-500 text-sm">
                                 외 {representative_product.total_product_types - 1}개 상품
@@ -99,7 +99,7 @@ function OrderHistorySummary({ order }) {
             <div className="mt-4 text-right">
                 <button 
                     onClick={handleViewDetail} // ⭐ 실제 라우팅 로직으로 변경
-                    className="px-4 py-2 bg-[#4CAF50] text-white rounded-md hover:bg-[#45a049] transition-colors"
+                    className="px-4 py-2 bg-[#306f65] text-white rounded-md hover:bg-[#58bcb5] transition-colors"
                 >
                     상세 보기
                 </button>

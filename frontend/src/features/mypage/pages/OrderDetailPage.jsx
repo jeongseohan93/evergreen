@@ -83,26 +83,26 @@ function OrderDetailPage() {
     };
 
     return (
-        <div className="p-6 bg-white rounded-lg shadow-md">
-            <h2 className="text-2xl font-bold text-[#306f65] mb-6 text-center">주문 상세 내역</h2>
+        <div className="p-6 bg-white rounded-lg border border-[#306f65]">
+            <h2 className="text-2xl font-bold font-aggro mb-6 text-center">주문 상세 내역</h2>
             
             <div className="mb-6 border-b pb-4">
-                <p className="text-lg font-semibold mb-2">주문 번호: {orderDetail.order_id}</p>
-                <p className="text-gray-700">주문일: {format(new Date(orderDetail.created_at), 'yyyy년 MM월 dd일 HH:mm')}</p>
-                <p className="text-gray-700">총 결제 금액: {orderDetail.total_amount.toLocaleString()}원</p>
-                <p className="text-gray-700">주문 상태: <span className="font-medium text-[#306f65]">{getStatusInKorean(orderDetail.status)}</span></p>
+                <p className="text-xl font-semibold text-gray-700">주문 번호: <span className='text-[#306f65]'>{orderDetail.order_id}</span></p>
+                <p className="text-sm text-gray-600 mb-3">주문일: <span className='text-[#58bcb5]'>{format(new Date(orderDetail.created_at), 'yyyy년 MM월 dd일 HH:mm')}</span></p>
+                <p className="text-gray-700 font-bold mb-3">총 결제 금액: {orderDetail.total_amount.toLocaleString()}원</p>
+                <p className="text-gray-700 font-bold">주문 상태: <span className="text-[#306f65] font-bold">{getStatusInKorean(orderDetail.status)}</span></p>
                 {/* 배송지 정보 등 추가 가능 */}
-                {orderDetail.delivery_address && (
+                {/* {orderDetail.delivery_address && (
                     <div className="mt-4 p-3 bg-gray-50 rounded-md">
                         <p className="font-semibold">배송지 정보:</p>
                         <p>{orderDetail.delivery_address.recipient_name} ({orderDetail.delivery_address.phone_number})</p>
                         <p>{orderDetail.delivery_address.address} {orderDetail.delivery_address.detail_address}</p>
                         <p>우편번호: {orderDetail.delivery_address.postal_code}</p>
                     </div>
-                )}
+                )} */}
             </div>
 
-            <h3 className="text-xl font-bold text-[#306f65] mb-4">주문 상품</h3>
+            <h3 className="text-xl font-bold font-aggro text-[#306f65]">주문 상품</h3>
             <div className="space-y-4">
                 {orderDetail.OrderItems && orderDetail.OrderItems.length > 0 ? (
                     orderDetail.OrderItems.map(item => (
@@ -115,9 +115,9 @@ function OrderDetailPage() {
                                 />
                             )}
                             <div>
-                                <p className="text-lg font-medium text-gray-800">{item.Product ? item.Product.name : '알 수 없는 상품'}</p>
-                                <p className="text-gray-600">수량: {item.quantity}개</p>
-                                <p className="text-gray-600">단가: {item.price.toLocaleString()}원</p>
+                                <p className="text-gray-800 font-medium font-aggro">{item.Product ? item.Product.name : '알 수 없는 상품'}</p>
+                                <p className="text-gray-700">수량: {item.quantity}개</p>
+                                <p className="text-gray-700">단가: {item.price.toLocaleString()}원</p>
                                 <p className="text-gray-800 font-semibold">총 가격: {(item.quantity * item.price).toLocaleString()}원</p>
                             </div>
                         </div>
