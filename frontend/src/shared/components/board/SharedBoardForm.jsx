@@ -1,6 +1,9 @@
 import React, { useState, useEffect } from 'react';
+import { useLocation } from 'react-router-dom';
 
-function SharedBoardForm({ initialData, onSave, onCancel, currentUserId, currentBoardType, hideNoticeOption = false }) {
+function SharedBoardForm({ initialData, onSave, onCancel, currentUserId, currentBoardType, hideNoticeOption = false, productId }) {
+  const location = useLocation();
+  const isAdmin = location.pathname.startsWith('/admin');
   const [formData, setFormData] = useState({
     title: '',
     content: '',
@@ -10,19 +13,20 @@ function SharedBoardForm({ initialData, onSave, onCancel, currentUserId, current
   });
 
   useEffect(() => {
+    console.log('currentBoardType:', currentBoardType);
     if (initialData) {
       setFormData({
         title: initialData.title || '',
         content: initialData.content?.text || '',
         notice: initialData.notice || 'N',
-        enum: initialData.enum || 'review',
+        enum: ['review', 'free', 'qna'].includes(initialData.enum) ? initialData.enum : 'free',
         user_id: initialData.user_id || '',
       });
     } else {
       setFormData(prev => ({
         ...prev,
         user_id: currentUserId || '',
-        enum: currentBoardType || 'review',
+        enum: ['review', 'free', 'qna'].includes(currentBoardType) ? currentBoardType : 'free',
       }));
     }
   }, [initialData, currentUserId, currentBoardType]);
@@ -39,8 +43,11 @@ function SharedBoardForm({ initialData, onSave, onCancel, currentUserId, current
     e.preventDefault();
     const dataToSave = {
       ...formData,
-      content: { text: formData.content }
+      content: { text: formData.content },
+      ...(productId != null && { product_id: productId })
     };
+    // 디버깅: 저장될 데이터 확인
+    console.log('SharedBoardForm - dataToSave:', dataToSave);
     onSave(dataToSave);
   };
 
@@ -86,7 +93,7 @@ function SharedBoardForm({ initialData, onSave, onCancel, currentUserId, current
         </div>
         <div className="mb-4">
           <label htmlFor="enum" className="block text-[#306f65] text-base font-bold mb-2">게시판 타입</label>
-          {(!initialData && (currentBoardType === 'review' || currentBoardType === 'free')) ? (
+          {(!initialData && currentBoardType === 'review') ? (
             <input
               type="text"
               id="enum"
@@ -104,7 +111,7 @@ function SharedBoardForm({ initialData, onSave, onCancel, currentUserId, current
               className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#306f65]"
               required
             >
-              <option value="review">사용후기 게시판</option>
+              {!isAdmin && currentBoardType !== 'free' && <option value="review">사용후기 게시판</option>}
               <option value="free">자유 게시판</option>
               <option value="qna">질문 게시판</option>
             </select>

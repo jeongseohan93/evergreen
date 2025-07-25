@@ -17,18 +17,22 @@ const useBoardManagement = () => {
   // 모든 게시글 불러오는 함수 (boardType과 keyword 인자 추가)
   // `boardType`은 'review' 또는 'free'가 될 수 있으며, 기본값은 빈 문자열로 설정하여 필터링 없음
   // `keyword`는 검색어이며, 기본값은 빈 문자열로 설정하여 검색 없음
+  // useBoardManagement.js
   const fetchBoards = useCallback(async (boardType = '', keyword = '', notice = '') => { // notice 인자 추가
     setLoading(true);
     setError(null);
     try {
-      const result = await getAllBoards(boardType, keyword, notice); // notice 인자 전달
+      // 순서대로 인자 전달!
+      const result = await getAllBoards(boardType, keyword, notice);
       if (result.success) {
         setBoards(result.data);
       } else {
         setError(result.message);
+        console.error('[fetchBoards] getAllBoards error message:', result.message);
       }
     } catch (err) {
       console.error('Failed to fetch boards:', err);
+      console.error('[fetchBoards] Caught error:', err);
       setError('게시글을 불러오는데 실패했습니다.');
     } finally {
       setLoading(false);
@@ -143,7 +147,8 @@ const useBoardManagement = () => {
     addBoard,
     modifyBoard,
     removeBoard,
-    setSelectedBoard // 필요하다면 외부에서 selectedBoard를 초기화할 수 있도록 노출
+    setSelectedBoard, // 필요하다면 외부에서 selectedBoard를 초기화할 수 있도록 노출
+    setBoards, // boards 상태 초기화용으로 노출
   };
 };
 

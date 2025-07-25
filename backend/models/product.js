@@ -86,8 +86,15 @@ class Product extends Model {
       underscored: false, 
     });
   }
-
- 
+  // Board와의 관계 추가
+  static associate(db) {
+    db.Product.hasMany(db.Board, {
+      foreignKey: 'product_id',
+      sourceKey: 'product_id',
+      as: 'Boards',
+      onDelete: 'CASCADE',
+    });
+  }
 }
 
 module.exports = Product;

@@ -49,18 +49,18 @@ function BoardManager() {
   // 검색 입력 초기화 함수 (검색창을 빈칸으로 만들고 전체 게시글 보여주기)
   const handleResetSearch = () => {
     setSearchKeyword('');
-    fetchBoards(currentBoardType, '');
+    fetchBoards(currentBoardType, '', '');
   };
 
 
   useEffect(() => {
     if (currentBoardType === 'notice') {
-      fetchBoards('', '', 'Y');
+      fetchBoards('', searchKeyword, 'Y'); // 공지사항만
     } else {
-      fetchBoards(currentBoardType, '', '');
+      fetchBoards(currentBoardType, searchKeyword, ''); // 기존 게시판
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [currentBoardType, fetchBoards]); 
+  }, [currentBoardType, fetchBoards, searchKeyword]); 
 
   useEffect(() => {
     if (selectedBoard?.board_id) {
@@ -111,7 +111,11 @@ function BoardManager() {
         hideMessageBox();
         setShowForm(false);
         setSelectedBoard(null);
-        fetchBoards(currentBoardType, searchKeyword); 
+        if (currentBoardType === 'notice') {
+          fetchBoards('', searchKeyword, 'Y');
+        } else {
+          fetchBoards(currentBoardType, searchKeyword, '');
+        }
       });
     } else {
       showMessageBox(result.message);
@@ -122,7 +126,11 @@ function BoardManager() {
     setShowForm(false);
     setShowDetail(false);
     setSelectedBoard(null);
-    fetchBoards(currentBoardType, searchKeyword); 
+    if (currentBoardType === 'notice') {
+      fetchBoards('', searchKeyword, 'Y');
+    } else {
+      fetchBoards(currentBoardType, searchKeyword, '');
+    }
   };
 
   const handleDeleteBoard = async (boardId) => {
@@ -137,7 +145,11 @@ function BoardManager() {
               setShowForm(false);
               setShowDetail(false);
           }
-          fetchBoards(currentBoardType, searchKeyword); 
+          if (currentBoardType === 'notice') {
+            fetchBoards('', searchKeyword, 'Y');
+          } else {
+            fetchBoards(currentBoardType, searchKeyword, '');
+          }
         });
       } else {
         showMessageBox(result.message);
@@ -163,7 +175,7 @@ function BoardManager() {
   };
 
   const handleSearch = () => {
-    fetchBoards(currentBoardType, searchKeyword); 
+    fetchBoards(currentBoardType, searchKeyword, ''); 
   };
 
   const handleKeyPress = (e) => {
@@ -238,7 +250,13 @@ function BoardManager() {
             error={error}
             onDelete={handleDeleteBoard}
             onSelectBoard={handleSelectBoard}
-            onRefresh={() => fetchBoards(currentBoardType, searchKeyword)}
+            onRefresh={() => {
+              if (currentBoardType === 'notice') {
+                fetchBoards('', searchKeyword, 'Y');
+              } else {
+                fetchBoards(currentBoardType, searchKeyword, '');
+              }
+            }}
             searchKeyword={searchKeyword}
             onSearchInputChange={handleSearchInputChange}
             onSearch={handleSearch}
@@ -246,7 +264,7 @@ function BoardManager() {
             onResetSearch={handleResetSearch}
             currentBoardType={currentBoardType}
             onChangeBoardType={handleChangeBoardType}
-            onNewBoardClick={handleNewBoardClick}
+            onNewBoardClick={currentBoardType === 'review' ? undefined : handleNewBoardClick}
           />
         </>
       )}

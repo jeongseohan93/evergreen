@@ -20,6 +20,7 @@ const QnaListPage = () => {
     setSelectedBoard,
     selectedBoard,
     addBoard,
+    setBoards,
   } = useBoardManagement();
 
   const [searchKeyword, setSearchKeyword] = useState('');
@@ -137,6 +138,13 @@ const QnaListPage = () => {
     fetchBoards('qna', '', ''); // 사용후기 게시글만
   }, [fetchBoards]);
 
+  useEffect(() => {
+    return () => {
+      setBoards([]); // 페이지를 벗어날 때 boards 상태 초기화
+      setSelectedBoard(null);
+    };
+  }, []);
+
   const handleSelectBoard = async (boardId) => {
     await fetchBoardById(boardId);
     setShowDetail(true);
@@ -147,7 +155,7 @@ const QnaListPage = () => {
     setShowDetail(false);
     setShowForm(false);
     setSelectedBoard(null);
-    fetchBoards('review', '', '');
+    fetchBoards('qna', '', '');
   };
 
   const handleNewBoardClick = () => {
@@ -160,13 +168,13 @@ const QnaListPage = () => {
     await addBoard(formData);
     setShowForm(false);
     setSelectedBoard(null);
-    fetchBoards('review', '', '');
+    fetchBoards('qna', '', '');
   };
 
   const handleCancelBoardForm = () => {
     setShowForm(false);
     setSelectedBoard(null);
-    fetchBoards('review', '', '');
+    fetchBoards('qna', '', '');
   };
 
   return (
@@ -182,13 +190,13 @@ const QnaListPage = () => {
               error={error}
               onDelete={removeBoard}
               onSelectBoard={handleSelectBoard}
-              onRefresh={() => fetchBoards('review', '', '')}
+              onRefresh={() => fetchBoards('qna', '', '')}
               searchKeyword={searchKeyword}
               onSearchInputChange={e => setSearchKeyword(e.target.value)}
-              onSearch={() => fetchBoards('review', searchKeyword, '')}
-              onSearchKeyPress={e => { if (e.key === 'Enter') fetchBoards('review', searchKeyword, ''); }}
-              onResetSearch={() => { setSearchKeyword(''); fetchBoards('review', '', ''); }}
-              currentBoardType="review"
+              onSearch={() => fetchBoards('qna', searchKeyword, '')}
+              onSearchKeyPress={e => { if (e.key === 'Enter') fetchBoards('qna', searchKeyword, ''); }}
+              onResetSearch={() => { setSearchKeyword(''); fetchBoards('qna', '', ''); }}
+              currentBoardType="qna"
               onChangeBoardType={() => {}} // 탭 전환 비활성화
               onNewBoardClick={handleNewBoardClick}
               hideHeader={true}
@@ -205,6 +213,7 @@ const QnaListPage = () => {
               onCancel={handleCancelBoardForm}
               currentUserId={user?.user_uuid}
               hideNoticeOption={true}
+              currentBoardType="free"
             />
           )}
           {showDetail && selectedBoard && (

@@ -31,6 +31,12 @@ function BoardList({
     return '전체 게시판 관리';
   };
 
+  // 공지사항 목록일 때만 notice가 'Y'인 게시글만 필터링
+  const displayBoards =
+    currentBoardType === 'notice'
+      ? boards.filter(board => board.notice === 'Y')
+      : boards;
+
   return (
     <div className="p-5 max-w-7xl mx-auto font-light text-sm text-gray-800">
       {/* 상단 게시판 타입 텍스트 */}
@@ -83,7 +89,7 @@ function BoardList({
       <div className="flex justify-between items-center mb-5">
         <h2 className="m-0 text-black text-3xl font-aggro font-bold">게시글 목록</h2>
         <div className="flex flex-row gap-2">
-          {!hideNewButton && (
+          {!hideNewButton && currentBoardType !== 'review' && (
             <button
               onClick={onNewBoardClick}
               className="px-6 py-2 bg-[#306f65] text-white rounded-md hover:bg-[#58bcb5] transition-colors duration-200 font-medium"
@@ -123,7 +129,7 @@ function BoardList({
           </button>
         </div>
       </div>
-      {(!boards || boards.length === 0) ? (
+      {(!displayBoards || displayBoards.length === 0) ? (
         <div className="p-5 text-center text-gray-500">등록된 게시글이 없습니다.</div>
       ) : (
         <div className="overflow-x-auto">
@@ -138,7 +144,7 @@ function BoardList({
               </tr>
             </thead>
             <tbody>
-              {boards.map(board => (
+              {displayBoards.map(board => (
                 <tr
                   key={board.board_id}
                   className={`border-b border-gray-200 text-center ${board.notice === 'Y' ? 'bg-yellow-50 border-2 border-blue-500' : ''}`}

@@ -5,14 +5,20 @@ import { useParams } from 'react-router-dom'; // URL 파라미터 (orderId)를 �
 import { useSelector } from 'react-redux'; // user_uuid를 가져오기 위해
 import { format } from 'date-fns'; // 날짜 포맷팅
 import { fetchOrderDetailApi } from '../api/mypage';
+import SharedBoardForm from '@/shared/components/board/SharedBoardForm'; // SharedBoardForm 컴포넌트 추가
+import useBoardManagement from '@/features/admin/components/board/hooks/useBoardManagement';
+import { getAllBoards } from '@/features/admin/api/boardApi';
 
 function OrderDetailPage() {
     const { orderId } = useParams(); // URL에서 orderId 가져오기
     const userUuid = useSelector(state => state.auth.user.user_uuid); // Redux store에서 user_uuid 가져오기
+    const { addBoard } = useBoardManagement();
 
     const [orderDetail, setOrderDetail] = useState(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
+    // 이미 사용후기 작성 여부 체크 (최상단으로 이동)
+    const [alreadyWroteReview, setAlreadyWroteReview] = useState(false);
 
     useEffect(() => {
         const getOrderDetail = async () => {
@@ -37,6 +43,39 @@ function OrderDetailPage() {
 
         getOrderDetail();
     }, [orderId, userUuid]); // orderId 또는 userUuid가 변경될 때마다 다시 호출
+
+    // 이미 사용후기 작성 여부 체크
+    let productId = null;
+    if (orderDetail && orderDetail.OrderItems && orderDetail.OrderItems.length > 0) {
+      productId = orderDetail.OrderItems[0].Product?.product_id || null;
+    }
+    useEffect(() => {
+      const checkAlreadyWroteReview = async () => {
+        if (!userUuid || !productId) return;
+        const result = await getAllBoards('review', '', '');
+        if (result.success) {
+          const found = result.data.some(
+            board => board.user_id === userUuid && board.product_id === productId
+          );
+          setAlreadyWroteReview(found);
+        }
+      };
+      checkAlreadyWroteReview();
+    }, [userUuid, productId]);
+
+    // 사용후기 작성 핸들러
+    const handleSaveBoard = async (formData) => {
+      const result = await addBoard(formData);
+      if (result.success) {
+        alert('사용후기가 성공적으로 등록되었습니다!');
+        window.location.reload(); // 또는 fetchBoards 등 새로고침/리셋
+      } else {
+        alert(result.message || '사용후기 등록에 실패했습니다.');
+      }
+    };
+
+    // 디버깅: productId 값 확인
+    console.log('OrderDetailPage - productId:', productId);
 
     if (loading) {
         return (
@@ -103,7 +142,7 @@ function OrderDetailPage() {
             </div>
 
             <h3 className="text-xl font-bold font-aggro text-[#306f65]">주문 상품</h3>
-            <div className="space-y-4">
+            <div className="space-y-4 mb-8">
                 {orderDetail.OrderItems && orderDetail.OrderItems.length > 0 ? (
                     orderDetail.OrderItems.map(item => (
                         <div key={item.order_item_id} className="flex items-center space-x-4 border border-gray-100 p-3 rounded-md">
@@ -126,15 +165,32 @@ function OrderDetailPage() {
                     <p className="text-center text-gray-600">주문된 상품이 없습니다.</p>
                 )}
             </div>
-
-            <div className="mt-6 text-right">
-                <button 
-                    onClick={() => window.history.back()} // 뒤로 가기
+            <h2 className="text-2xl font-bold font-aggro mb-6 text-center">사용후기 작성</h2>
+            {alreadyWroteReview ? (
+              <>
+                <div className="text-center text-red-500 font-bold mt-8">
+                  사용후기는 1번만 작성하실 수 있습니다.
+                </div>
+                <div className="mt-6 text-right">
+                  <button
+                    onClick={() => window.history.back()}
                     className="px-6 py-2 bg-gray-300 text-gray-800 rounded-md hover:bg-gray-400 transition-colors"
-                >
+                  >
                     목록으로 돌아가기
-                </button>
-            </div>
+                  </button>
+                </div>
+              </>
+            ) : (
+              <SharedBoardForm
+                initialData={null}
+                onSave={handleSaveBoard}
+                onCancel={() => { window.history.back(); }}
+                currentUserId={userUuid}
+                currentBoardType="review"
+                hideNoticeOption={true}
+                productId={productId}
+              />
+            )}
         </div>
     );
 }

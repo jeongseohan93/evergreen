@@ -20,6 +20,7 @@ const FreeListPage = () => {
     setSelectedBoard,
     selectedBoard,
     addBoard,
+    setBoards,
   } = useBoardManagement();
 
   const [searchKeyword, setSearchKeyword] = useState('');
@@ -137,6 +138,13 @@ const FreeListPage = () => {
     fetchBoards('free', '', ''); // 사용후기 게시글만
   }, [fetchBoards]);
 
+  useEffect(() => {
+    return () => {
+      setBoards([]); // 페이지를 벗어날 때 boards 상태 초기화
+      setSelectedBoard(null);
+    };
+  }, []);
+
   const handleSelectBoard = async (boardId) => {
     await fetchBoardById(boardId);
     setShowDetail(true);
@@ -147,7 +155,7 @@ const FreeListPage = () => {
     setShowDetail(false);
     setShowForm(false);
     setSelectedBoard(null);
-    fetchBoards('review', '', '');
+    fetchBoards('free', '', '');
   };
 
   const handleNewBoardClick = () => {
@@ -160,13 +168,13 @@ const FreeListPage = () => {
     await addBoard(formData);
     setShowForm(false);
     setSelectedBoard(null);
-    fetchBoards('review', '', '');
+    fetchBoards('free', '', '');
   };
 
   const handleCancelBoardForm = () => {
     setShowForm(false);
     setSelectedBoard(null);
-    fetchBoards('review', '', '');
+    fetchBoards('free', '', '');
   };
 
   return (
@@ -182,13 +190,13 @@ const FreeListPage = () => {
               error={error}
               onDelete={removeBoard}
               onSelectBoard={handleSelectBoard}
-              onRefresh={() => fetchBoards('review', '', '')}
+              onRefresh={() => fetchBoards('free', '', '')}
               searchKeyword={searchKeyword}
               onSearchInputChange={e => setSearchKeyword(e.target.value)}
-              onSearch={() => fetchBoards('review', searchKeyword, '')}
-              onSearchKeyPress={e => { if (e.key === 'Enter') fetchBoards('review', searchKeyword, ''); }}
-              onResetSearch={() => { setSearchKeyword(''); fetchBoards('review', '', ''); }}
-              currentBoardType="review"
+              onSearch={() => fetchBoards('free', searchKeyword, '')}
+              onSearchKeyPress={e => { if (e.key === 'Enter') fetchBoards('free', searchKeyword, ''); }}
+              onResetSearch={() => { setSearchKeyword(''); fetchBoards('free', '', ''); }}
+              currentBoardType="free"
               onChangeBoardType={() => {}} // 탭 전환 비활성화
               onNewBoardClick={handleNewBoardClick}
               hideHeader={true}
@@ -205,6 +213,7 @@ const FreeListPage = () => {
               onCancel={handleCancelBoardForm}
               currentUserId={user?.user_uuid}
               hideNoticeOption={true}
+              currentBoardType="free"
             />
           )}
           {showDetail && selectedBoard && (

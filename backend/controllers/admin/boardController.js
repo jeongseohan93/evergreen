@@ -122,7 +122,7 @@ exports.getBoardById = async (req, res, next) => {
 
 // 새 게시글 작성
 exports.createBoard = async (req, res, next) => {
-    const { user_id, title, content, notice, enum: enumValue } = req.body;
+    const { user_id, title, content, notice, enum: enumValue, product_id } = req.body;
     try {
         // ✨ 1. 수신된 데이터 확인 (가장 중요!)
         console.log("[createBoard] 수신된 req.body:", req.body);
@@ -155,6 +155,7 @@ exports.createBoard = async (req, res, next) => {
             name: userName,
             notice: notice || 'N',
             enum: enumValue,
+            product_id, // product_id 저장
             created_at: new Date(),
             updated_at: new Date(),
         });

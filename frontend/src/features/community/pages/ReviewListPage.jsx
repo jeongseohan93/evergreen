@@ -20,6 +20,7 @@ const ReviewListPage = () => {
     setSelectedBoard,
     selectedBoard,
     addBoard,
+    setBoards,
   } = useBoardManagement();
 
   const [searchKeyword, setSearchKeyword] = useState('');
@@ -136,6 +137,13 @@ const ReviewListPage = () => {
   useEffect(() => {
     fetchBoards('review', '', ''); // 사용후기 게시글만
   }, [fetchBoards]);
+
+  useEffect(() => {
+    return () => {
+      setBoards([]); // 페이지를 벗어날 때 boards 상태 초기화
+      setSelectedBoard(null);
+    };
+  }, []);
 
   const handleSelectBoard = async (boardId) => {
     await fetchBoardById(boardId);

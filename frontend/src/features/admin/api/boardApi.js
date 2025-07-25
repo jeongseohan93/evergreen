@@ -37,6 +37,7 @@ export const getBoardById = async (boardId) => {
 };
 
 export const createBoard = async (newBoardData) => {
+  console.log('createBoard - newBoardData:', newBoardData); // 디버깅
   try {
     const response = await apiService.post('/admin/board', newBoardData);
     return { success: response.status === 201, data: response.data, message: '게시글이 성공적으로 작성되었습니다.' };

@@ -18,6 +18,8 @@ const NoticeListPage = () => {
     removeBoard,
     setSelectedBoard,
     selectedBoard,
+    addBoard,
+    setBoards,
   } = useBoardManagement();
 
   const [searchKeyword, setSearchKeyword] = useState('');
@@ -132,6 +134,13 @@ const NoticeListPage = () => {
   useEffect(() => {
     fetchBoards('', '', 'Y'); // 공지사항만
   }, [fetchBoards]);
+
+  useEffect(() => {
+    return () => {
+      setBoards([]); // 페이지를 벗어날 때 boards 상태 초기화
+      setSelectedBoard(null);
+    };
+  }, []);
 
   const handleSelectBoard = async (boardId) => {
     await fetchBoardById(boardId);

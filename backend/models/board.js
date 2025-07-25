@@ -20,6 +20,16 @@ class Board extends Model {
         onUpdate: 'CASCADE',
         onDelete: 'CASCADE',
       },
+      product_id: {
+        type: DataTypes.INTEGER,
+        allowNull: true,
+        references: {
+          model: 'products',
+          key: 'product_id',
+        },
+        onUpdate: 'CASCADE',
+        onDelete: 'CASCADE',
+      },
       reply: {
         type: DataTypes.TEXT,
       },
@@ -77,6 +87,13 @@ class Board extends Model {
         targetKey: 'user_uuid',
         as: 'User', // 🚩 as: 'User' 명시 (include 할 때와 일치)
         onDelete: 'CASCADE',
+    });
+    // Product와의 관계 추가
+    db.Board.belongsTo(db.Product, {
+      foreignKey: 'product_id',
+      targetKey: 'product_id',
+      as: 'Product',
+      onDelete: 'CASCADE',
     });
    // Board는 여러 개의 Reply를 가질 수 있음 (1:N 관계)
     db.Board.hasMany(db.Reply, {
