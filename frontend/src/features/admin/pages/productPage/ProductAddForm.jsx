@@ -151,6 +151,36 @@ const ProductAddForm = ({
                                 placeholder="재고 수량"
                             />
                         </div>
+
+                        {/* ⭐⭐ 3단계 카테고리 이름 필드 추가 ⭐⭐ */}
+                        <div>
+                            <label className="block text-sm font-medium text-gray-700 mb-2">
+                                세부 카테고리 이름
+                            </label>
+                            <input
+                                type="text"
+                                name="sub2_category_name"
+                                value={newProduct.sub2_category_name}
+                                onChange={handleInputChange}
+                                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#306f65]"
+                                placeholder="세부 카테고리 이름을 입력하세요 (선택 사항)"
+                            />
+                        </div>
+
+                        {/* ⭐⭐ 유튜브 URL 필드 추가 ⭐⭐ */}
+                        <div>
+                            <label className="block text-sm font-medium text-gray-700 mb-2">
+                                유튜브 URL
+                            </label>
+                            <input
+                                type="url" // URL 타입으로 변경
+                                name="youtube_url"
+                                value={newProduct.youtube_url}
+                                onChange={handleInputChange}
+                                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#306f65]"
+                                placeholder="유튜브 임베드 URL을 입력하세요 (선택 사항)"
+                            />
+                        </div>
                     </div>
 
                     {/* 메모 필드 */}

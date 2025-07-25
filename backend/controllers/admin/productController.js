@@ -177,7 +177,9 @@ try {
                 { name: { [Op.like]: `%${keyword}%` } },
                 { brand: { [Op.like]: `%${keyword}%` } }, // 브랜드 검색 추가
                 { origin: { [Op.like]: `%${keyword}%` } }, // 원산지 검색 추가
-                { model_name: { [Op.like]: `%${keyword}%` } } // 모델명 검색 추가
+                { model_name: { [Op.like]: `%${keyword}%` } }, // 모델명 검색 추가
+                // ⭐⭐ 세부 카테고리 이름 검색 추가 ⭐⭐
+                { sub2_category_name: { [Op.like]: `%${keyword}%` } }
             ]
         }
     });
@@ -200,8 +202,8 @@ try {
 exports.productMod = async (req, res) => {
   
     const productId = parseInt(req.params.productId);
-    // origin, model_name 필드 추가
-    const { name, price, category_id, memo, stock, small_photo, large_photo, brand, pick, origin, model_name } = req.body; 
+    // ⭐⭐ sub2_category_name, youtube_url 필드 추가 ⭐⭐
+    const { name, price, category_id, memo, stock, small_photo, large_photo, brand, pick, origin, model_name, sub2_category_name, youtube_url } = req.body; 
 
     if (isNaN(productId)) {
         return res.status(400).json({ success: false, message: '유효하지 않은 상품 ID입니다.' });
@@ -252,6 +254,22 @@ exports.productMod = async (req, res) => {
         });
     }
 
+    // ⭐⭐ sub2_category_name 유효성 검사 추가 (선택 사항) ⭐⭐
+    if (sub2_category_name !== undefined && (typeof sub2_category_name !== 'string' || (sub2_category_name && sub2_category_name.length > 100))) {
+        return res.status(400).json({
+            success: false,
+            message: '세부 카테고리 이름은 100자 이내의 문자열이어야 합니다.'
+        });
+    }
+
+    // ⭐⭐ youtube_url 유효성 검사 추가 (선택 사항) ⭐⭐
+    if (youtube_url !== undefined && (typeof youtube_url !== 'string' || (youtube_url && youtube_url.length > 255))) {
+        return res.status(400).json({
+            success: false,
+            message: '유튜브 URL은 255자 이내의 문자열이어야 합니다.'
+        });
+    }
+
     const validPickValues = [
         'nothing',
         'evergreen-recommend',
@@ -288,6 +306,9 @@ exports.productMod = async (req, res) => {
                 brand: brand || null,
                 origin: origin || null, // origin 필드 업데이트
                 model_name: model_name || null, // model_name 필드 업데이트
+                // ⭐⭐ sub2_category_name, youtube_url 필드 업데이트 ⭐⭐
+                sub2_category_name: sub2_category_name || null,
+                youtube_url: youtube_url || null,
                 pick: finalPick
             },
             {
@@ -372,8 +393,8 @@ exports.productStock = async (req,res) => {
 
 //------------------------------상품 추가------------------------------------------------
 exports.productAdd = async (req, res) => {
-    // origin, model_name 필드 추가
-    const { name, price, category_id, memo, stock, small_photo, large_photo, brand, origin, model_name } = req.body;
+    // ⭐⭐ sub2_category_name, youtube_url 필드 추가 ⭐⭐
+    const { name, price, category_id, memo, stock, small_photo, large_photo, brand, origin, model_name, sub2_category_name, youtube_url } = req.body;
     
     // 필수 입력 항목에 brand, origin 추가
     if (!name || !price || !category_id || !brand || !origin) {
@@ -419,6 +440,22 @@ exports.productAdd = async (req, res) => {
             message: '모델명은 100자 이내의 문자열이어야 합니다.'
         });
     }
+
+    // ⭐⭐ sub2_category_name 유효성 검사 추가 (선택 사항) ⭐⭐
+    if (sub2_category_name !== undefined && (typeof sub2_category_name !== 'string' || (sub2_category_name && sub2_category_name.length > 100))) {
+        return res.status(400).json({
+            success: false,
+            message: '세부 카테고리 이름은 100자 이내의 문자열이어야 합니다.'
+        });
+    }
+
+    // ⭐⭐ youtube_url 유효성 검사 추가 (선택 사항) ⭐⭐
+    if (youtube_url !== undefined && (typeof youtube_url !== 'string' || (youtube_url && youtube_url.length > 255))) {
+        return res.status(400).json({
+            success: false,
+            message: '유튜브 URL은 255자 이내의 문자열이어야 합니다.'
+        });
+    }
     
     try {
         const newProduct = await Product.create({
@@ -431,7 +468,10 @@ exports.productAdd = async (req, res) => {
             large_photo: large_photo || null,
             brand: brand || null,
             origin: origin || null, // origin 필드 추가
-            model_name: model_name || null // model_name 필드 추가
+            model_name: model_name || null, // model_name 필드 추가
+            // ⭐⭐ sub2_category_name, youtube_url 필드 추가 ⭐⭐
+            sub2_category_name: sub2_category_name || null,
+            youtube_url: youtube_url || null
         });
         
         res.status(201).json({

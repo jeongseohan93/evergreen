@@ -89,18 +89,14 @@ const BoardPage = () => (
  </div>
 );
 
-// === Header 컴포넌트 ===
-const AdminHeader = ({ onGoDashboard }) => {
-  return (
-    // ⭐ 색상 변경: 메인 콘텐츠 배경색과 동일한 bg-[#f2f2e8]로 변경 ⭐
-    <header className="flex items-center justify-center p-4 bg-[#f2f2e8] text-gray-800 shadow-md"> 
-   
-      <Logo /> 
-      
-     
-    </header>
-  );
-};
+// === Header 컴포넌트 (이제 사용하지 않음) ===
+// const AdminHeader = ({ onGoDashboard }) => {
+//   return (
+//     <header className="flex items-center justify-center p-4 bg-[#f2f2e8] text-gray-800 shadow-md"> 
+//       <Logo /> 
+//     </header>
+//   );
+// };
 
 // === Sidebar 컴포넌트 ===
 const AdminSidebar = ({ activeKey, setActiveKey, onGoDashboard, onLogout }) => {
@@ -122,8 +118,13 @@ const AdminSidebar = ({ activeKey, setActiveKey, onGoDashboard, onLogout }) => {
 
   return (
     <aside
-      className="flex-col bg-[#306f65] text-white w-64 p-5 z-30 rounded-lg"
+      className="flex-col bg-[#306f65] text-white w-64 p-5 z-30"
     >
+      {/* ⭐ 로고를 Admin Panel 위로 이동 ⭐ */}
+      {/* ⭐ 로고와 Admin Panel 사이 간격 조정을 위해 mb-8로 변경 ⭐ */}
+      <div className="flex justify-center mb-8"> 
+        <Logo />
+      </div>
       <div className="flex items-center justify-between pb-6 border-b border-white mb-6">
         {/* ⭐ "Admin Panel" 텍스트 유지 ⭐ */}
         <h2
@@ -243,8 +244,8 @@ const AdminLayout = () => {
   return (
  
     <div className="min-h-screen flex flex-col bg-gray-100 font-sans">
-  
-      <AdminHeader onGoDashboard={handleGoDashboard} /> 
+      {/* ⭐ AdminHeader 컴포넌트 제거 ⭐ */}
+      {/* <AdminHeader onGoDashboard={handleGoDashboard} /> */}
 
       <div className="flex flex-1">
         {/* AdminSidebar에 handleLogout 함수를 onLogout prop으로 전달 */}

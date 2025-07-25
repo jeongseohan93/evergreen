@@ -37,6 +37,9 @@ const useProductManagement = () => {
         brand: '',      // 브랜드명 (필수)
         origin: '',     // 원산지 (필수)
         model_name: '', // 모델명 (선택 사항)
+        // ⭐⭐ 새롭게 추가된 필드 초기화 ⭐⭐
+        sub2_category_name: '', // 3단계 카테고리 이름 (선택 사항)
+        youtube_url: '',        // 유튜브 URL (선택 사항)
         pick: 'nothing', // 기본값 설정
     });
 
@@ -164,6 +167,9 @@ const useProductManagement = () => {
                 brand: '', 
                 origin: '',     // 원산지 초기화
                 model_name: '', // 모델명 초기화
+                // ⭐⭐ 새롭게 추가된 필드 초기화 ⭐⭐
+                sub2_category_name: '', 
+                youtube_url: '',
                 pick: 'nothing'
             });
             setError('');
@@ -271,7 +277,19 @@ const useProductManagement = () => {
         setLoading(true);
         setError('');
         try {
-            const response = await addProduct(newProduct);
+            // ⭐⭐ newProduct에서 빈 문자열을 null로 변환하여 전송 ⭐⭐
+            const productToSend = { ...newProduct };
+            if (productToSend.model_name === '') {
+                productToSend.model_name = null;
+            }
+            if (productToSend.sub2_category_name === '') {
+                productToSend.sub2_category_name = null;
+            }
+            if (productToSend.youtube_url === '') {
+                productToSend.youtube_url = null;
+            }
+
+            const response = await addProduct(productToSend); // 수정된 productToSend 사용
             if (response.success) {
                 await fetchAllProducts();
                 setShowAddForm(false);
@@ -286,6 +304,9 @@ const useProductManagement = () => {
                     brand: '', 
                     origin: '',     // 원산지 초기화
                     model_name: '', // 모델명 초기화
+                    // ⭐⭐ 새롭게 추가된 필드 초기화 ⭐⭐
+                    sub2_category_name: '', 
+                    youtube_url: '',
                     pick: 'nothing'
                 });
                 // 상품 추가 성공 후 이미지 관련 상태 초기화
@@ -310,6 +331,9 @@ const useProductManagement = () => {
                 brand: productToEdit.brand || '',
                 origin: productToEdit.origin || '',
                 model_name: productToEdit.model_name || '',
+                // ⭐⭐ 새롭게 추가된 필드도 null일 경우 빈 문자열로 변환 ⭐⭐
+                sub2_category_name: productToEdit.sub2_category_name || '',
+                youtube_url: productToEdit.youtube_url || '',
                 _small_photo_file: null, // 작은 사진용 File 객체
                 _large_photo_file: null  // 큰 사진용 File 객체
             });
@@ -450,9 +474,17 @@ const useProductManagement = () => {
             delete finalUpdateData._small_photo_file;
             delete finalUpdateData._large_photo_file;
 
-            // 모델명이 빈 문자열이면 null로 변환하여 전송 (선택 사항이므로)
+            // 모델명, 3단계 카테고리 이름, 유튜브 URL이 빈 문자열이면 null로 변환하여 전송 (선택 사항이므로)
             if (finalUpdateData.model_name === '') {
                 finalUpdateData.model_name = null;
+            }
+            // ⭐⭐ 3단계 카테고리 이름이 빈 문자열이면 null로 변환 ⭐⭐
+            if (finalUpdateData.sub2_category_name === '') {
+                finalUpdateData.sub2_category_name = null;
+            }
+            // ⭐⭐ 유튜브 URL이 빈 문자열이면 null로 변환 ⭐⭐
+            if (finalUpdateData.youtube_url === '') {
+                finalUpdateData.youtube_url = null;
             }
 
             console.log("handleUpdateProduct: 최종 업데이트 요청 데이터", finalUpdateData);
@@ -485,6 +517,7 @@ const useProductManagement = () => {
     };
 
     const handleDeleteProduct = useCallback(async (productId) => {
+        // ⭐⭐ alert() 대신 커스텀 모달 UI를 사용해야 합니다. ⭐⭐
         if (!window.confirm('정말로 이 상품을 삭제하시겠습니까?')) {
             return;
         }
@@ -494,6 +527,7 @@ const useProductManagement = () => {
         try {
             const response = await deleteProduct(productId);
             if (response.success) {
+                // ⭐⭐ alert() 대신 커스텀 모달 UI를 사용해야 합니다. ⭐⭐
                 alert(response.message || '상품이 성공적으로 삭제되었습니다.');
                 // ⭐ 수정: 검색 중이었다면 검색 결과도 새로고침 (isSearching 상태에 따라 조건부 호출) ⭐
                 if (isSearching) { // searchKeyword.trim() 조건 제거
@@ -503,6 +537,7 @@ const useProductManagement = () => {
                 }
             } else {
                 setError(response.message || '상품 삭제에 실패했습니다.');
+                // ⭐⭐ alert() 대신 커스텀 모달 UI를 사용해야 합니다. ⭐⭐
                 alert(`상품 삭제 실패: ${response.message || '알 수 없는 오류'}`);
             }
         } catch (err) {

@@ -79,6 +79,10 @@ const ProductList = ({
                     <th className="border border-gray-300 px-3 py-2 text-left text-sm font-semibold text-gray-700">모델명</th>
                     <th className="border border-gray-300 px-3 py-2 text-left text-sm font-semibold text-gray-700">가격</th>
                     <th className="border border-gray-300 px-3 py-2 text-left text-sm font-semibold text-gray-700">카테고리</th>
+                    {/* ⭐⭐ 추가: 세부 카테고리 헤더 ⭐⭐ */}
+                    <th className="border border-gray-300 px-3 py-2 text-left text-sm font-semibold text-gray-700">세부 카테고리</th>
+                    {/* ⭐⭐ 추가: 유튜브 URL 헤더 ⭐⭐ */}
+                    <th className="border border-gray-300 px-3 py-2 text-left text-sm font-semibold text-gray-700">유튜브 URL</th>
                     <th className="border border-gray-300 px-3 py-2 text-left text-sm font-semibold text-gray-700">재고</th>
                     <th className="border border-gray-300 px-3 py-2 text-left text-sm font-semibold text-gray-700">메모</th>
                     <th className="border border-gray-300 px-3 py-2 text-left text-sm font-semibold text-gray-700">작은 사진</th>
@@ -89,7 +93,8 @@ const ProductList = ({
             <tbody>
                 {products.length === 0 ? (
                     <tr>
-                        <td colSpan="12" className="text-center py-3 text-gray-500">상품이 없습니다.</td> {/* colSpan 조정 */}
+                        {/* ⭐⭐ colSpan 조정 (기존 12개 + 새 필드 2개 = 14개) ⭐⭐ */}
+                        <td colSpan="14" className="text-center py-3 text-gray-500">상품이 없습니다.</td>
                     </tr>
                 ) : (
                     products.map(product => (
@@ -212,6 +217,50 @@ const ProductList = ({
                                     </select>
                                 ) : (
                                     getCategoryName(product.category_id)
+                                )}
+                            </td>
+
+                            {/* ⭐⭐ 세부 카테고리 셀 추가 ⭐⭐ */}
+                            <td className="border border-gray-300 px-3 py-2 text-sm w-28">
+                                {isEditingRow(product.product_id) ? (
+                                    <input
+                                        type="text"
+                                        name="sub2_category_name"
+                                        value={editingProduct.sub2_category_name || ''}
+                                        onChange={handleEditInputChange}
+                                        className="w-full min-w-0 px-2 py-1 border border-gray-300 rounded text-sm focus:outline-none focus:ring-1 focus:ring-[#306f65]"
+                                        style={{width: '100%', minWidth: 0, overflow: 'auto'}}
+                                    />
+                                ) : (
+                                    product.sub2_category_name || '-'
+                                )}
+                            </td>
+
+                            {/* ⭐⭐ 유튜브 URL 셀 추가 ⭐⭐ */}
+                            <td className="border border-gray-300 px-3 py-2 text-sm w-32">
+                                {isEditingRow(product.product_id) ? (
+                                    <input
+                                        type="url"
+                                        name="youtube_url"
+                                        value={editingProduct.youtube_url || ''}
+                                        onChange={handleEditInputChange}
+                                        className="w-full min-w-0 px-2 py-1 border border-gray-300 rounded text-sm focus:outline-none focus:ring-1 focus:ring-[#306f65]"
+                                        placeholder="유튜브 URL 입력"
+                                        style={{width: '100%', minWidth: 0, overflow: 'auto'}}
+                                    />
+                                ) : (
+                                    product.youtube_url ? (
+                                        <a 
+                                            href={product.youtube_url} 
+                                            target="_blank" 
+                                            rel="noopener noreferrer" 
+                                            className="text-blue-600 hover:underline break-all"
+                                        >
+                                            링크
+                                        </a>
+                                    ) : (
+                                        '-'
+                                    )
                                 )}
                             </td>
 
