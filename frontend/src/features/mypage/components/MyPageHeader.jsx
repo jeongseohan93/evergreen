@@ -2,9 +2,9 @@ import React from 'react';
 
 const MyPageHeader = () => {
     return (
-        <div className="mb-8 pt-4">
-            <h1 className="text-4xl font-bold text-gray-800">MY PAGE</h1>
-            <p className="text-lg text-gray-600">마이페이지</p>
+        // ⭐ flex justify-center와 py-8을 추가하여 제목을 가운데 정렬하고 상하 여백을 늘렸습니다. ⭐
+        <div className="flex justify-center mb-8 py-8"> 
+            <h1 className="text-4xl font-bold text-gray-800">나의 주문 정보</h1>
         </div>
     );
 };

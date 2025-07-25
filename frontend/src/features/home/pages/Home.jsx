@@ -4,9 +4,10 @@ import BannerSlider from '../components/Banner/Banner';
 import MenuBar from '@/shared/components/layouts/MenuBar/MenuBar';
 import HomeHeader from '../components/ui/HomeHeader';
 import CardBundle from '../components/CardBundle/CardBundle';
+
 import ProductDetailTabs from '../components/ui/CategoryTabs';
 import ProductDisplayBox from '../components/ui/ProductDisplayBox';
-
+import Logo from '../../../shared/components/layouts/Header/Logo';
 
 const Home = () => {
     const [activeCategory, setActiveCategory] = useState('evergreen-recommend');
@@ -21,6 +22,9 @@ const Home = () => {
     return (
         <>
             <Header />
+            <div className="flex justify-center py-4">
+            <Logo />
+            </div>
             <SubHeader />
             <MenuBar />
             <BannerSlider />

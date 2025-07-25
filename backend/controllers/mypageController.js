@@ -16,27 +16,59 @@ exports.getMypageSummary = async (req, res, next) => {
     }
 
     try {
+        // 1. 사용자 정보 조회 (user_id -> user_uuid, nickname -> name, created_at -> createdAt으로 수정)
         const user = await User.findOne({
             where: { user_uuid: userUuid },
-            attributes: ['user_id', 'nickname', 'email', 'created_at']
+            // ⭐⭐⭐ 이 부분을 수정했습니다! ⭐⭐⭐
+            // 'user_id' -> 'user_uuid'
+            // 'nickname' -> 'name' (User 모델에 'nickname' 컬럼이 없음)
+            // 'created_at' -> 'createdAt' (User 모델의 `timestamps: true, underscored: false` 설정에 따름)
+            attributes: ['user_uuid', 'name', 'email', 'createdAt'] 
         });
         if (!user) {
             return res.status(404).json({ success: false, message: '사용자 정보를 찾을 수 없습니다.' });
         }
 
+        // 2. 주문 상태별 개수 집계
+        const orderStatusCountsRaw = await Order.findAll({
+            where: { user_uuid: userUuid },
+            attributes: [
+                'status',
+                [Sequelize.fn('COUNT', Sequelize.col('status')), 'count']
+            ],
+            group: ['status']
+        });
+
+        // 기본 주문 상태 초기화
+        const orderStatusCounts = {
+            pending: 0,         // 결제 대기
+            paid: 0,            // 결제 완료
+            shipping: 0,        // 배송 중
+            delivered: 0,       // 배송 완료
+            cancelled: 0,       // 취소됨
+            payment_failed: 0,  // 결제 실패
+        };
+
+        // 집계된 데이터로 orderStatusCounts 업데이트
+        orderStatusCountsRaw.forEach(item => {
+            if (orderStatusCounts.hasOwnProperty(item.status)) {
+                orderStatusCounts[item.status] = item.dataValues.count;
+            }
+        });
+
+        // 3. 최근 주문 목록 조회
         const recentOrders = await Order.findAll({
             where: { user_uuid: userUuid },
             attributes: [
-                'order_id', 'total_amount', 'status', 'created_at',
+                'order_id', 'total_amount', 'status', 'created_at', // Order 모델의 createdAt은 created_at일 수 있음. 확인 필요.
             ],
             include: [{
                 model: OrderItem,
-                as: 'OrderItems', // OrderItem 모델에서 OrderItems로 별칭 설정됨
+                as: 'OrderItems',
                 attributes: ['product_id', 'quantity', 'price'],
                 include: [{
                     model: Product,
-                    as: 'Product', // ⭐ Product 모델의 include 별칭을 'Product'로 명시
-                    // ⭐ Product 모델의 실제 컬럼명인 'name'과 'small_photo'를 사용
+                    as: 'Product',
                     attributes: ['name', 'small_photo'] 
                 }],
                 limit: 1 // 각 주문의 대표 상품 하나만 가져오기
@@ -48,17 +80,16 @@ exports.getMypageSummary = async (req, res, next) => {
         const summarizedRecentOrders = recentOrders.map(order => {
             const representativeItem = order.OrderItems && order.OrderItems.length > 0 ? order.OrderItems[0] : null;
             const productInfo = representativeItem && representativeItem.Product ? {
-                product_name: representativeItem.Product.name, // ⭐ Product.name으로 변경
-                product_thumbnail: representativeItem.Product.small_photo, // ⭐ Product.small_photo로 변경
-                // 총 몇 종류의 상품이 있는지 (모든 OrderItems를 include 했다면 정확함)
-                total_product_types: order.OrderItems.length
+                product_name: representativeItem.Product.name,
+                product_thumbnail: representativeItem.Product.small_photo,
+                total_product_types: order.OrderItems.length 
             } : null;
 
             return {
                 order_id: order.order_id,
                 total_amount: order.total_amount,
                 status: order.status,
-                created_at: order.created_at,
+                created_at: order.created_at, // Order 모델의 created_at 컬럼명에 따라 유지 또는 변경
                 representative_product: productInfo, // 대표 상품 정보
             };
         });
@@ -68,24 +99,22 @@ exports.getMypageSummary = async (req, res, next) => {
             message: '마이페이지 대시보드 정보를 성공적으로 불러왔습니다.',
             data: {
                 userSummary: {
-                    nickname: user.nickname,
+                    nickname: user.name, // ⭐ 프론트엔드에서 nickname을 사용한다면 user.name을 nickname으로 보냄
                     email: user.email,
                 },
+                orderStatusCounts: orderStatusCounts, 
                 recentOrders: summarizedRecentOrders,
             }
         });
 
     } catch (error) {
         console.error('마이페이지 대시보드 조회 오류:', error);
-        // 에러 핸들링 미들웨어로 전달
         next(error);
     }
 };
 
 // 로그인된 사용자의 모든 주문 목록을 조회 (OrderHistoryPage에서 사용)
 exports.getAllOrders = async (req, res, next) => {
-    // ⭐ 중요: 실제 구현 시 이 userUuid는 인증 미들웨어를 통해 req.user.user_uuid 등으로 받아와야 합니다.
-    // 현재는 프론트엔드에서 쿼리 파라미터로 userUuid를 전달하는 임시 방편을 사용합니다.
     const userUuid = req.query.userUuid;
 
     if (!userUuid) {
@@ -97,36 +126,34 @@ exports.getAllOrders = async (req, res, next) => {
         const orders = await Order.findAll({
             where: { user_uuid: userUuid },
             attributes: [
-                'order_id', 'toss_order_id', 'total_amount', 'status', 'created_at',
+                'order_id', 'toss_order_id', 'total_amount', 'status', 'created_at', // Order 모델의 created_at 컬럼명에 따라 유지 또는 변경
                 'order_address', 'recipient_name', 'recipient_phone', 'additional_requests',
                 'tracking_number', 'delivery_company', 'delivered_at', 'cancelled_at', 'cancel_reason',
                 'payment_key', 'payment_method', 'payment_approved_at', 'payment_error_code', 'payment_error_message',
             ],
             include: [{
                 model: OrderItem,
-                as: 'OrderItems', // OrderItem 모델에서 OrderItems로 별칭 설정됨
+                as: 'OrderItems',
                 attributes: ['product_id', 'quantity', 'price'],
                 include: [{
                     model: Product,
-                    as: 'Product', // ⭐ Product 모델의 include 별칭을 'Product'로 명시
-                    // ⭐ Product 모델의 실제 컬럼명인 'name'과 'small_photo'를 사용
+                    as: 'Product',
                     attributes: ['name', 'price', 'small_photo'] 
                 }]
             }],
-            order: [['created_at', 'DESC']], // 주문일 기준 최신순 정렬
+            order: [['created_at', 'DESC']], // 주문일 기준 최신순 정렬 (Order 모델의 created_at 컬럼명에 따라 유지 또는 변경)
         });
 
-        // 클라이언트에 보낼 때 각 주문의 대표 상품 정보 포함
         const ordersWithRepresentativeProduct = orders.map(order => {
             const representativeItem = order.OrderItems && order.OrderItems.length > 0 ? order.OrderItems[0] : null;
             const productInfo = representativeItem && representativeItem.Product ? {
-                product_name: representativeItem.Product.name, // ⭐ Product.name으로 변경
-                product_thumbnail: representativeItem.Product.small_photo, // ⭐ Product.small_photo로 변경
-                total_product_types: order.OrderItems.length
+                product_name: representativeItem.Product.name,
+                product_thumbnail: representativeItem.Product.small_photo,
+                total_product_types: order.OrderItems.length 
             } : null;
 
             return {
-                ...order.toJSON(), // Sequelize 인스턴스를 일반 JS 객체로 변환
+                ...order.toJSON(), 
                 representative_product: productInfo,
             };
         });
@@ -141,8 +168,6 @@ exports.getAllOrders = async (req, res, next) => {
 // 로그인된 사용자의 특정 주문 상세 정보를 조회
 exports.getOrderDetail = async (req, res, next) => {
     const { orderId } = req.params;
-    // ⭐ 중요: 실제 구현 시 이 userUuid는 인증 미들웨어를 통해 req.user.user_uuid 등으로 받아와야 합니다.
-    // 현재는 프론트엔드에서 쿼리 파라미터로 userUuid를 전달하는 임시 방편을 사용합니다.
     const userUuid = req.query.userUuid;
 
     if (!orderId || isNaN(orderId)) {
@@ -157,7 +182,7 @@ exports.getOrderDetail = async (req, res, next) => {
         const order = await Order.findOne({
             where: {
                 order_id: orderId,
-                user_uuid: userUuid // 본인의 주문만 조회하도록 강제
+                user_uuid: userUuid 
             },
             include: [
                 {
@@ -165,8 +190,7 @@ exports.getOrderDetail = async (req, res, next) => {
                     as: 'OrderItems',
                     include: [{
                         model: Product,
-                        as: 'Product', // ⭐ Product 모델의 include 별칭을 'Product'로 명시
-                        // ⭐ Product 모델의 실제 컬럼명인 'name'과 'small_photo'를 사용
+                        as: 'Product',
                         attributes: ['product_id', 'name', 'price', 'small_photo'] 
                     }]
                 },
