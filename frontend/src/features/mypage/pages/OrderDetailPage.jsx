@@ -63,7 +63,12 @@ function OrderDetailPage() {
 
     // 사용후기 작성 핸들러
     const handleSaveBoard = async (formData) => {
-      await saveReview(formData, alreadyWroteReview, existingReview, addBoard, updateBoard);
+      // 게시판 타입을 사용후기로 강제 설정
+      const reviewFormData = {
+        ...formData,
+        board_type: 'review'
+      };
+      await saveReview(reviewFormData, alreadyWroteReview, existingReview, addBoard, updateBoard);
     };
 
     // 디버깅: productId 값 확인
@@ -164,10 +169,10 @@ function OrderDetailPage() {
               onSave={handleSaveBoard}
               onCancel={() => { window.history.back(); }}
               currentUserId={userUuid}
-              currentBoardType="review"
               hideNoticeOption={true}
               productId={productId}
-            />
+              currentBoardType="review"
+              />
         </div>
     );
 }

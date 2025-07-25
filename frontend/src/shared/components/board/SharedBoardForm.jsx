@@ -19,7 +19,7 @@ function SharedBoardForm({ initialData, onSave, onCancel, currentUserId, current
         title: initialData.title || '',
         content: initialData.content?.text || '',
         notice: initialData.notice || 'N',
-        enum: ['review', 'free', 'qna'].includes(initialData.enum) ? initialData.enum : 'free',
+        enum: ['review', 'free', 'qna'].includes(currentBoardType) ? currentBoardType : (['review', 'free', 'qna'].includes(initialData.enum) ? initialData.enum : 'free'),
         user_id: initialData.user_id || '',
       });
     } else {

@@ -23,7 +23,8 @@ export const saveReview = async (formData, alreadyWroteReview, existingReview, a
   // 게시판 타입을 사용후기로 고정
   const reviewFormData = {
     ...formData,
-    board_type: 'review'
+    board_type: 'review',
+    enum: 'review'  // enum 필드도 'review'로 강제 설정
   };
 
   let result;
@@ -48,3 +49,4 @@ export const saveReview = async (formData, alreadyWroteReview, existingReview, a
   }
   return result;
 };
+
