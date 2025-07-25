@@ -1,66 +1,44 @@
 // src/pages/AccountInfoPage.jsx
-import React, { useState, useEffect, useRef } from 'react'; // useRef 추가
+import React, { useState, useEffect, useRef } from 'react';
 import { getMyInfoApi, updateMyInfoApi } from '../api/userApi';
-// ⭐⭐ AddressSearchModal 컴포넌트 임포트 경로 확인 및 추가 ⭐⭐
-// 실제 프로젝트 구조에 맞게 경로를 수정해주세요.
-// 예: '../../../shared/api/AddressSearchModal' 또는 '@shared/api/AddressSearchModal'
 import AddressSearchModal from '../../../shared/api/AddressSearchModal'; 
 
-// ⭐ 백엔드에서 받아온 단일 address 문자열을 폼 데이터로 매핑하는 함수 (필요시 사용) ⭐
-// 백엔드가 이미 zipCode, addressMain, addressDetail을 제공한다면 이 함수는 필요 없습니다.
-const mapBackendAddressToForm = (userData) => {
-    // 백엔드에서 단일 'address' 문자열을 받는다고 가정 (예: "01234 도로명주소 상세주소")
-    // 실제 백엔드 응답 형식에 따라 이 파싱 로직은 달라져야 합니다.
-    // 여기서는 간단히 'address'를 그대로 쓰고, zipCode, addressMain, addressDetail은 비워둡니다.
-    // 이상적으로는 백엔드 API가 애초에 주소를 분리하여 제공해야 합니다.
-    // 만약 백엔드가 'zip_code', 'address_main', 'address_detail'을 직접 제공한다면,
-    // 아래와 같이 변경해야 합니다.
-    return {
-        email: userData.email || '',
-        name: userData.name || '',
-        phone: userData.phone || '',
-        zipCode: userData.zip_code || '',        // 백엔드에서 제공하는 필드명에 맞춤
-        addressMain: userData.address_main || '',// 백엔드에서 제공하는 필드명에 맞춤
-        addressDetail: userData.address_detail || '', // 백엔드에서 제공하는 필드명에 맞춤
-    };
-};
+// 이 함수는 이제 필요하지 않을 가능성이 높습니다. (백엔드가 분리된 필드를 직접 제공하기 때문)
+// const mapBackendAddressToForm = (userData) => { /* ... */ };
 
 const AccountInfoPage = () => {
     const [formData, setFormData] = useState({
         email: '',
         name: '',
         phone: '',
-        zipCode: '',      // ⬅️ 우편번호 필드 추가
-        addressMain: '',  // ⬅️ 기본 주소 필드 추가
-        addressDetail: '' // ⬅️ 상세 주소 필드 추가
+        zipCode: '',      
+        addressMain: '',  
+        addressDetail: '' 
     });
     const [loading, setLoading] = useState(true);
-    const [showAddressModal, setShowAddressModal] = useState(false); // 주소 모달 상태 추가
-    const detailAddressRef = useRef(null); // 상세 주소 필드 참조
+    const [showAddressModal, setShowAddressModal] = useState(false);
+    const detailAddressRef = useRef(null);
 
-    // 1. 페이지 로드 시 내 정보 불러오기
     useEffect(() => {
         const fetchMyInfo = async () => {
             try {
                 const data = await getMyInfoApi(); 
                 
                 if (data && data.user) {
-                    // ⭐ 백엔드 응답에 따라 폼 데이터 매핑 방식 변경 ⭐
-                    // 백엔드가 zip_code, address_main, address_detail을 직접 제공한다면:
+                    // ⭐⭐⭐ 이 부분을 수정해야 합니다! 백엔드에서 오는 필드명에 맞추세요 ⭐⭐⭐
                     setFormData({
                         email: data.user.email || '',
                         name: data.user.name || '',
                         phone: data.user.phone || '',
-                        zipCode: data.user.zip_code || '',
-                        addressMain: data.user.address_main || '',
-                        addressDetail: data.user.address_detail || '',
+                        // 백엔드 User 모델과 user.toJSON()의 결과는 카멜케이스입니다.
+                        zipCode: data.user.zipCode || '',        
+                        addressMain: data.user.addressMain || '',
+                        addressDetail: data.user.addressDetail || '',
                     });
-                    // 백엔드가 단일 'address' 문자열로 제공하고 프론트에서 파싱해야 한다면:
-                    // setFormData(mapBackendAddressToForm(data.user)); 
                     
                 } else {
                     alert(data.message || '로그인이 필요하거나 사용자 정보를 찾을 수 없습니다.');
-                    // window.location.href = '/login'; // 주석 해제하여 로그인 페이지로 리디렉션
+                    // window.location.href = '/login'; 
                 }
             } catch (error) {
                 console.error("정보 조회 실패:", error);
@@ -72,45 +50,39 @@ const AccountInfoPage = () => {
         fetchMyInfo();
     }, []);
 
-    // 2. 폼 입력값 변경 시 상태 업데이트
     const handleInputChange = (e) => {
         const { name, value } = e.target;
         setFormData(prev => ({ ...prev, [name]: value }));
     };
 
-    // ⭐⭐ 주소 검색 모달에서 주소 선택 시 호출될 콜백 함수 ⭐⭐
     const handleAddressSelect = ({ zipCode, addressMain, addressDetail }) => {
         setFormData(prev => ({
             ...prev,
             zipCode,
             addressMain,
-            addressDetail: addressDetail || '' // 상세 주소는 없을 수도 있으므로 빈 문자열로 초기화
+            addressDetail: addressDetail || ''
         }));
-        setShowAddressModal(false); // 모달 닫기
-        detailAddressRef.current?.focus(); // 상세 주소 필드로 포커스 이동
+        setShowAddressModal(false);
+        detailAddressRef.current?.focus();
     };
 
-    // 3. 폼 제출 (정보 수정) 핸들러
     const handleSubmit = async (e) => {
         e.preventDefault();
         try {
-            // ⭐ updateMyInfoApi에 전송할 데이터 구조 변경 ⭐
-            // 백엔드에서 zip_code, address_main, address_detail을 각각 받는다면:
+            // ⭐ 이 부분은 백엔드가 스네이크 케이스를 받는다면 그대로 둡니다. ⭐
+            // User 모델의 underscored: false 설정은 DB 컬럼명을 스네이크 케이스로 만들지만
+            // Sequelize가 모델 인스턴스에서는 카멜케이스로 다루므로, 백엔드 컨트롤러에서
+            // req.body를 받을 때 스네이크 케이스로 매핑하려면 별도의 설정이나 변환이 필요할 수 있습니다.
+            // 현재 백엔드 컨트롤러(`updateMyInfo`)는 카멜케이스로 받고 있으므로 이대로 두세요.
             const dataToUpdate = {
                 name: formData.name,
                 phone: formData.phone,
-                zip_code: formData.zipCode, // 백엔드 필드명에 맞춤
-                address_main: formData.addressMain, // 백엔드 필드명에 맞춤
-                address_detail: formData.addressDetail // 백엔드 필드명에 맞춤
+                zipCode: formData.zipCode, // 백엔드 필드명에 맞춤 (카멜케이스)
+                addressMain: formData.addressMain, // 백엔드 필드명에 맞춤 (카멜케이스)
+                addressDetail: formData.addressDetail // 백엔드 필드명에 맞춤 (카멜케이스)
             };
-            // 만약 백엔드에서 여전히 단일 'address' 문자열을 요구한다면:
-            // const dataToUpdate = {
-            //     name: formData.name,
-            //     phone: formData.phone,
-            //     address: `${formData.addressMain} ${formData.addressDetail}`.trim()
-            // };
-
-            const data = await updateMyInfoApi(dataToUpdate); // 수정된 데이터 객체 전달
+            
+            const data = await updateMyInfoApi(dataToUpdate); 
             
             if (data.success) { 
                 alert('정보가 성공적으로 수정되었습니다.');
@@ -148,7 +120,6 @@ const AccountInfoPage = () => {
                     <input type="text" id="phone" name="phone" value={formData.phone || ''} onChange={handleInputChange} className="w-full mt-1 p-2 border border-gray-300 rounded-md focus:ring focus:ring-blue-200" />
                 </div>
                 
-                {/* ⭐⭐ 주소 입력 필드 수정: 우편번호, 주소, 상세 주소 및 검색 버튼 추가 ⭐⭐ */}
                 <div className="mb-4">
                     <label className="block text-gray-700 font-semibold mb-1">주소</label>
                     <div className="flex space-x-2 mb-2">
@@ -180,7 +151,6 @@ const AccountInfoPage = () => {
                     />
                 </div>
 
-                {/* 상세 주소 */}
                 <div className="mb-6">
                     <label htmlFor="addressDetail" className="block text-gray-700 font-semibold mb-1 sr-only">상세주소</label>
                     <input
@@ -200,7 +170,6 @@ const AccountInfoPage = () => {
                 </button>
             </form>
 
-            {/* ⭐⭐ 주소 검색 모달 조건부 렌더링 ⭐⭐ */}
             {showAddressModal && (
                 <AddressSearchModal
                     onSelect={handleAddressSelect}

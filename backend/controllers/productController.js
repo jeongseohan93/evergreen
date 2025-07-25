@@ -7,25 +7,39 @@ const { Op } = require('sequelize');
  * 'pick' 컬럼이 'best'인 상품만 조회하는 함수
  * @description 가장 최근에 수정한 상품이 먼저 오도록 정렬합니다.
  */
-exports.getBestProducts = async (req, res) => {
+exports.getProductsByPathVariable = async (req, res) => {
     try {
+        // 1. URL 경로에서 ':pickValue'에 해당하는 값 추출
+        const { pickValue } = req.params;
+
+        // 2. pickValue가 유효한지 확인 (방어적 코딩)
+        if (!pickValue) {
+            return res.status(400).json({
+                success: false,
+                message: "pickType 경로 파라미터가 필요합니다. (예: /product/pick/best)"
+            });
+        }
+
+        // 3. 추출된 pickValue를 사용하여 상품 필터링
         const products = await Product.findAll({
             where: {
-                pick: 'best' // 'best' 상품만 필터링
+                pick: pickValue // 'best' 대신 URL에서 추출한 pickValue 사용
             },
-            order: [['updated_at', 'DESC']]
+            order: [['updated_at', 'DESC']] // 최신 업데이트 순 정렬 유지
         });
 
+        // 4. 성공 응답 반환
         res.status(200).json({
             success: true,
             data: products
         });
 
     } catch (error) {
-        console.error('베스트 상품 조회 중 오류:', error);
+        // 5. 오류 발생 시 처리
+        console.error(`'${req.params.pickValue}' 상품 조회 중 오류:`, error);
         res.status(500).json({
             success: false,
-            message: '서버 오류로 베스트 상품을 조회할 수 없습니다.'
+            message: '서버 오류로 상품을 조회할 수 없습니다.'
         });
     }
 };

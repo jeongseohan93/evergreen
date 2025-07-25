@@ -1,3 +1,5 @@
+// src/shared/ProductCard.jsx
+
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 
@@ -8,7 +10,8 @@ import { addToCartApi } from '../../../../features/cart/api/cartApi';
 import { toast } from 'react-toastify';
 
 
-const ProductCard = ({ productId, imageUrl, name, price = 0, hashtags = [], likes = 0, productDetails = {} }) => {
+// className prop을 받도록 수정
+const ProductCard = ({ productId, imageUrl, name, price = 0, hashtags = [], likes = 0, productDetails = {}, className }) => { // <--- className prop 추가
     const navigate = useNavigate();
 
     const handleCardClick = () => {
@@ -43,11 +46,8 @@ const ProductCard = ({ productId, imageUrl, name, price = 0, hashtags = [], like
 
         if (window.confirm(confirmMessage)) {
             try {
-                // apiCall(addWishList)은 이미 response.data 객체를 반환합니다.
                 const response = Array.isArray(apiArgs) ? await apiCall(...apiArgs) : await apiCall(apiArgs);
 
-                // ================== ⭐️ 수정된 부분 시작 ⭐️ ==================
-                // 디버깅 로그에서도 .data를 제거하여 확인합니다.
                 console.log('--- API 응답 상세 확인 ---');
                 console.log('응답 객체 (response):', response);
                 console.log('response.success의 타입:', typeof response.success);
@@ -55,7 +55,6 @@ const ProductCard = ({ productId, imageUrl, name, price = 0, hashtags = [], like
                 console.log('response.message의 실제 값:', response.message);
                 console.log('---------------------------');
 
-                // response.data.success -> response.success 로 변경
                 if (response.success) {
                     toast.success(successMessage);
                     console.log('성공 조건 만족. 페이지 이동 시도:', redirectPath);
@@ -63,11 +62,9 @@ const ProductCard = ({ productId, imageUrl, name, price = 0, hashtags = [], like
                         navigate(redirectPath);
                     }
                 } else {
-                    // response.data.message -> response.message 로 변경
                     console.log('실패 조건 만족. 에러 토스트 표시:', response.message);
                     toast.error(`추가 실패: ${response.message || '알 수 없는 오류'}`);
                 }
-                // ================== ⭐️ 수정된 부분 끝 ⭐️ ====================
 
             } catch (error) {
                 console.error(`${action} 오류 (catch 블록 진입):`, error);
@@ -79,12 +76,17 @@ const ProductCard = ({ productId, imageUrl, name, price = 0, hashtags = [], like
 
     return (
         <div
-            className="w-full max-w-xs bg-white rounded-lg overflow-hidden font-sans group cursor-pointer"
+            // *** 이 부분 수정 ***
+            // `max-w-xs`를 제거하고, `className` prop을 적용합니다.
+            // `ProductDisplayBox`에서 전달하는 너비 클래스가 우선 적용되도록 합니다.
+            // 기본 너비 (w-full)는 유지하지만, max-w는 ProductDisplayBox에서 조절.
+            className={`bg-white rounded-lg overflow-hidden font-sans group cursor-pointer ${className || ''}`} 
             onClick={handleCardClick}
         >
             <div className="relative">
+                {/* 이미지 높이도 조정할 수 있습니다. 예를 들어 h-64 (256px) 또는 h-72 (288px) 등 */}
                 <img
-                    className="w-full h-80 object-cover"
+                    className="w-full h-80 object-cover" // h-80 (320px)도 줄일 수 있음
                     src={imageUrl || '/images/default_product.png'}
                     alt={name}
                     onError={(e) => { e.target.onerror = null; e.target.src='/images/default_product.png' }}

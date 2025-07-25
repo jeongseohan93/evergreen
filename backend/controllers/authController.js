@@ -57,7 +57,9 @@ exports.signup = async (req, res) => {
     password,
     name,
     phone,
-    address
+    zipCode,     
+    addressMain, 
+    addressDetail 
   } = req.body;
 
   // 1. 이메일 중복 체크
@@ -78,7 +80,9 @@ exports.signup = async (req, res) => {
       password: hash,
       name,
       phone,
-      address 
+      zipCode,        
+      addressMain,    
+      addressDetail 
     });
 
     // 4. 성공 응답 (201 Created)

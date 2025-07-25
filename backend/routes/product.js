@@ -3,10 +3,9 @@
 const express = require('express');
 const router = express.Router();
 
-const { getBestProducts, getProductById, searchProducts } = require('../controllers/productController');
+const { getProductsByPathVariable, getProductById, searchProducts } = require('../controllers/productController');
 
-// 'GET /api/products/best' 요청 시 getBestProducts 함수 실행
-router.get('/best', getBestProducts);
+router.get('/pick/:pickValue', getProductsByPathVariable);
 
 // ⭐️ 1. /category 라우트를 /:productId 보다 먼저 정의합니다.
 router.get('/category', searchProducts); // ⭐️ searchProducts 컨트롤러를 '/category'에 연결

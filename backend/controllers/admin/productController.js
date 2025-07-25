@@ -252,7 +252,18 @@ exports.productMod = async (req, res) => {
         });
     }
 
-    const validPickValues = ['best', 'recommend', 'nothing'];
+    const validPickValues = [
+        'nothing',
+        'evergreen-recommend',
+        'reel-recommend',
+        'popular-products',
+        'hard-bait',
+        'soft-bait',
+        'tackle-bag-small-items',
+        'new-products',
+        'restocked-products',
+        'general-recommend',
+    ];
     const finalPick = validPickValues.includes(pick) ? pick : 'nothing';
 
     try {
@@ -450,7 +461,7 @@ exports.getCategories = async (req, res) => {
             data: categories
         });
     } catch (error) {
-        console.error('카테고리 조회 오류:', error);
+        console.error('카테고리 조회 오류:', error); 
         res.status(500).json({
             success: false,
             message: '카테고리를 불러오는 도중 오류가 발생했습니다.'

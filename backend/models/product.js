@@ -1,16 +1,3 @@
-// Product models를 위한 준비
-
-// Product에는 category_id, lineup_id를 외래키로 둘 예정이나 
-// 작업의 용이성을 위해 차후 외래키 설정을 하는것으로 하겠다.
-
-// 외래키 제외 컬럼
-// name VARCHAR(100) NOT NULL - 상품명
-// price INT NOT NULL - 가격
-// memo TEXT - 간단 설명 (ex. 프리리그 전용 로드! )
-// small_photo VARCHAR(255) - List에서 보여줄 이미지
-// large_photo VARCHAR(255) - 상세 이미지
-// stock INT DEFAULT 0 - 재고량
-
 const { Model, DataTypes } = require('sequelize');
 
 class Product extends Model {
@@ -59,6 +46,11 @@ class Product extends Model {
       large_photo: {
         type: DataTypes.STRING(255),
       },
+      // ⭐️ 유튜브 링크를 저장할 youtube_url 컬럼 추가
+      youtube_url: {
+        type: DataTypes.STRING(255), // 유튜브 임베드 URL을 저장할 예정
+        allowNull: true, // 유튜브 링크가 없는 상품도 있을 수 있으므로
+      },
       stock: {
         type: DataTypes.INTEGER,
         defaultValue: 0,
@@ -67,7 +59,18 @@ class Product extends Model {
         type: DataTypes.STRING(100),
       },
       pick: {
-        type: DataTypes.ENUM('best', 'recommend', 'nothing'), 
+        type: DataTypes.ENUM(
+          'nothing',
+          'evergreen-recommend',
+          'reel-recommend',
+          'popular-products',
+          'hard-bait',
+          'soft-bait',
+          'tackle-bag-small-items',
+          'new-products',
+          'restocked-products',
+          'general-recommend'
+        ),
         defaultValue: 'nothing',
       },
       created_at: {
