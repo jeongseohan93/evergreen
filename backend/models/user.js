@@ -1,4 +1,4 @@
-const Sequelize = require('sequelize');
+const { Sequelize, DataTypes } = require('sequelize');
 
 // ===============================
 // [ User 모델 정의 (Sequelize) ]
@@ -13,7 +13,7 @@ class User extends Sequelize.Model {
             {
                 // UUID 기본키 (user_uuid, 자동생성, PK)
                 user_uuid: {
-                    type: Sequelize.CHAR(36),
+                    type: DataTypes.CHAR(36),
                     allowNull: false,
                     primaryKey: true,
                     defaultValue: Sequelize.UUIDV4,  // UUID 자동생성

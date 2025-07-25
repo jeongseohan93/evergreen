@@ -10,7 +10,7 @@ class Board extends Model {
         autoIncrement: true,
       },
       user_id: {
-        type: DataTypes.UUID, // UUID 타입 사용
+        type: DataTypes.CHAR(36), // UUID 타입 사용
         allowNull: false,
         // 🚩 외래 키 제약 조건 명시 (이 부분이 없으면 FOREIGN KEY 에러 발생)
         references: {
@@ -19,6 +19,7 @@ class Board extends Model {
         },
         onUpdate: 'CASCADE',
         onDelete: 'CASCADE',
+        collate: 'utf8_general_ci',
       },
       product_id: {
         type: DataTypes.INTEGER,
@@ -77,7 +78,7 @@ class Board extends Model {
       timestamps: false,
       underscored: true,
       charset: 'utf8',
-      collate: 'utf8_general_ci',
+      collate: 'utf8_general_ci', // 정렬 기준
     });
   }
 

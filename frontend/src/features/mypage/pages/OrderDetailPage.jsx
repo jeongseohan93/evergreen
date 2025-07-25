@@ -87,7 +87,8 @@ function OrderDetailPage() {
 
     if (error) {
         return (
-            <div className="flex justify-center items-center h-48">
+            <div className="flex justify-center items-center h-
+            48">
                 <p className="text-red-500">{error}</p>
             </div>
         );
