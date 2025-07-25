@@ -31,6 +31,19 @@ const ProductList = ({
     return category ? category.name : '알 수 없음';
 };
 
+    const productPickDisplayMap = {
+    'nothing': '선택 안 함',
+    'evergreen-recommend': '에버그린추천',
+    'reel-recommend': '릴추천',
+    'popular-products': '인기상품',
+    'hard-bait': '하드베이트',
+    'soft-bait': '소프트베이트',
+    'tackle-bag-small-items': '태클/가방/소품',
+    'new-products': '신상품',
+    'restocked-products': '재입고',
+    'general-recommend': '추천', 
+    };
+
     // 현재 행이 수정 모드인지 확인
     const isEditingRow = (productId) => editingProduct && editingProduct.product_id === productId;
 
@@ -106,13 +119,18 @@ const ProductList = ({
                                         style={{overflow: 'auto'}}
                                     >
                                         <option value="nothing">선택 안 함</option>
-                                        <option value="best">베스트</option>
-                                        <option value="recommend">추천</option>
+                                        <option value="evergreen-recommend">에버그린추천</option>
+                                        <option value="reel-recommend">릴추천</option>
+                                        <option value="popular-products">인기상품</option>
+                                        <option value="hard-bait">하드베이트</option>
+                                        <option value="soft-bait">소프트베이트</option>
+                                        <option value="tackle-bag-small-items">태클/가방/소품</option>
+                                        <option value="new-products">신상품</option>
+                                        <option value="restocked-products">재입고</option>
+                                        <option value="general-recommend">추천</option>
                                     </select>
                                 ) : (
-                                    (product.pick === 'best' && '베스트') ||
-                                    (product.pick === 'recommend' && '추천') ||
-                                    '선택 안 함'
+                                    productPickDisplayMap[product.pick] || '선택 안 함'
                                 )}
                             </td>
 

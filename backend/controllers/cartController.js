@@ -1,16 +1,25 @@
 const { Cart, Product } = require('../models');
+const jwt = require('jsonwebtoken');
 
 /**
  * 1. 장바구니에 상품 추가 (POST /cart) - 수정된 버전
  */
 exports.addToCart = async (req, res) => {
+    const token = req.cookies.access_token;
+
+    if (!token) {
+        return res.status(401).json({ success: false, message: '접근 권한이 없습니다. 로그인이 필요합니다.' });
+        }
+    
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+
     // ⭐️ 1. 함수 시작 시 로그
     console.log("--- POST /cart 요청 시작 ---");
     console.log("요청 본문 (req.body):", req.body); // 프론트에서 보낸 데이터 확인
 
     try {
         const { productId, quantity } = req.body;
-        const user_uuid = 'temp-user-uuid'; // 임시 ID 고정
+        const user_uuid = decoded.user_uuid; // 임시 ID 고정
 
         // ⭐️ 2. 유효성 검사 직전 로그
         console.log(`유효성 검사: productId=${productId}, quantity=${quantity}`);
@@ -84,9 +93,17 @@ exports.addToCart = async (req, res) => {
  * 2. 내 장바구니 조회 (GET /cart) - 수정된 버전
  */
 exports.getCart = async (req, res) => {
+    const token = req.cookies.access_token;
+
+    if (!token) {
+        return res.status(401).json({ success: false, message: '접근 권한이 없습니다. 로그인이 필요합니다.' });
+        }
+    
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+
     console.log("--- GET /cart 요청 시작 ---");
     try {
-        const user_uuid = 'temp-user-uuid';
+        const user_uuid = decoded.user_uuid;
         console.log(`조회할 사용자 UUID: ${user_uuid}`);
 
         const cartItems = await Cart.findAll({
@@ -108,10 +125,17 @@ exports.getCart = async (req, res) => {
  * 3. 장바구니 상품 수량 수정 (PATCH /cart/:cartId)
  */
 exports.updateCartItem = async (req, res) => {
+    const token = req.cookies.access_token;
+
+    if (!token) {
+        return res.status(401).json({ success: false, message: '접근 권한이 없습니다. 로그인이 필요합니다.' });
+        }
+    
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
     try {
         const { cartId } = req.params;
         const { quantity } = req.body;
-        const user_uuid = 'temp-user-uuid'; // 테스트를 위한 임시 사용자 ID
+        const user_uuid = decoded.user_uuid; // 테스트를 위한 임시 사용자 ID
 
         if (quantity < 1) {
             return res.status(400).json({ success: false, message: '수량은 1 이상이어야 합니다.' });
@@ -136,9 +160,16 @@ exports.updateCartItem = async (req, res) => {
  * 4. 장바구니 상품 삭제 (DELETE /cart/:cartId)
  */
 exports.removeCartItem = async (req, res) => {
+    const token = req.cookies.access_token;
+
+    if (!token) {
+        return res.status(401).json({ success: false, message: '접근 권한이 없습니다. 로그인이 필요합니다.' });
+        }
+    
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
     try {
         const { cartId } = req.params;
-        const user_uuid = 'temp-user-uuid'; // 테스트를 위한 임시 사용자 ID
+        const user_uuid = decoded.user_uuid; // 테스트를 위한 임시 사용자 ID
 
         const item = await Cart.findByPk(cartId);
         if (!item || item.user_uuid !== user_uuid) {

@@ -1,21 +1,17 @@
-// 추천하는 최종 ProductDetailPage.jsx
-
 import React, { useState, useEffect } from 'react';
-// ✅ useNavigate 훅을 추가로 import 합니다.
 import { useParams, useNavigate } from 'react-router-dom';
-import { getProductByIdApi, addWishList  } from '../api/ProductApi';
-import { addToCartApi } from '../../cart/api/cartApi'
+import { getProductByIdApi, addWishList } from '../api/ProductApi';
+import { addToCartApi } from '../../cart/api/cartApi';
 import { Header, Footer, SubHeader } from '@/app';
-import DetailPageHeader from "../components/ui/DetailPageHeader/DetailPageHeader";
-import ImageGallery from "../components/ui/ImageGallery/ImageGallery";
-import ProductInfo from "../components/ui/ProductInfo/ProductInfo";
-import ProductDetailTabs from "../components/ui/ProductInfo/ui/ProductDetailTab/ProductDetailTab";
+import DetailPageHeader from '../components/ui/DetailPageHeader/DetailPageHeader';
+import ImageGallery from '../components/ui/ImageGallery/ImageGallery';
+import ProductInfo from '../components/ui/ProductInfo/ProductInfo';
+import ProductDetailTabs from '../components/ui/ProductInfo/ui/ProductDetailTab/ProductDetailTab';
 
 const ProductDetailPage = () => {
-    const { productId } = useParams(); 
-    // ✅ navigate 함수를 사용할 수 있도록 선언합니다.
-    const navigate = useNavigate(); 
-    
+    const { productId } = useParams();
+    const navigate = useNavigate();
+
     const [product, setProduct] = useState(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
@@ -40,51 +36,42 @@ const ProductDetailPage = () => {
         fetchProduct();
     }, [productId]);
 
-    // ✅ 장바구니 추가 및 페이지 이동 핸들러
     const handleAddToCart = async () => {
-    if (!productId) return;
-    try {
-        const result = await addToCartApi(productId, quantity);
-        
-        console.log('API 응답:', result); // 이 로그를 보면 result.data 안에 success가 있습니다.
+        if (!productId) return;
+        try {
+            const result = await addToCartApi(productId, quantity);
 
-        // ✅ result.success가 아닌 result.data.success로 확인해야 합니다.
-        if (result.data.success) { 
-            alert('장바구니에 상품을 담았습니다.');
-            navigate('/cart');
-        } else {
-            // ✅ 실패 메시지도 result.data.message에서 가져와야 합니다.
-            alert(`장바구니 추가 실패: ${result.data.message || '알 수 없는 오류'}`);
+            console.log('API 응답:', result);
+
+            if (result.success) {
+                alert('장바구니에 상품을 담았습니다.');
+                navigate('/cart');
+            } else {
+                alert(`장바구니 추가 실패: ${result.message || '알 수 없는 오류'}`);
+            }
+        } catch (err) {
+            console.error('API 호출 중 오류 발생:', err);
+            alert('장바구니 추가에 실패했습니다. 서버 또는 네트워크를 확인해주세요.');
         }
-    } catch (err) {
-        console.error('API 호출 중 오류 발생:', err);
-        alert('장바구니 추가에 실패했습니다. 서버 또는 네트워크를 확인해주세요.');
-    }
-};
-    
-    if (loading) return <div>로딩 중...</div>;
-    if (error) return <div>오류: {error}</div>;
-    if (!product) return <div>상품 정보가 없습니다.</div>;
+    };
 
     const handlePurchase = () => {
-        console.log('주문하기 클릭!',{ productId, quantity });
-        // 실제로는 주문에 필요한 정보를 가지고 주문 페이지로 이동합니다.
-        // navigate의 state 옵션을 사용하면 데이터를 안전하게 전달할 수 있습니다.
-        navigate('/order', { 
-            state: { 
+        console.log('주문하기 클릭!', { productId, quantity });
+        navigate('/order', {
+            state: {
                 items: [
-                    { 
+                    {
                         productId: product.product_id,
                         name: product.name,
                         price: product.price,
                         quantity: quantity,
                     }
-                ] 
-            } 
+                ]
+            }
         });
     };
 
-    const handleWishlist = async() => {
+    const handleWishlist = async () => {
         try {
             const response = await addWishList(productId);
             if (response.success) {
@@ -92,7 +79,7 @@ const ProductDetailPage = () => {
             } else {
                 alert(`관심 상품 추가 실패: ${response.message || '알 수 없는 오류'}`);
             }
-        }catch (error) {
+        } catch (error) {
             console.error("관심 상품 추가 오류:", error.response?.data || error.message);
             alert('관심 상품 추가 중 오류가 발생했습니다.');
             if (error.response?.status === 401) {
@@ -102,29 +89,100 @@ const ProductDetailPage = () => {
         }
     }
 
+    if (loading) return <div className="text-center py-8">로딩 중...</div>;
+    if (error) return <div className="text-center py-8 text-red-500">오류: {error}</div>;
+    if (!product) return <div className="text-center py-8">상품 정보가 없습니다.</div>;
+
     return (
-        <>
+        <div className="min-h-screen flex flex-col bg-gray-50">
             <Header />
             <SubHeader />
-            <DetailPageHeader title={product.name} />
-            <div className="flex flex-row">
-                <ImageGallery imageUrl={product.large_photo} />
-                <ProductInfo
-                    name={product.name}
-                    originalPrice={product.price}
-                    salePrice={product.sale_price || product.price}
-                    shippingCost={2500}
-                    tags={product.memo ? product.memo.split(' ') : []}
-                    quantity={quantity}
-                    setQuantity={setQuantity}
-                    onAddToCart={handleAddToCart}
-                    onPurchase={handlePurchase}
-                    onAddWishList={handleWishlist}
-                />
+            <div className="flex-grow container mx-auto px-4 py-8">
+                <DetailPageHeader title={product.name} />
+                
+                {/* 이미지와 버튼들을 감싸는 div의 높이 조절 */}
+                {/* max-h-[800px] 또는 max-h-[700px] 등으로 조절하여 전체 컨테이너 높이 제한 */}
+                <div className="flex flex-col lg:flex-row gap-8 bg-white p-6 rounded-lg shadow-md max-h-[700px] overflow-hidden"> 
+                    {/* 이미지 영역을 lg:w-3/5 (60%)로 유지 */}
+                    <div className="w-full lg:w-2/5 h-full"> {/* h-full 추가하여 부모 max-h에 맞춤 */}
+                        {/* small_photo 대신 large_photo로 변경 */}
+                        <ImageGallery imageUrl={product.small_photo} />
+                    </div>
+                    {/* 상품 정보 영역을 lg:w-2/5 (40%)로 유지 */}
+                    <div className="w-full lg:w-3/5 h-full overflow-y-auto"> {/* h-full과 overflow-y-auto 추가 */}
+                        <ProductInfo
+                            name={product.name}
+                            originalPrice={product.price}
+                            salePrice={product.sale_price || product.price}
+                            // shippingCost={2500} // ProductInfo에서 제거했으므로 여기도 제거
+                            quantity={quantity}
+                            setQuantity={setQuantity}
+                            onAddToCart={handleAddToCart}
+                            onPurchase={handlePurchase}
+                            onAddWishList={handleWishlist} 
+                            brand={product.brand} 
+                            sub2_category_name={product.sub2_category_name} 
+                            model_name={product.model_name} 
+                            deposit={product.deposit} 
+                        />
+                    </div>
+                </div>
+                
+                <ProductDetailTabs />
+                <div className="bg-white p-6 rounded-lg shadow-md mt-6">
+                    <div id="detail-info" className="py-4">
+                        <h2 className="text-xl font-semibold mb-4 border-b pb-2">상품 상세 정보</h2>
+                        {/* 기존 텍스트 설명을 제거하고 large_photo 이미지를 표시 */}
+                        {product.large_photo && (
+                            <div className="flex justify-center items-center p-4 ">
+                                <img 
+                                    src={product.large_photo} 
+                                    alt={`${product.name} 상세 이미지`} 
+                                    className="max-w-full h-auto object-contain rounded-md shadow-sm"
+                                    // 이미지 크기 조절을 위해 max-h-screen 또는 특정 높이 제한 추가 가능
+                                    // 예: max-h-[800px]
+                                />
+                            </div>
+                        )}
+
+                        {product.youtube_url && (
+                        <div className="flex justify-center items-center p-4 mt-4"> {/* mt-4로 위 이미지와의 간격 추가 */}
+                            <iframe 
+                                width="560" 
+                                height="315" 
+                                src={product.youtube_url}
+                                title={`${product.name} 유튜브 영상`} 
+                                frameborder="0" 
+                                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" 
+                                referrerpolicy="strict-origin-when-cross-origin" 
+                                allowfullscreen>
+                            </iframe>
+                        </div>
+                        )}
+                        {!product.large_photo && (
+                            <p className="text-gray-600">등록된 상세 이미지가 없습니다.</p>
+                        )}
+                    </div>
+                    <div id="purchase-guide" className="py-4 mt-6 border-t pt-6">
+                        <h2 className="text-xl font-semibold mb-4 border-b pb-2">구매 안내</h2>
+                        <ul className="list-disc list-inside text-gray-700">
+                            <li>배송 안내: 주문 확인 후 2-3일 이내 출고됩니다. (주말, 공휴일 제외)</li>
+                            <li>교환/반품 안내: 상품 수령 후 7일 이내 신청 가능합니다. (고객센터 문의)</li>
+                            <li>A/S 안내: 구매일로부터 1년간 무상 A/S를 제공합니다.</li>
+                        </ul>
+                    </div>
+                    <div id="reviews" className="py-4 mt-6 border-t pt-6">
+                        <h2 className="text-xl font-semibold mb-4 border-b pb-2">사용후기 (0)</h2>
+                        <p className="text-gray-600">아직 등록된 사용후기가 없습니다. 첫 후기를 남겨보세요!</p>
+                    </div>
+                    <div id="qna" className="py-4 mt-6 border-t pt-6">
+                        <h2 className="text-xl font-semibold mb-4 border-b pb-2">Q&A (0)</h2>
+                        <p className="text-gray-600">상품에 대해 궁금한 점이 있으신가요? 문의를 남겨주세요.</p>
+                    </div>
+                </div>
             </div>
-            <ProductDetailTabs />
             <Footer />
-        </>
+        </div>
     );
 };
 

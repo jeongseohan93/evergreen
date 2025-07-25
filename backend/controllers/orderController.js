@@ -1,6 +1,7 @@
 // backend/controllers/orderController.js
 
-const { Order, OrderItem, sequelize } = require('../models'); // Order와 OrderItem 모델 임포트
+const { Order, OrderItem, sequelize, ShippingAddress } = require('../models'); // Order와 OrderItem 모델 임포트
+const jwt = require('jsonwebtoken');
 const { v4: uuidv4 } = require('uuid'); // UUID 생성을 위해 uuid 라이브러리 필요 (npm install uuid)
 
 /**
@@ -75,4 +76,60 @@ exports.createOrderForPayment = async (req, res, next) => {
     console.error("주문 생성 중 오류 발생:", error);
     next(error); // 에러 핸들링 미들웨어로 전달
   }
+};
+
+exports.getAddressDefault = async ( req, res ) => {
+    const token = req.cookies.access_token;
+        
+        try {
+            if (!token) {
+                // 💡 200 대신 401 Unauthorized 반환 (일관성 유지를 위해)
+                return res.status(401).json({ success: false, message: '접근 권한이 없습니다. 로그인이 필요합니다.' });
+            }
+    
+            const decoded = jwt.verify(token, process.env.JWT_SECRET);
+
+            const defaultAddress = await ShippingAddress.findOne({
+            where: {
+                user_uuid: decoded.user_uuid,
+                is_default: true,
+            },
+        });
+
+        if (defaultAddress) {
+            res.json({ success: true, data: defaultAddress });
+        } else {
+            // 기본 배송지가 없을 경우
+            res.status(200).json({ success: true, data: null, message: '기본 배송지가 설정되어 있지 않습니다.' });
+        }
+          } catch (error) {
+        console.error('기본 배송지 조회 중 오류 발생:', error);
+        res.status(500).json({ success: false, message: '서버 오류 발생' });
+    }
+}
+
+exports.getAllAddressDefault = async ( req, res ) => {
+        const token = req.cookies.access_token;
+        
+        try {
+            if (!token) {
+                // 💡 200 대신 401 Unauthorized 반환 (일관성 유지를 위해)
+                return res.status(401).json({ success: false, message: '접근 권한이 없습니다. 로그인이 필요합니다.' });
+            }
+    
+            const decoded = jwt.verify(token, process.env.JWT_SECRET);
+
+            const addresses = await ShippingAddress.findAll({
+            where: {
+                user_uuid: decoded.user_uuid,
+            },
+            order: [['is_default', 'DESC'], ['createdAt', 'DESC']], // 기본 배송지를 먼저, 최신 순으로 정렬
+        });
+
+        res.json({ success: true, data: addresses });
+
+          } catch (error) {
+        console.error('사용자 배송지 목록 조회 중 오류 발생:', error);
+        res.status(500).json({ success: false, message: '서버 오류 발생' });
+    }
 };
