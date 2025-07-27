@@ -177,6 +177,11 @@ const FreeListPage = () => {
     fetchBoards('free', '', '');
   };
 
+  const handleEditBoardClick = () => {
+    setShowForm(true);
+    setShowDetail(false);
+  };
+
   return (
     <>
       <Header />
@@ -223,7 +228,7 @@ const FreeListPage = () => {
               replies={replies}
               repliesLoading={repliesLoading}
               repliesError={repliesError}
-              handleEditBoardClick={() => setShowForm(true)}
+              handleEditBoardClick={handleEditBoardClick}
               handleDeleteBoard={handleDeleteBoard}
               handleEditReply={handleEditReply}
               handleSaveEditedReply={handleSaveEditedReply}

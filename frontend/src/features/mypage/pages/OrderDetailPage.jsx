@@ -5,20 +5,22 @@ import { useParams } from 'react-router-dom'; // URL 파라미터 (orderId)를 �
 import { useSelector } from 'react-redux'; // user_uuid를 가져오기 위해
 import { format } from 'date-fns'; // 날짜 포맷팅
 import { fetchOrderDetailApi } from '../api/mypage';
+import { checkExistingReview, saveReview } from '../api/orderReview';
 import SharedBoardForm from '@/shared/components/board/SharedBoardForm'; // SharedBoardForm 컴포넌트 추가
 import useBoardManagement from '@/features/admin/components/board/hooks/useBoardManagement';
-import { getAllBoards } from '@/features/admin/api/boardApi';
 
 function OrderDetailPage() {
     const { orderId } = useParams(); // URL에서 orderId 가져오기
     const userUuid = useSelector(state => state.auth.user.user_uuid); // Redux store에서 user_uuid 가져오기
-    const { addBoard } = useBoardManagement();
+    const { addBoard, updateBoard } = useBoardManagement();
 
     const [orderDetail, setOrderDetail] = useState(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
     // 이미 사용후기 작성 여부 체크 (최상단으로 이동)
     const [alreadyWroteReview, setAlreadyWroteReview] = useState(false);
+    // 기존 사용후기 데이터 추가
+    const [existingReview, setExistingReview] = useState(null);
 
     useEffect(() => {
         const getOrderDetail = async () => {
@@ -50,28 +52,23 @@ function OrderDetailPage() {
       productId = orderDetail.OrderItems[0].Product?.product_id || null;
     }
     useEffect(() => {
-      const checkAlreadyWroteReview = async () => {
+      const checkReview = async () => {
         if (!userUuid || !productId) return;
-        const result = await getAllBoards('review', '', '');
-        if (result.success) {
-          const found = result.data.some(
-            board => board.user_id === userUuid && board.product_id === productId
-          );
-          setAlreadyWroteReview(found);
-        }
+        const { alreadyWroteReview: hasReview, existingReview: review } = await checkExistingReview(userUuid, productId);
+        setAlreadyWroteReview(hasReview);
+        setExistingReview(review);
       };
-      checkAlreadyWroteReview();
+      checkReview();
     }, [userUuid, productId]);
 
     // 사용후기 작성 핸들러
     const handleSaveBoard = async (formData) => {
-      const result = await addBoard(formData);
-      if (result.success) {
-        alert('사용후기가 성공적으로 등록되었습니다!');
-        window.location.reload(); // 또는 fetchBoards 등 새로고침/리셋
-      } else {
-        alert(result.message || '사용후기 등록에 실패했습니다.');
-      }
+      // 게시판 타입을 사용후기로 강제 설정
+      const reviewFormData = {
+        ...formData,
+        board_type: 'review'
+      };
+      await saveReview(reviewFormData, alreadyWroteReview, existingReview, addBoard, updateBoard);
     };
 
     // 디버깅: productId 값 확인
@@ -131,15 +128,6 @@ function OrderDetailPage() {
                 <p className="text-sm text-gray-600 mb-3">주문일: <span className='text-[#58bcb5]'>{format(new Date(orderDetail.created_at), 'yyyy년 MM월 dd일 HH:mm')}</span></p>
                 <p className="text-gray-700 font-bold mb-3">총 결제 금액: {orderDetail.total_amount.toLocaleString()}원</p>
                 <p className="text-gray-700 font-bold">주문 상태: <span className="text-[#306f65] font-bold">{getStatusInKorean(orderDetail.status)}</span></p>
-                {/* 배송지 정보 등 추가 가능 */}
-                {/* {orderDetail.delivery_address && (
-                    <div className="mt-4 p-3 bg-gray-50 rounded-md">
-                        <p className="font-semibold">배송지 정보:</p>
-                        <p>{orderDetail.delivery_address.recipient_name} ({orderDetail.delivery_address.phone_number})</p>
-                        <p>{orderDetail.delivery_address.address} {orderDetail.delivery_address.detail_address}</p>
-                        <p>우편번호: {orderDetail.delivery_address.postal_code}</p>
-                    </div>
-                )} */}
             </div>
 
             <h3 className="text-xl font-bold font-aggro text-[#306f65]">주문 상품</h3>
@@ -166,32 +154,25 @@ function OrderDetailPage() {
                     <p className="text-center text-gray-600">주문된 상품이 없습니다.</p>
                 )}
             </div>
-            <h2 className="text-2xl font-bold font-aggro mb-6 text-center">사용후기 작성</h2>
+            <h2 className="text-2xl font-bold font-aggro mb-6 text-center">
+              {alreadyWroteReview ? '사용후기 수정' : '사용후기 작성'}
+            </h2>
             {alreadyWroteReview ? (
-              <>
-                <div className="text-center text-red-500 font-bold mt-8">
-                  사용후기는 1번만 작성하실 수 있습니다.
-                </div>
-                <div className="mt-6 text-right">
-                  <button
-                    onClick={() => window.history.back()}
-                    className="px-6 py-2 bg-gray-300 text-gray-800 rounded-md hover:bg-gray-400 transition-colors"
-                  >
-                    목록으로 돌아가기
-                  </button>
-                </div>
-              </>
-            ) : (
-              <SharedBoardForm
-                initialData={null}
-                onSave={handleSaveBoard}
-                onCancel={() => { window.history.back(); }}
-                currentUserId={userUuid}
-                currentBoardType="review"
-                hideNoticeOption={true}
-                productId={productId}
+              <div className="mb-4 p-4 bg-blue-50 border border-blue-200 rounded-md">
+                <p className="text-blue-800 text-center font-medium">
+                  이미 작성하신 사용후기가 있습니다. 아래에서 수정하실 수 있습니다.
+                </p>
+              </div>
+            ) : null}
+            <SharedBoardForm
+              initialData={existingReview}
+              onSave={handleSaveBoard}
+              onCancel={() => { window.history.back(); }}
+              currentUserId={userUuid}
+              hideNoticeOption={true}
+              productId={productId}
+              currentBoardType="review"
               />
-            )}
         </div>
     );
 }
