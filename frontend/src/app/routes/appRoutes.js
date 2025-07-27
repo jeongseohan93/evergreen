@@ -28,6 +28,8 @@ const appRoutes = [
     element: <AccessDeniedPage />
   },
   
+  { path: '/wishlist', element: <WishlistPage /> },
+
    {
     path: 'mypage', // 부모 경로. 앞에 '/'가 없어야 중첩됩니다.
     element: (
@@ -40,7 +42,6 @@ const appRoutes = [
       { path: 'orders', element: <OrderHistoryPage /> },     // -> /mypage/orders (주문 내역)
       { path: 'orders/:orderId', element: <OrderDetailPage /> }, // -> /mypage/orders/:orderId (주문 상세)
       { path: 'profile', element: <ProfilePage /> },     // -> /mypage/profile
-      { path: 'wishlist', element: <WishlistPage /> },   // -> /mypage/wishlist
       { path: 'mileage', element: <MileagePage /> },     // -> /mypage/mileage
       { path: 'board', element: <BoardPage /> },         // -> /mypage/board
       { path: 'addresses', element: <AddressPage /> },   // -> /mypage/addresses

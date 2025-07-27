@@ -205,7 +205,7 @@ const ProductReview = ({ productId }) => {
     // 목록 보기 모드일 때
     return (
         <div className="py-8">
-            <h3 className="text-xl font-bold text-gray-800 mb-4">사용후기 ({reviews.length})</h3>
+            <h3 className="text-xl font-bold text-gray-800 mb-4">REVIEW ({reviews.length})</h3>
             {reviews.length > 0 ? (
                 <SharedBoardList
                     boards={reviews}
