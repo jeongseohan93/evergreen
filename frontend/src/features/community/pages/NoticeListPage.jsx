@@ -182,6 +182,7 @@ const NoticeListPage = () => {
               hideNewButton={true}
               hideDivider={true}
               hideNoticeButton={true}
+              hideManagementButtons={true}
             />
           ) : (
             <SharedBoardDetail

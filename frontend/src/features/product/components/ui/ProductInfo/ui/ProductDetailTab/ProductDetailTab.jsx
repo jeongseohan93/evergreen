@@ -40,12 +40,6 @@ const ProductDetailTabs = () => {
                 >
                     사용후기 (0)
                 </button>
-                <button
-                    className={`flex-1 py-4 text-center transition-all duration-300 ease-in-out ${activeTab === 'qna' ? 'text-blue-600 border-b-2 border-blue-600 font-semibold' : 'hover:text-blue-500 hover:border-b-2 hover:border-gray-300'}`}
-                    onClick={() => scrollToSection('qna')}
-                >
-                    Q&A (0)
-                </button>
             </div>
         </div>
     );

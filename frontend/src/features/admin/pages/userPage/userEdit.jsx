@@ -13,7 +13,9 @@ const UserEdit = ({ userUuid, onCancel }) => {
     name: "",
     email: "",
     phone: "",
-    address: "",
+    zipCode: "",
+    addressMain: "",
+    addressDetail: "",
   });
 
   useEffect(() => {
@@ -24,7 +26,9 @@ const UserEdit = ({ userUuid, onCancel }) => {
           name: user.name || "",
           email: user.email || "",
           phone: user.phone || "",
-          address: user.address || "",
+          zipCode: user.zipCode || "",
+          addressMain: user.addressMain || "",
+          addressDetail: user.addressDetail || "",
         });
       }
     };
@@ -93,15 +97,36 @@ const UserEdit = ({ userUuid, onCancel }) => {
               />
             </div>
             <div className="flex items-center gap-2">
-              <label className="w-32 text-left text-[#58bcb5]">회원 주소 *:</label>
+              <label className="w-32 text-left text-[#58bcb5]">우편번호:</label>
               <input
                 type="text"
-                name="address"
-                value={form.address}
+                name="zipCode"
+                value={form.zipCode}
                 onChange={handleChange}
-                placeholder="주소"
+                placeholder="우편번호"
                 className="flex-1 px-4 py-2 border border-gray-300 rounded focus:outline-none focus:border-[#306f65]"
-                required
+              />
+            </div>
+            <div className="flex items-center gap-2">
+              <label className="w-32 text-left text-[#58bcb5]">기본주소:</label>
+              <input
+                type="text"
+                name="addressMain"
+                value={form.addressMain}
+                onChange={handleChange}
+                placeholder="기본주소"
+                className="flex-1 px-4 py-2 border border-gray-300 rounded focus:outline-none focus:border-[#306f65]"
+              />
+            </div>
+            <div className="flex items-center gap-2">
+              <label className="w-32 text-left text-[#58bcb5]">상세주소:</label>
+              <input
+                type="text"
+                name="addressDetail"
+                value={form.addressDetail}
+                onChange={handleChange}
+                placeholder="상세주소"
+                className="flex-1 px-4 py-2 border border-gray-300 rounded focus:outline-none focus:border-[#306f65]"
               />
             </div>
             <div className="flex gap-2 mt-4">

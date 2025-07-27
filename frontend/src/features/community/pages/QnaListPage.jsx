@@ -209,6 +209,7 @@ const QnaListPage = () => {
               //hideNewButton={true}
               hideDivider={true}
               hideNoticeButton={true}
+              hideManagementButtons={true}
             />
           )}
           {showForm && (

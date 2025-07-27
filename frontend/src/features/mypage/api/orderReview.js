@@ -19,7 +19,7 @@ export const checkExistingReview = async (userUuid, productId) => {
 };
 
 // 사용후기 저장 (작성 또는 수정)
-export const saveReview = async (formData, alreadyWroteReview, existingReview, addBoard, updateBoard) => {
+export const saveReview = async (formData, alreadyWroteReview, existingReview, addBoard, modifyBoard) => {
   // 게시판 타입을 사용후기로 고정
   const reviewFormData = {
     ...formData,
@@ -27,10 +27,18 @@ export const saveReview = async (formData, alreadyWroteReview, existingReview, a
     enum: 'review'  // enum 필드도 'review'로 강제 설정
   };
 
+  // 디버깅: 전송될 데이터 확인
+  console.log('saveReview - 원본 formData:', formData);
+  console.log('saveReview - 수정된 reviewFormData:', reviewFormData);
+  console.log('saveReview - alreadyWroteReview:', alreadyWroteReview);
+  console.log('saveReview - existingReview:', existingReview);
+
   let result;
   if (alreadyWroteReview && existingReview) {
     // 수정 모드
-    result = await updateBoard(existingReview.board_id, reviewFormData);
+    console.log('saveReview - 수정 모드 실행');
+    result = await modifyBoard(existingReview.board_id, reviewFormData);
+    
     if (result.success) {
       alert('사용후기가 성공적으로 수정되었습니다!');
       window.location.reload();
@@ -39,6 +47,7 @@ export const saveReview = async (formData, alreadyWroteReview, existingReview, a
     }
   } else {
     // 새로 작성 모드
+    console.log('saveReview - 새로 작성 모드 실행');
     result = await addBoard(reviewFormData);
     if (result.success) {
       alert('사용후기가 성공적으로 등록되었습니다!');
@@ -49,4 +58,6 @@ export const saveReview = async (formData, alreadyWroteReview, existingReview, a
   }
   return result;
 };
+
+
 

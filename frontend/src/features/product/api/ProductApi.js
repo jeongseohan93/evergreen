@@ -19,6 +19,21 @@ export const getProductByIdApi = async (productId) => {
     }
 };
 
+/**
+ * 특정 상품의 사용후기 목록을 조회하는 API 함수
+ * @param {string | number} productId - 조회할 상품의 ID
+ */
+export const getProductReviewsApi = async (productId) => {
+    try {
+        // GET /api/boards/review?product_id=${productId}
+        const response = await apiService.get(`/boards/review?product_id=${productId}`);
+        return response.data; // { success: true, data: [...] } 객체를 반환
+    } catch (error) {
+        console.error(`상품 ID ${productId}의 사용후기 조회 실패:`, error);
+        throw error;
+    }
+};
+
 export const addWishList = async (productId) => { // 함수 이름: addWishList
     try {
         // 백엔드는 product_id를 req.body로 받을 것으로 예상합니다.

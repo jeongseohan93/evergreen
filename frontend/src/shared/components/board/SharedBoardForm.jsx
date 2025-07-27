@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useLocation } from 'react-router-dom';
 
-function SharedBoardForm({ initialData, onSave, onCancel, currentUserId, currentBoardType, hideNoticeOption = false, productId }) {
+function SharedBoardForm({ initialData, onSave, onCancel, currentUserId, currentBoardType, hideNoticeOption = false, hideReviewOption = false, productId }) {
   const location = useLocation();
   const isAdmin = location.pathname.startsWith('/admin');
   const [formData, setFormData] = useState({
@@ -93,7 +93,7 @@ function SharedBoardForm({ initialData, onSave, onCancel, currentUserId, current
         </div>
         <div className="mb-4">
           <label htmlFor="enum" className="block text-[#306f65] text-base font-bold mb-2">게시판 타입</label>
-          {(!initialData && currentBoardType === 'review') ? (
+          {currentBoardType === 'review' ? (
             <input
               type="text"
               id="enum"
@@ -111,7 +111,7 @@ function SharedBoardForm({ initialData, onSave, onCancel, currentUserId, current
               className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#306f65]"
               required
             >
-              {!isAdmin && currentBoardType !== 'free' && <option value="review">사용후기 게시판</option>}
+              {!hideReviewOption && !isAdmin && currentBoardType !== 'free' && <option value="review">사용후기 게시판</option>}
               <option value="free">자유 게시판</option>
               <option value="qna">질문 게시판</option>
             </select>

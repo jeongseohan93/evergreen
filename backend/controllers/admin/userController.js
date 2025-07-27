@@ -5,7 +5,7 @@ const { User } = require('../../models'); // User 시퀄라이즈 모델 import
 exports.getAllUsers = async (req, res) => {
   try {
     const users = await User.findAll({
-      attributes: ['user_uuid', 'email', 'name', 'phone', 'address', 'createdAt', 'deletedAt'],
+      attributes: ['user_uuid', 'email', 'name', 'phone', 'zipCode', 'addressMain', 'addressDetail', 'createdAt', 'deletedAt'],
       where: {
         role: 'user' // admin이 아닌 회원만 조회
       },
@@ -75,7 +75,7 @@ exports.getUserById = async (req, res) => {
   const { userUuid } = req.params;
   try {
     const user = await User.findOne({
-      attributes: ['user_uuid', 'email', 'name', 'phone', 'address', 'createdAt', 'deletedAt'],
+      attributes: ['user_uuid', 'email', 'name', 'phone', 'zipCode', 'addressMain', 'addressDetail', 'createdAt', 'deletedAt'],
       where: { user_uuid: userUuid },
       paranoid: false // 삭제된 회원도 조회
     });
@@ -92,7 +92,7 @@ exports.getUserById = async (req, res) => {
 // 회원 정보 수정
 exports.updateUser = async (req, res) => {
     const { userUuid } = req.params;
-    const { name, email, phone, address } = req.body;
+    const { name, email, phone, zipCode, addressMain, addressDetail } = req.body;
     try {
       const user = await User.findOne({
         where: { user_uuid: userUuid },
@@ -101,7 +101,7 @@ exports.updateUser = async (req, res) => {
       if (!user) {
         return res.status(404).json({ message: '해당 회원을 찾을 수 없습니다.' });
       }
-      await user.update({ name, email, phone, address });
+      await user.update({ name, email, phone, zipCode, addressMain, addressDetail });
       res.json({ message: '회원 정보가 수정되었습니다.' });
     } catch (err) {
       console.error('회원 정보 수정 실패:', err);

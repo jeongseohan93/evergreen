@@ -209,6 +209,7 @@ const ReviewListPage = () => {
               //hideNewButton={true}
               hideDivider={true}
               hideNoticeButton={true}
+              hideManagementButtons={true}
             />
           )}
           {showForm && (

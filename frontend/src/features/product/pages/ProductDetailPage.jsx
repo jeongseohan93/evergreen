@@ -1,12 +1,16 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
+import { useSelector } from 'react-redux';
 import { getProductByIdApi, addWishList } from '../api/ProductApi';
 import { addToCartApi } from '../../cart/api/cartApi';
+import { format } from 'date-fns';
+import ProductReview from '../components/ProductReview/ProductReview';
 import { Header, Footer, SubHeader } from '@/app';
 import DetailPageHeader from '../components/ui/DetailPageHeader/DetailPageHeader';
 import ImageGallery from '../components/ui/ImageGallery/ImageGallery';
 import ProductInfo from '../components/ui/ProductInfo/ProductInfo';
 import ProductDetailTabs from '../components/ui/ProductInfo/ui/ProductDetailTab/ProductDetailTab';
+
 
 const ProductDetailPage = () => {
     const { productId } = useParams();
@@ -172,12 +176,7 @@ const ProductDetailPage = () => {
                         </ul>
                     </div>
                     <div id="reviews" className="py-4 mt-6 border-t pt-6">
-                        <h2 className="text-xl font-semibold mb-4 border-b pb-2">사용후기 (0)</h2>
-                        <p className="text-gray-600">아직 등록된 사용후기가 없습니다. 첫 후기를 남겨보세요!</p>
-                    </div>
-                    <div id="qna" className="py-4 mt-6 border-t pt-6">
-                        <h2 className="text-xl font-semibold mb-4 border-b pb-2">Q&A (0)</h2>
-                        <p className="text-gray-600">상품에 대해 궁금한 점이 있으신가요? 문의를 남겨주세요.</p>
+                        <ProductReview productId={productId} />
                     </div>
                 </div>
             </div>

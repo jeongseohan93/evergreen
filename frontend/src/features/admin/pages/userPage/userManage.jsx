@@ -80,7 +80,8 @@ const UserManage = ({ onEditUser }) => {
               <th className="p-4 text-base">이름</th>
               <th className="p-4 text-base">이메일</th>
               <th className="p-4 text-base">전화번호</th>
-              <th className="p-4 text-base">주소</th>
+              <th className="p-4 text-base">우편번호</th>
+              <th className="p-4 text-base">기본주소</th>
               <th className="p-4 text-base">가입일</th>
               <th className="p-4 text-base">관리</th>
             </tr>
@@ -88,19 +89,19 @@ const UserManage = ({ onEditUser }) => {
           <tbody>
             {loading ? (
               <tr>
-                <td colSpan="6" className="p-5 text-center">로딩 중...</td>
+                <td colSpan="7" className="p-5 text-center">로딩 중...</td>
               </tr>
             ) : error ? (
               <tr>
-                <td colSpan="6" className="p-5 text-center text-red-500">{error}</td>
+                <td colSpan="7" className="p-5 text-center text-red-500">{error}</td>
               </tr>
             ) : users.length === 0 ? (
               <tr>
-                <td colSpan="6" className="p-5 text-center">등록된 회원이 없습니다.</td>
+                <td colSpan="7" className="p-5 text-center">등록된 회원이 없습니다.</td>
               </tr>
             ) : filteredUsers.length === 0 ? (
               <tr>
-                <td colSpan="6" className="p-5 text-center">검색 결과가 없습니다.</td>
+                <td colSpan="7" className="p-5 text-center">검색 결과가 없습니다.</td>
               </tr>
             ) : (
               filteredUsers.map((user) => (
@@ -108,7 +109,8 @@ const UserManage = ({ onEditUser }) => {
                   <td className="p-3 text-sm">{user.name}</td>
                   <td className="p-3 text-sm">{user.email}</td>
                   <td className="p-3 text-sm">{user.phone}</td>
-                  <td className="p-3 text-sm">{user.address}</td>
+                  <td className="p-3 text-sm">{user.zipCode || '-'}</td>
+                  <td className="p-3 text-sm">{user.addressMain || '-'}</td>
                   <td className="p-3 text-sm">{new Date(user.createdAt).toISOString().split('T')[0]}</td>
                   <td className="p-3 text-sm">
                     <div className="flex gap-2">

@@ -12,7 +12,7 @@ import useBoardManagement from '@/features/admin/components/board/hooks/useBoard
 function OrderDetailPage() {
     const { orderId } = useParams(); // URL에서 orderId 가져오기
     const userUuid = useSelector(state => state.auth.user.user_uuid); // Redux store에서 user_uuid 가져오기
-    const { addBoard, updateBoard } = useBoardManagement();
+    const { addBoard, modifyBoard } = useBoardManagement();
 
     const [orderDetail, setOrderDetail] = useState(null);
     const [loading, setLoading] = useState(true);
@@ -66,9 +66,10 @@ function OrderDetailPage() {
       // 게시판 타입을 사용후기로 강제 설정
       const reviewFormData = {
         ...formData,
-        board_type: 'review'
+        board_type: 'review',
+        enum: 'review'  // enum 필드도 'review'로 강제 설정
       };
-      await saveReview(reviewFormData, alreadyWroteReview, existingReview, addBoard, updateBoard);
+      await saveReview(reviewFormData, alreadyWroteReview, existingReview, addBoard, modifyBoard);
     };
 
     // 디버깅: productId 값 확인

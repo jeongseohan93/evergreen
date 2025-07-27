@@ -21,6 +21,8 @@ function SharedBoardDetail({
   currentUser,
   isAdmin = false,
   onReplyInputFocus,
+  hideEditDeleteButtons = false,
+  hideReplyForm = false,
 }) {
   if (!selectedBoard) return null;
 
@@ -68,7 +70,7 @@ function SharedBoardDetail({
         </div>
       )}
       <div className="flex justify-end space-x-3">
-        {(isAdmin || (selectedBoard.User && currentUser && String(selectedBoard.User.user_uuid) === String(currentUser.user_uuid))) && (
+        {!hideEditDeleteButtons && (isAdmin || (selectedBoard.User && currentUser && String(selectedBoard.User.user_uuid) === String(currentUser.user_uuid))) && (
           <>
             <button
               onClick={handleEditBoardClick}
@@ -167,25 +169,27 @@ function SharedBoardDetail({
           </div>
         )}
         {/* 댓글 작성 폼 */}
-        <div className="mt-6 p-4 border border-gray-200 rounded-md bg-white shadow-sm">
-          <h4 className="font-bold text-[#306f65] text-base mb-2">댓글 작성</h4>
-          <textarea
-            value={newReplyContent}
-            onChange={(e) => setNewReplyContent(e.target.value)}
-            placeholder="댓글을 작성하려면 로그인하세요."
-            className="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-[#306f65] resize-none"
-            rows="4"
-            onFocus={onReplyInputFocus}
-          ></textarea>
-          <div className="flex justify-end mt-3">
-            <button
-              onClick={handleAddReply}
-              className="px-6 py-2 bg-[#306f65] text-white rounded-md hover:bg-[#58bcb5] transition-colors duration-200 font-medium"
-            >
-              댓글 추가
-            </button>
+        {!hideReplyForm && (
+          <div className="mt-6 p-4 border border-gray-200 rounded-md bg-white shadow-sm">
+            <h4 className="font-bold text-[#306f65] text-base mb-2">댓글 작성</h4>
+            <textarea
+              value={newReplyContent}
+              onChange={(e) => setNewReplyContent(e.target.value)}
+              placeholder="댓글을 작성하려면 로그인하세요."
+              className="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-[#306f65] resize-none"
+              rows="4"
+              onFocus={onReplyInputFocus}
+            ></textarea>
+            <div className="flex justify-end mt-3">
+              <button
+                onClick={handleAddReply}
+                className="px-6 py-2 bg-[#306f65] text-white rounded-md hover:bg-[#58bcb5] transition-colors duration-200 font-medium"
+              >
+                댓글 추가
+              </button>
+            </div>
           </div>
-        </div>
+        )}
       </div>
     </div>
   );
