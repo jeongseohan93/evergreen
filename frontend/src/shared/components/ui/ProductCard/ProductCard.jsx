@@ -32,7 +32,7 @@ const ProductCard = ({ productId, imageUrl, name, price = 0, hashtags = [], like
             successMessage = '관심 상품에 추가되었습니다!';
             apiCall = addWishList;
             apiArgs = productId;
-            redirectPath = '/mypage/wishlist';
+            redirectPath = '/wishlist';
         } else if (action === '장바구니') {
             confirmMessage = '이 상품을 장바구니에 추가하시겠습니까?';
             successMessage = '장바구니에 추가되었습니다!';
@@ -103,9 +103,6 @@ const ProductCard = ({ productId, imageUrl, name, price = 0, hashtags = [], like
                     </button>
                     <button onClick={(e) => handleActionClick(e, '장바구니')} className="bg-white p-2 rounded-full shadow-md hover:bg-gray-100 transition-colors">
                         <svg className="w-5 h-5 text-gray-700" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"></path></svg>
-                    </button>
-                    <button onClick={(e) => handleActionClick(e, '미리보기')} className="bg-white p-2 rounded-full shadow-md hover:bg-gray-100 transition-colors">
-                        <svg className="w-5 h-5 text-gray-700" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
                     </button>
                 </div>
             </div>

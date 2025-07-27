@@ -12,6 +12,7 @@ export { default as CartIcon } from './components/ui/Icon/CartIcon';
 export { default as EvergreenLogo } from './components/ui/Icon/EvergreenLogo';
 export { default as SearchBar } from './components/layouts/Header/SearchBar';
 export { default as UserActionIcons } from './components/ui/Icon/UserActionIcons';
+export { default as WishlistIcon } from './components/ui/Icon/WishlistIcon'; 
 
 export * from './contants/footerLinks';
 export { default as apiService } from './services/apiService';

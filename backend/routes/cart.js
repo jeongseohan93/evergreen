@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const { addToCart, getCart, updateCartItem, removeCartItem } = require('../controllers/cartController');
+const { addToCart, getCart, updateCartItem, removeCartItem, countCart } = require('../controllers/cartController');
 
 // 'POST /' 요청은 addToCart 함수로 연결
 router.post('/', addToCart);
@@ -13,5 +13,7 @@ router.patch('/:cartId', updateCartItem);
 
 // 'DELETE /:cartId' 요청은 removeCartItem 함수로 연결
 router.delete('/:cartId', removeCartItem);
+
+router.get('/count', countCart);
 
 module.exports = router;

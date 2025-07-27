@@ -534,3 +534,24 @@ exports.deleteWishlistItem = async (req, res) => {
         res.status(500).json({ success: false, message: '서버 오류가 발생했습니다.' });
     }
 };
+
+exports.wishlistCount = async (req, res) => {
+    const token = req.cookies.access_token;
+    
+        if (!token) {
+            return res.status(401).json({ success: false, message: '접근 권한이 없습니다. 로그인이 필요합니다.' });
+            }
+        
+        const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    
+        try {
+            const numberOfWishlistItems = await Wishlist.count({
+                where: { user_uuid: decoded.user_uuid}
+            });
+    
+            res.json({ success: true, count: numberOfWishlistItems, message: "관심상품 항목 개수를 성공적으로 불러왔습니다." });
+        } catch (error) {
+            console.error("관심상품 개수 조회 중 서버 오류:", error.message);
+            return res.status(500).json({ success: false, message: '서버 오류로 관심상품 개수를 불러올 수 없습니다.' });
+        }
+}

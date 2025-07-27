@@ -1,6 +1,9 @@
 const express = require('express');
 const router = express.Router();
-const { userinfor, updateMyInfo, shipingform, getshipping, updateShippingAddress, deleteShippingAddress , addWishlistItem, getWishlistItems,deleteWishlistItem } = require('../controllers/userController');
+const { userinfor, updateMyInfo, shipingform, getshipping, 
+        updateShippingAddress, deleteShippingAddress , 
+        addWishlistItem, getWishlistItems,deleteWishlistItem,
+        wishlistCount } = require('../controllers/userController');
 
 router.get('/infor', userinfor);
 
@@ -19,5 +22,7 @@ router.post('/wishlists', addWishlistItem);
 router.get('/wishlists', getWishlistItems);
 
 router.delete('/wishlists/:wishlistId', deleteWishlistItem);
+
+router.get('/wishlist-count', wishlistCount);
 
 module.exports = router;

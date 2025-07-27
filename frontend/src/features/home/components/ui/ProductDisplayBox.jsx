@@ -42,7 +42,7 @@ const ProductDisplayBox = ({ activeCategory }) => {
         return (
             <div className="
                 max-w-[1330px] mx-auto
-                bg-white shadow-lg rounded-lg
+                bg-white
                 p-6 sm:p-8 lg:p-10
                 mt-8 mb-12
                 min-h-[400px]
@@ -57,7 +57,7 @@ const ProductDisplayBox = ({ activeCategory }) => {
         return (
             <div className="
                 max-w-[1330px] mx-auto
-                bg-white shadow-lg rounded-lg
+                bg-white 
                 p-6 sm:p-8 lg:p-10
                 mt-8 mb-12
                 min-h-[400px]
@@ -73,7 +73,7 @@ const ProductDisplayBox = ({ activeCategory }) => {
         return (
             <div className="
                 max-w-[1330px] mx-auto
-                bg-white shadow-lg rounded-lg
+                bg-white 
                 p-6 sm:p-8 lg:p-10
                 mt-8 mb-12
                 min-h-[400px]
@@ -89,7 +89,7 @@ const ProductDisplayBox = ({ activeCategory }) => {
     return (
         <div className="
             max-w-[1330px] mx-auto
-            bg-white shadow-lg rounded-lg
+            bg-white 
             p-6 sm:p-8 lg:p-10
             mt-8 mb-12
             min-h-[400px]

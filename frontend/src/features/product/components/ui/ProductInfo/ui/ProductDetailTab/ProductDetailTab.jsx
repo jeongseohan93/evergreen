@@ -26,25 +26,25 @@ const ProductDetailTabs = () => {
                     className={`flex-1 py-4 text-center transition-all duration-300 ease-in-out ${activeTab === 'detail-info' ? 'text-blue-600 border-b-2 border-blue-600 font-semibold' : 'hover:text-blue-500 hover:border-b-2 hover:border-gray-300'}`}
                     onClick={() => scrollToSection('detail-info')}
                 >
-                    상세정보
-                </button>
-                <button
-                    className={`flex-1 py-4 text-center transition-all duration-300 ease-in-out ${activeTab === 'purchase-guide' ? 'text-blue-600 border-b-2 border-blue-600 font-semibold' : 'hover:text-blue-500 hover:border-b-2 hover:border-gray-300'}`}
-                    onClick={() => scrollToSection('purchase-guide')}
-                >
-                    구매안내
+                    DETAIL
                 </button>
                 <button
                     className={`flex-1 py-4 text-center transition-all duration-300 ease-in-out ${activeTab === 'reviews' ? 'text-blue-600 border-b-2 border-blue-600 font-semibold' : 'hover:text-blue-500 hover:border-b-2 hover:border-gray-300'}`}
                     onClick={() => scrollToSection('reviews')}
                 >
-                    사용후기 (0)
+                    REVIEW (0)
                 </button>
                 <button
                     className={`flex-1 py-4 text-center transition-all duration-300 ease-in-out ${activeTab === 'qna' ? 'text-blue-600 border-b-2 border-blue-600 font-semibold' : 'hover:text-blue-500 hover:border-b-2 hover:border-gray-300'}`}
                     onClick={() => scrollToSection('qna')}
                 >
                     Q&A (0)
+                </button>
+                <button
+                    className={`flex-1 py-4 text-center transition-all duration-300 ease-in-out ${activeTab === 'purchase-guide' ? 'text-blue-600 border-b-2 border-blue-600 font-semibold' : 'hover:text-blue-500 hover:border-b-2 hover:border-gray-300'}`}
+                    onClick={() => scrollToSection('purchase-guide')}
+                >
+                    GUIDE
                 </button>
             </div>
         </div>
