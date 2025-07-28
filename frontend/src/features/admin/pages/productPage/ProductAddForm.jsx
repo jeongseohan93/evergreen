@@ -8,6 +8,7 @@ const ProductAddForm = ({
     handleInputChange,
     handleAddProduct,
     categories,
+    lineup,
     // 새롭게 추가되는 props (작은 사진, 큰 사진 각각 관리)
     // ⭐⭐ 여기 이름들을 useProductManagement의 함수 이름과 일치시킴 ⭐⭐
     handleNewProductSmallFileChange, // 이름 변경: handleSmallFileChange -> handleNewProductSmallFileChange
@@ -118,6 +119,21 @@ const ProductAddForm = ({
                             />
                         </div>
 
+                         {/* 재고 필드 */}
+                        <div>
+                            <label className="block text-sm font-medium text-gray-700 mb-2">
+                                재고
+                            </label>
+                            <input
+                                type="number"
+                                name="stock"
+                                value={newProduct.stock}
+                                onChange={handleInputChange}
+                                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#306f65]" // focus:border-transparent 제거
+                                placeholder="재고 수량"
+                            />
+                        </div>
+
                         {/* 카테고리 필드 */}
                         <div>
                             <label className="block text-sm font-medium text-[#58bcb5] mb-2">
@@ -137,20 +153,25 @@ const ProductAddForm = ({
                             </select>
                         </div>
 
-                        {/* 재고 필드 */}
+                        {/* 카테고리 필드 */}
                         <div>
-                            <label className="block text-sm font-medium text-gray-700 mb-2">
-                                재고
+                            <label className="block text-sm font-medium text-[#58bcb5] mb-2">
+                                라인업 *
                             </label>
-                            <input
-                                type="number"
-                                name="stock"
-                                value={newProduct.stock}
+                            <select
+                                name="lineup_id"
+                                value={newProduct.lineup_id}
                                 onChange={handleInputChange}
+                                required
                                 className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#306f65]" // focus:border-transparent 제거
-                                placeholder="재고 수량"
-                            />
+                            >
+                                <option value="">라인업 선택</option>
+                                {lineup.map(cat => (
+                                    <option key={cat.lineup_id} value={cat.lineup_id}>{cat.name}</option>
+                                ))}
+                            </select>
                         </div>
+
 
                         {/* ⭐⭐ 3단계 카테고리 이름 필드 추가 ⭐⭐ */}
                         <div>
@@ -173,7 +194,6 @@ const ProductAddForm = ({
                                 유튜브 URL
                             </label>
                             <input
-                                type="url" // URL 타입으로 변경
                                 name="youtube_url"
                                 value={newProduct.youtube_url}
                                 onChange={handleInputChange}

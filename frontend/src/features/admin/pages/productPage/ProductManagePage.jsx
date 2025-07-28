@@ -13,6 +13,7 @@ const ProductManagePage = () => {
     const {
         products,
         categories,
+        lineup,
         loading, // ⭐ loading 상태 받아옴 ⭐
         error,   // ⭐ error 상태 받아옴 ⭐
         searchKeyword,
@@ -61,6 +62,7 @@ const ProductManagePage = () => {
                     handleInputChange={handleInputChange}
                     handleAddProduct={handleAddProduct}
                     categories={categories}
+                    lineup={lineup}
                     // ⭐ ProductAddForm에 새 상품용 핸들러 및 상태, 그리고 error/loading 전달 ⭐
                     handleNewProductSmallFileChange={handleNewProductSmallFileChange} // ⭐ 올바른 prop 이름으로 전달 ⭐
                     handleNewProductLargeFileChange={handleNewProductLargeFileChange} // ⭐ 올바른 prop 이름으로 전달 ⭐
@@ -95,6 +97,7 @@ const ProductManagePage = () => {
                     <ProductList
                         products={displayProducts}
                         categories={categories}
+                        lineup={lineup}
                         editingProduct={editingProduct}
                         toggleEditMode={toggleEditMode}
                         handleEditInputChange={handleEditInputChange}

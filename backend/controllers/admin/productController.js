@@ -1,6 +1,7 @@
 // models에서 product 클래스 호출
 const Product = require('../../models/product');
 const Category = require('../../models/category');
+const LineUp = require('../../models/lineup');
 // Sequelize에서 제공하는 연산자
 const {Op} = require('sequelize');
 
@@ -203,7 +204,7 @@ exports.productMod = async (req, res) => {
   
     const productId = parseInt(req.params.productId);
     // ⭐⭐ sub2_category_name, youtube_url 필드 추가 ⭐⭐
-    const { name, price, category_id, memo, stock, small_photo, large_photo, brand, pick, origin, model_name, sub2_category_name, youtube_url } = req.body; 
+    const { name, price, category_id, memo, stock, small_photo, lineup_id, large_photo, brand, pick, origin, model_name, sub2_category_name, youtube_url } = req.body; 
 
     if (isNaN(productId)) {
         return res.status(400).json({ success: false, message: '유효하지 않은 상품 ID입니다.' });
@@ -263,10 +264,10 @@ exports.productMod = async (req, res) => {
     }
 
     // ⭐⭐ youtube_url 유효성 검사 추가 (선택 사항) ⭐⭐
-    if (youtube_url !== undefined && (typeof youtube_url !== 'string' || (youtube_url && youtube_url.length > 255))) {
+    if (youtube_url !== undefined && (typeof youtube_url !== 'string' || (youtube_url && youtube_url.length > 500))) {
         return res.status(400).json({
             success: false,
-            message: '유튜브 URL은 255자 이내의 문자열이어야 합니다.'
+            message: '유튜브 URL은 500자 이내의 문자열이어야 합니다.'
         });
     }
 
@@ -299,6 +300,7 @@ exports.productMod = async (req, res) => {
                 name,
                 price: parseInt(price),
                 category_id: parseInt(category_id),
+                lineup_id: parseInt(lineup_id),
                 memo: memo || null,
                 stock: stock ? parseInt(stock) : 0,
                 small_photo: small_photo || null,
@@ -394,7 +396,7 @@ exports.productStock = async (req,res) => {
 //------------------------------상품 추가------------------------------------------------
 exports.productAdd = async (req, res) => {
     // ⭐⭐ sub2_category_name, youtube_url 필드 추가 ⭐⭐
-    const { name, price, category_id, memo, stock, small_photo, large_photo, brand, origin, model_name, sub2_category_name, youtube_url } = req.body;
+    const { name, price, category_id, memo, stock, small_photo, lineup_id ,large_photo, brand, origin, model_name, sub2_category_name, youtube_url } = req.body;
     
     // 필수 입력 항목에 brand, origin 추가
     if (!name || !price || !category_id || !brand || !origin) {
@@ -450,10 +452,10 @@ exports.productAdd = async (req, res) => {
     }
 
     // ⭐⭐ youtube_url 유효성 검사 추가 (선택 사항) ⭐⭐
-    if (youtube_url !== undefined && (typeof youtube_url !== 'string' || (youtube_url && youtube_url.length > 255))) {
+    if (youtube_url !== undefined && (typeof youtube_url !== 'string' || (youtube_url && youtube_url.length > 500))) {
         return res.status(400).json({
             success: false,
-            message: '유튜브 URL은 255자 이내의 문자열이어야 합니다.'
+            message: '유튜브 URL은 500자 이내의 문자열이어야 합니다.'
         });
     }
     
@@ -462,6 +464,7 @@ exports.productAdd = async (req, res) => {
             name,
             price: parseInt(price),
             category_id: parseInt(category_id),
+            lineup_id: parseInt(lineup_id),
             memo: memo || null,
             stock: stock ? parseInt(stock) : 0,
             small_photo: small_photo || null,
@@ -718,3 +721,23 @@ exports.productDelete = async (req, res) => {
     }
 };
 //--------------------------------------상품 삭제-------------------------------------------
+
+
+exports.lineupAll = async (req, res) => {
+    try {
+        const lineup = await LineUp.findAll({
+            order: [['lineup_id', 'ASC']]
+        });
+        
+        res.status(200).json({
+            success: true,
+            data: lineup
+        });
+    } catch (error) {
+        console.error('라인업 조회 오류:', error); 
+        res.status(500).json({
+            success: false,
+            message: '라인업을 불러오는 도중 오류가 발생했습니다.'
+        });
+    }
+}

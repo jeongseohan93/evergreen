@@ -7,6 +7,7 @@ const DEFAULT_IMAGE_URL = '/images/default_product.png'; // 실제 경로에 맞
 const ProductList = ({
     products,
     categories,
+    lineup,
     editingProduct,
     toggleEditMode,
     handleEditInputChange,
@@ -30,6 +31,14 @@ const ProductList = ({
     const category = categories.find(cat => cat.category_id === Number(categoryId));
     return category ? category.name : '알 수 없음';
 };
+
+    const getLineupName = (lineupId) => {
+        if (!Array.isArray(lineup) || lineup.length === 0) {
+        return '알 수 없음 (목록 없음)';
+    }
+    const lineups = lineup.find(cat => cat.lineup_id === Number(lineupId));
+    return lineups ? lineups.name : '알 수 없음';
+    }
 
     const productPickDisplayMap = {
     'nothing': '선택 안 함',
@@ -79,6 +88,7 @@ const ProductList = ({
                     <th className="border border-gray-300 px-3 py-2 text-left text-sm font-semibold text-gray-700">모델명</th>
                     <th className="border border-gray-300 px-3 py-2 text-left text-sm font-semibold text-gray-700">가격</th>
                     <th className="border border-gray-300 px-3 py-2 text-left text-sm font-semibold text-gray-700">카테고리</th>
+                    <th className="border border-gray-300 px-3 py-2 text-left text-sm font-semibold text-gray-700">라인업</th>
                     {/* ⭐⭐ 추가: 세부 카테고리 헤더 ⭐⭐ */}
                     <th className="border border-gray-300 px-3 py-2 text-left text-sm font-semibold text-gray-700">세부 카테고리</th>
                     {/* ⭐⭐ 추가: 유튜브 URL 헤더 ⭐⭐ */}
@@ -217,6 +227,25 @@ const ProductList = ({
                                     </select>
                                 ) : (
                                     getCategoryName(product.category_id)
+                                )}
+                            </td>
+                            
+                            <td className="border border-gray-300 px-3 py-2 text-sm w-28">
+                                {isEditingRow(product.product_id) ? (
+                                    <select
+                                        name="lineup_id"
+                                        value={editingProduct.lineup_id || ''}
+                                        onChange={handleEditInputChange}
+                                        className="w-full min-w-0 px-2 py-1 border border-gray-300 rounded text-sm focus:outline-none focus:ring-1 focus:ring-[#306f65] overflow-auto"
+                                        style={{overflow: 'auto'}}
+                                    >
+                                        <option value="">선택</option>
+                                        {lineup.map(cat => (
+                                            <option key={cat.lineup_id} value={cat.lineup_id}>{cat.name}</option>
+                                        ))}
+                                    </select>
+                                ) : (
+                                    getLineupName(product.lineup_id)
                                 )}
                             </td>
 

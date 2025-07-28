@@ -48,7 +48,7 @@ class Product extends Model {
       },
       // ⭐️ 유튜브 링크를 저장할 youtube_url 컬럼 추가
       youtube_url: {
-        type: DataTypes.STRING(255), // 유튜브 임베드 URL을 저장할 예정
+        type: DataTypes.STRING(500), // 유튜브 임베드 URL을 저장할 예정
         allowNull: true, // 유튜브 링크가 없는 상품도 있을 수 있으므로
       },
       stock: {

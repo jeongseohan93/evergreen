@@ -11,12 +11,13 @@ import {
     uploadProductImage,
 } from '../../../api/productApi';
 
-import { fetchCategories as fetchCategoriesApi } from '../../../api/categoryApi';
+import { fetchCategories as fetchCategoriesApi, getLineUpApi } from '../../../api/categoryApi';
 
 
 const useProductManagement = () => {
     const [products, setProducts] = useState([]);
     const [categories, setCategories] = useState([]);
+    const [lineup, setLineup] = useState([]);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState('');
     const [searchKeyword, setSearchKeyword] = useState('');
@@ -30,6 +31,7 @@ const useProductManagement = () => {
         name: '', 
         price: '', 
         category_id: '', 
+        lineup_id: '',
         memo: '', 
         stock: '',
         small_photo: '',
@@ -97,17 +99,34 @@ const useProductManagement = () => {
         }
     }, []);
 
+    const getlineup = useCallback(async () => {
+        setError('');
+        try {
+            const response = await getLineUpApi();
+            if (response.success && Array.isArray(response.data)) {
+                setLineup(response.data);
+            } else {
+                setError(response.message || "카테고리 데이터를 불러왔으나 형식이 올바르지 않습니다.");
+                setLineup([]);
+            }
+        } catch (err) {
+            setError(err.response?.data?.message || '카테고리 목록을 불러오는 데 실패했습니다.');
+            setLineup([]);
+        }
+    }, []);
+
+
     const initialLoad = useCallback(async () => {
         setLoading(true);
         try {
-            await Promise.all([fetchAllProducts(), fetchCategories()]);
+            await Promise.all([fetchAllProducts(), fetchCategories(), getlineup()]);
         } catch (error) {
             console.error("초기 데이터 로드 중 오류 발생:", error);
             setError('초기 데이터 로드에 실패했습니다.');
         } finally {
             setLoading(false);
         }
-    }, [fetchAllProducts, fetchCategories]);
+    }, [fetchAllProducts, fetchCategories, getlineup]);
 
     useEffect(() => {
         initialLoad();
@@ -160,6 +179,7 @@ const useProductManagement = () => {
                 name: '', 
                 price: '', 
                 category_id: '', 
+                lineup_id:'',
                 memo: '', 
                 stock: '',
                 small_photo: '', 
@@ -296,7 +316,8 @@ const useProductManagement = () => {
                 setNewProduct({
                     name: '', 
                     price: '', 
-                    category_id: '', 
+                    category_id: '',
+                    lineup_id:'',
                     memo: '', 
                     stock: '',
                     small_photo: '', 
@@ -551,6 +572,7 @@ const useProductManagement = () => {
     return {
         products,
         categories,
+        lineup,
         loading,
         error,
         searchKeyword,

@@ -155,6 +155,11 @@ const ProductDetailPage = () => {
                 <div className="bg-white p-6 rounded-lg shadow-md mt-6">
                     <div id="detail-info" className="py-4">
                         <h2 className="text-xl font-semibold mb-4 border-b pb-2">DETAIL</h2>
+                        {product.youtube_url && (
+                        <div className="flex justify-center items-center p-4 mt-4">
+                            <div dangerouslySetInnerHTML={{ __html: product.youtube_url }} />
+                        </div>
+                        )}
                         {product.large_photo && (
                             <div className="flex justify-center items-center p-4 ">
                                 <img
@@ -164,20 +169,7 @@ const ProductDetailPage = () => {
                                 />
                             </div>
                         )}
-                        {product.youtube_url && (
-                        <div className="flex justify-center items-center p-4 mt-4">
-                            <iframe
-                                width="560"
-                                height="315"
-                                src={product.youtube_url}
-                                title={`${product.name} 유튜브 영상`}
-                                frameBorder="0"
-                                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                                referrerPolicy="strict-origin-when-cross-origin"
-                                allowFullScreen>
-                            </iframe>
-                        </div>
-                        )}
+                        
                         {!product.large_photo && (
                             <p className="text-gray-600">등록된 상세 이미지가 없습니다.</p>
                         )}

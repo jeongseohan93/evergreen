@@ -1,7 +1,7 @@
 // src/app/routes/adminRoutes.js
 
 //import { Outlet } from 'react-router-dom';
-import AdminOutlet from './adminOutlet'
+import AdminOutlet from './AdminOutlet'
 
 
 import DashboardPage from '@/features/admin/pages/DashBoardPage';

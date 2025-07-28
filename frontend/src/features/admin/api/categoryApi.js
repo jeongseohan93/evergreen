@@ -65,3 +65,22 @@ export const updateCategory = async (categoryId, newName) => {
     throw error;
   }
 };
+
+export const getLineUpApi = async () => {
+  try {
+    const response = await apiService.get('/admin/product/lineup'); 
+    return { 
+      success: response.data.success, 
+      data: response.data.data || [], 
+      message: response.data.message 
+    }; 
+  } catch (error) {
+    console.error('API Error: getLineUpApi', error.response?.data || error.message);
+
+    return { 
+      success: false, 
+      message: error.response?.data?.message || '라인업 불러오기 실패', 
+      data: [] 
+    }; 
+  }
+}
