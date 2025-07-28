@@ -66,8 +66,8 @@ function Header() {
   </li>
 
   <li>
-    <Link to='/community/support' className="text-white hover:text-blue-400 transition-colors duration-200">
-      고객센터
+    <Link to='/board/notice' className="text-white hover:text-blue-400 transition-colors duration-200">
+      공지사항
     </Link>
   </li>
 </ul>

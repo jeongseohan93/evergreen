@@ -6,6 +6,7 @@ import { addToCartApi } from '../../cart/api/cartApi';
 import { format } from 'date-fns';
 import ProductReview from '../components/ProductReview/ProductReview';
 import { Header, Footer, SubHeader } from '@/app';
+import MenuBar from '@/shared/components/layouts/MenuBar/MenuBar';
 import DetailPageHeader from '../components/ui/DetailPageHeader/DetailPageHeader';
 import ImageGallery from '../components/ui/ImageGallery/ImageGallery';
 import ProductInfo from '../components/ui/ProductInfo/ProductInfo';
@@ -117,6 +118,7 @@ const ProductDetailPage = () => {
         <div className="min-h-screen flex flex-col bg-gray-50">
             <Header />
             <SubHeader />
+            <MenuBar />
             <div className="flex-grow container mx-auto px-4 py-8">
                 <DetailPageHeader title={product.name} />
 

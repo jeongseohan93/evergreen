@@ -3,6 +3,7 @@
 import React, { useState } from 'react';
 import { Header, Footer, SubHeader } from '@/app';
 import { useNavigate } from 'react-router-dom';
+import MenuBar from '@/shared/components/layouts/MenuBar/MenuBar';
 // API 함수들이 정의된 파일이라고 가정합니다.
 import { sendVerificationCode, resetPasswordWithCode } from '../api/authApi';
 
@@ -63,6 +64,7 @@ const FindPasswordPage = () => {
         <>
             <Header />
             <SubHeader />
+            <MenuBar />
             <main className="flex flex-col items-center justify-center w-full px-4 py-16 bg-white">
                 <div className="w-full max-w-2xl">
                     <div className="flex border-b border-gray-300">

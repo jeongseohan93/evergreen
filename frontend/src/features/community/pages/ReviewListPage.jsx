@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Header, SubHeader, Footer } from '@/app';
+import MenuBar from '@/shared/components/layouts/MenuBar/MenuBar';
 import BoardList from '@/shared/components/board/SharedBoardList';
 import SharedBoardDetail from '@/shared/components/board/SharedBoardDetail';
 import SharedMessageBox from '../../../shared/components/board/SharedMessageBox';
@@ -186,6 +187,7 @@ const ReviewListPage = () => {
     <>
       <Header />
       <SubHeader />
+      <MenuBar />
       <main className="flex flex-col items-center justify-center min-h-[400px] bg-white">
         <div className="w-full max-w-7xl">
           {!showForm && !showDetail && (

@@ -1,5 +1,6 @@
 import React, { useState, useRef } from 'react'; // useRef 추가
 import { Header, SubHeader, Footer } from '@/app';
+import MenuBar from '@/shared/components/layouts/MenuBar/MenuBar';
 import { HiOutlineUser, HiOutlineLockClosed, HiOutlineEye, HiOutlinePhone, HiOutlineMapPin, HiOutlineEyeSlash} from 'react-icons/hi2'
 import { signUp } from '../api/authApi';
 import { useNavigate } from 'react-router-dom';
@@ -76,6 +77,7 @@ const SignPage = () => {
         <>
             <Header/>
             <SubHeader/>
+            <MenuBar />
             <div className="flex items-center justify-center p-4">
                 <form onSubmit={handleSubmit} className="p-8 w-full max-w-md space-y-4">
                     <div>

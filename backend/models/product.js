@@ -26,6 +26,7 @@ class Product extends Model {
       },
       memo: {
         type: DataTypes.TEXT,
+        allowNull: true,
       },
       origin: {
         type: DataTypes.STRING(100), // 예: '대한민국', '중국', '일본' 등

@@ -1,9 +1,11 @@
 import { useState, useEffect } from 'react';
+import { useSelector } from 'react-redux';
 import { EvergreenLogo, CartIcon, UserActionIcons, WishlistIcon, SearchBar } from '@/shared';
 import { apiService } from '@/shared';
 import { FaSearch } from 'react-icons/fa';
 import Logo from '../../shared/components/layouts/Header/Logo';
 
+import { selectIsLoggedIn } from '../../features/authentication/authSlice';
 
 function SubHeader() {
     // 검색창 표시 여부만 관리합니다. 애니메이션 상태는 더 이상 필요 없습니다.
@@ -11,6 +13,7 @@ function SubHeader() {
     const [cartItemCount, setCartItemCount] = useState(0);
     const [wishlistItemCount, setWishlistItemCount] = useState(0);
 
+    const isLoggedIn = useSelector(selectIsLoggedIn); 
     const fetchCartItemCount = async () => {
         try {
             console.log("API에서 장바구니 개수를 불러오는 중...");
@@ -68,9 +71,18 @@ function SubHeader() {
     };
 
     useEffect(() => {
-        fetchCartItemCount();
-        fetchWishlistItemCount();
-    }, []);
+        // 로그인 상태에 따라 개수를 다시 불러오거나 0으로 설정
+        if (isLoggedIn) {
+            console.log("로그인 상태 변화 감지: 로그인됨. 장바구니/위시리스트 개수 새로고침.");
+            fetchCartItemCount();
+            fetchWishlistItemCount();
+        } else {
+            // 로그아웃 상태일 때 개수를 0으로 초기화
+            console.log("로그인 상태 변화 감지: 로그아웃됨. 장바구니/위시리스트 개수 0으로 초기화.");
+            setCartItemCount(0);
+            setWishlistItemCount(0);
+        }
+    }, [isLoggedIn]);
 
     // 검색창 토글 함수는 단순히 showSearchBar 상태를 반전시킵니다.
     const toggleSearchBar = () => {

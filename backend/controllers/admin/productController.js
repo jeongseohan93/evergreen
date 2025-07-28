@@ -255,21 +255,30 @@ exports.productMod = async (req, res) => {
         });
     }
 
-    // ⭐⭐ sub2_category_name 유효성 검사 추가 (선택 사항) ⭐⭐
-    if (sub2_category_name !== undefined && (typeof sub2_category_name !== 'string' || (sub2_category_name && sub2_category_name.length > 100))) {
+    if (sub2_category_name != null) { 
+    
+    if (typeof sub2_category_name !== 'string') { 
         return res.status(400).json({
             success: false,
-            message: '세부 카테고리 이름은 100자 이내의 문자열이어야 합니다.'
+            message: '세부 카테고리 이름은 문자열 형식이어야 합니다.'
         });
     }
+    
+    if (sub2_category_name.length > 100) { 
+        return res.status(400).json({
+            success: false,
+            message: '세부 카테고리 이름은 100자 이내여야 합니다.'
+        });
+    }
+}
 
     // ⭐⭐ youtube_url 유효성 검사 추가 (선택 사항) ⭐⭐
-    if (youtube_url !== undefined && (typeof youtube_url !== 'string' || (youtube_url && youtube_url.length > 500))) {
-        return res.status(400).json({
-            success: false,
-            message: '유튜브 URL은 500자 이내의 문자열이어야 합니다.'
-        });
-    }
+    if (youtube_url !== null && youtube_url !== undefined && (typeof youtube_url !== 'string' || (youtube_url.length > 500))) {
+    return res.status(400).json({
+        success: false,
+        message: '유튜브 URL은 500자 이내의 문자열이어야 합니다.'
+    });
+}
 
     const validPickValues = [
         'nothing',
@@ -443,21 +452,31 @@ exports.productAdd = async (req, res) => {
         });
     }
 
-    // ⭐⭐ sub2_category_name 유효성 검사 추가 (선택 사항) ⭐⭐
-    if (sub2_category_name !== undefined && (typeof sub2_category_name !== 'string' || (sub2_category_name && sub2_category_name.length > 100))) {
+    
+    if (sub2_category_name != null) { 
+    
+    if (typeof sub2_category_name !== 'string') { 
         return res.status(400).json({
             success: false,
-            message: '세부 카테고리 이름은 100자 이내의 문자열이어야 합니다.'
+            message: '세부 카테고리 이름은 문자열 형식이어야 합니다.'
         });
     }
+    
+    if (sub2_category_name.length > 100) { 
+        return res.status(400).json({
+            success: false,
+            message: '세부 카테고리 이름은 100자 이내여야 합니다.'
+        });
+    }
+}
 
     // ⭐⭐ youtube_url 유효성 검사 추가 (선택 사항) ⭐⭐
-    if (youtube_url !== undefined && (typeof youtube_url !== 'string' || (youtube_url && youtube_url.length > 500))) {
-        return res.status(400).json({
-            success: false,
-            message: '유튜브 URL은 500자 이내의 문자열이어야 합니다.'
-        });
-    }
+    if (youtube_url !== null && youtube_url !== undefined && (typeof youtube_url !== 'string' || (youtube_url.length > 500))) {
+    return res.status(400).json({
+        success: false,
+        message: '유튜브 URL은 500자 이내의 문자열이어야 합니다.'
+    });
+}
     
     try {
         const newProduct = await Product.create({

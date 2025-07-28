@@ -2,7 +2,8 @@ import React, { useState, useEffect, useCallback } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import { useSelector } from 'react-redux';
-
+import { Header, SubHeader, Footer } from '@/app';
+import MenuBar from '@/shared/components/layouts/MenuBar/MenuBar';
 // 컴포넌트 임포트
 import OrderHeader from "../components/OrderHeader";
 import OrderSummaryLeft from "../components/OrderSummaryLeft";
@@ -272,54 +273,61 @@ function OrderPage() {
     }
 
     return (
+        <>
+        <Header />
+        <SubHeader />
+        <MenuBar />
         <div className="flex flex-col items-center min-h-screen bg-gray-100 p-4 font-inter">
-            <div className="flex flex-col md:flex-row w-full max-w-6xl gap-6">
-                <div className="flex-1 bg-white p-8 rounded-2xl shadow-lg">
-                    <h1 className="text-2xl font-bold text-gray-800 mb-6 text-center">주문/배송 정보</h1>
+                <div className="flex flex-col md:flex-row w-full max-w-6xl gap-6">
+                    <div className="flex-1 bg-white p-8 rounded-2xl shadow-lg">
+                        <h1 className="text-2xl font-bold text-gray-800 mb-6 text-center">주문/배송 정보</h1>
 
-                    <OrderSummaryLeft
-                        items={items}
-                        addressForm={addressForm}
-                        handleAddressChange={handleAddressChange}
-                        additionalRequests={additionalRequests}
-                        handleAdditionalRequestsChange={handleAdditionalRequestsChange}
-                        onQuantityChange={handleItemQuantityChange}
-                        onOpenAddressListModal={handleOpenAddressListModal}     // ⭐⭐ 기존 배송지 목록 모달 열기 함수 전달 ⭐⭐
-                        onOpenAddressSearchModal={handleOpenAddressSearchModal} // ⭐⭐ 주소 검색 모달 열기 함수 전달 ⭐⭐
+                        <OrderSummaryLeft
+                            items={items}
+                            addressForm={addressForm}
+                            handleAddressChange={handleAddressChange}
+                            additionalRequests={additionalRequests}
+                            handleAdditionalRequestsChange={handleAdditionalRequestsChange}
+                            onQuantityChange={handleItemQuantityChange}
+                            onOpenAddressListModal={handleOpenAddressListModal}     // ⭐⭐ 기존 배송지 목록 모달 열기 함수 전달 ⭐⭐
+                            onOpenAddressSearchModal={handleOpenAddressSearchModal} // ⭐⭐ 주소 검색 모달 열기 함수 전달 ⭐⭐
+                        />
+
+                        <button
+                            className="w-full px-6 py-3 bg-indigo-600 text-white rounded-xl shadow-md hover:bg-indigo-700 transition duration-300 font-semibold text-lg mt-6"
+                            onClick={handleProceedToPayment}
+                            disabled={loading}
+                        >
+                            결제하기
+                        </button>
+                    </div>
+
+                    <div className="w-full md:w-1/3 md:sticky md:top-4 h-fit">
+                        <PaymentSummarySticky payment={paymentSummaryProps} />
+                    </div>
+                </div>
+
+                {/* ⭐⭐ 배송지 목록 모달 렌더링 ⭐⭐ */}
+                {isAddressListModalOpen && (
+                    <ShippingAddressListModal
+                        isOpen={isAddressListModalOpen}
+                        onClose={handleCloseAddressListModal}
+                        onSelectAddress={handleSelectAddressFromListModal}
+                        userUuid={userUuid}
                     />
+                )}
 
-                    <button
-                        className="w-full px-6 py-3 bg-indigo-600 text-white rounded-xl shadow-md hover:bg-indigo-700 transition duration-300 font-semibold text-lg mt-6"
-                        onClick={handleProceedToPayment}
-                        disabled={loading}
-                    >
-                        결제하기
-                    </button>
-                </div>
-
-                <div className="w-full md:w-1/3 md:sticky md:top-4 h-fit">
-                    <PaymentSummarySticky payment={paymentSummaryProps} />
-                </div>
+                {/* ⭐⭐ 주소 검색 모달 렌더링 ⭐⭐ */}
+                {isAddressSearchModalOpen && (
+                    <AddressSearchModal
+                        onSelect={handleSelectAddressFromSearchModal}
+                        onClose={handleCloseAddressSearchModal}
+                    />
+                )}
             </div>
-
-            {/* ⭐⭐ 배송지 목록 모달 렌더링 ⭐⭐ */}
-            {isAddressListModalOpen && (
-                <ShippingAddressListModal
-                    isOpen={isAddressListModalOpen}
-                    onClose={handleCloseAddressListModal}
-                    onSelectAddress={handleSelectAddressFromListModal}
-                    userUuid={userUuid}
-                />
-            )}
-
-            {/* ⭐⭐ 주소 검색 모달 렌더링 ⭐⭐ */}
-            {isAddressSearchModalOpen && (
-                <AddressSearchModal
-                    onSelect={handleSelectAddressFromSearchModal}
-                    onClose={handleCloseAddressSearchModal}
-                />
-            )}
-        </div>
+            <Footer />
+        </>
+        
     );
 }
 

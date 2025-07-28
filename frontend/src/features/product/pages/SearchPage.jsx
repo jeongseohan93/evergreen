@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { useSearchParams, useNavigate } from "react-router-dom";
 import { Header, Footer, SubHeader} from '@/app';
+import MenuBar from '@/shared/components/layouts/MenuBar/MenuBar';
 import ProductSearchBar from "../components/ProductSearchBar/ProductSearchBar";
 import Pagination from "@/shared/components/Pagination/Pagination";
 
@@ -83,7 +84,7 @@ const SearchPage = () => {
         <>
             <Header />
             <SubHeader />
-
+            <MenuBar />
             <ProductSearchBar
                 value={searchTermInInput}
                 onSearch={handleSearchExecution}

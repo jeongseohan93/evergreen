@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { Header, Footer, SubHeader} from '@/app';
+import MenuBar from '@/shared/components/layouts/MenuBar/MenuBar';
 import { useNavigate } from 'react-router-dom';
 import { findId } from '../api/authApi'
 
@@ -32,7 +33,7 @@ const FindIdPage = () => {
             {/* Header와 Footer는 기존 코드를 유지합니다. */}
             <Header />
             <SubHeader />
-
+            <MenuBar />
             {/* 메인 컨텐츠 영역 */}
             <main className="flex flex-col items-center justify-center w-full px-4 py-16 bg-white">
                 <div className="w-full max-w-2xl">

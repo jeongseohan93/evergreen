@@ -1,5 +1,6 @@
 import React from 'react';
 import { Header, Footer, SubHeader} from '@/app';
+import MenuBar from '@/shared/components/layouts/MenuBar/MenuBar';
 import EvergreenLogo from '../../../assets/image/everlogo.png';
 import { PageHeader } from '@/shared';
 
@@ -8,6 +9,7 @@ const AboutPage = () => {
         <>
             <Header />
             <SubHeader />
+            <MenuBar />
             <PageHeader title = '회사소개' />
             <section className="py-12 px-4">
                 <div className="max-w-6xl mx-auto bg-white rounded-xl p-10 border border-gray-300">

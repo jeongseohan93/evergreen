@@ -1,6 +1,7 @@
 import { useEffect } from 'react';
 import { useNavigate  } from 'react-router-dom';
 import { useSlelector } from 'react-redux';
+import MenuBar from '@/shared/components/layouts/MenuBar/MenuBar';
 
 import { Header, SubHeader, Footer } from '@/app';
 import LoginForm from '../components/LoginForm'
@@ -19,6 +20,7 @@ const LoginPage = () => {
         <>
             <Header />
             <SubHeader />
+            <MenuBar />
 
             <div className="flex justify-center items-center min-h-[500px] bg-white">
                 <LoginForm />

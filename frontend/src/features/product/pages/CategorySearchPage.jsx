@@ -3,6 +3,7 @@
 import React, { useEffect, useState, useCallback } from "react";
 import { useSearchParams, useNavigate } from "react-router-dom";
 import { Header, Footer, SubHeader} from '@/app';
+import MenuBar from '@/shared/components/layouts/MenuBar/MenuBar';
 import BrandHeader from "../components/BrandHeader/BrandHeader"; 
 import Pagination from "@/shared/components/Pagination/Pagination";
 
@@ -151,6 +152,7 @@ const CategorySearchPage = () => {
         <>
             <Header />
             <SubHeader />
+            <MenuBar />
             <BrandHeader
                 title={headerTitle} 
                 currentCategoryName={categoryName} 

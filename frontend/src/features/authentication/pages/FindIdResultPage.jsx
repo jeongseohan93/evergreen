@@ -3,6 +3,7 @@
 import React, { useEffect } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { Header, Footer, SubHeader } from '@/app';
+import MenuBar from '@/shared/components/layouts/MenuBar/MenuBar';
 
 const FindIdResultPage = () => {
     const location = useLocation();
@@ -25,6 +26,7 @@ const FindIdResultPage = () => {
         <>
             <Header />
             <SubHeader />
+            <MenuBar />
             <main className="flex flex-col items-center justify-center w-full px-4 py-16 bg-white">
                 <div className="w-full max-w-2xl text-center">
                     <h1 className="text-3xl font-bold mb-4">아이디 찾기 결과</h1>

@@ -4,12 +4,14 @@ import React from 'react';
 import { Outlet } from 'react-router-dom';
 import MyPageNavGrid from '../components/MypageNavGrid'; // 메뉴 컴포넌트
 import { Header, SubHeader, Footer } from '@/app';
+import MenuBar from '@/shared/components/layouts/MenuBar/MenuBar';
 
 const MyPageLayout = () => {
     return (
         <>
             <Header />
             <SubHeader />
+            <MenuBar />
             <div className="container mx-auto p-4 md:p-8 max-w-6xl">
                 {/* 마이페이지 공통 메뉴 */}
                 <MyPageNavGrid />
