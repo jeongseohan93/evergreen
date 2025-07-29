@@ -11,7 +11,7 @@ import { toast } from 'react-toastify';
 
 
 // className prop을 받도록 수정
-const ProductCard = ({ productId, imageUrl, name, price = 0, hashtags = [], likes = 0, productDetails = {}, className }) => { // <--- className prop 추가
+const ProductCard = ({ productId, imageUrl, name, price = 0, hashtags, likes = 0, productDetails = {}, className }) => { // <--- className prop 추가
     const navigate = useNavigate();
 
     const handleCardClick = () => {
@@ -111,9 +111,7 @@ const ProductCard = ({ productId, imageUrl, name, price = 0, hashtags = [], like
                 <h3 className="text-lg font-bold text-gray-900 mb-2 truncate">{name}</h3>
                 <p className="text-xl font-extrabold text-gray-800 mb-3">{price.toLocaleString()}원</p>
                 <div className="text-sm text-gray-500 truncate">
-                    {hashtags.map((tag) => (
-                        <span key={tag} className="mr-2">{`#${tag}`}</span>
-                    ))}
+                    {`#${hashtags}`}
                 </div>
             </div>
         </div>

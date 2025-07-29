@@ -2,7 +2,7 @@
 import React from 'react';
 import { Link } from 'react-router-dom'; // Link 컴포넌트를 사용해 SPA 내에서 이동
 
-import LogoImage from '../../../../image/logo.png'; 
+import LogoImage from '@/assets/image/logo.png'; 
 
 const Logo = () => {
   return (

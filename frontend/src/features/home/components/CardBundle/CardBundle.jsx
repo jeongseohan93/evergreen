@@ -1,67 +1,80 @@
-// src/components/CardBundle.jsx (컴포넌트 이름 변경 권장)
-
 import React, { useState, useEffect } from 'react';
 import { ProductCard } from '@/shared';
-import { getProductsByPickApi } from '../../api/HomeProduct'; // API 함수 이름 변경 가정
+import { getProductsByPickApi } from '../../api/HomeProduct';
 
-const CardBundle = ({ pickValue }) => { // pickValue prop을 받도록 수정
+const CardBundle = ({ pickValue }) => {
     const [products, setProducts] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
 
     useEffect(() => {
         const fetchProducts = async () => {
-            if (!pickValue) { // pickValue가 없으면 API 호출 안 함 (초기 로딩 방지 등)
+            // pickValue가 없으면 API 호출을 건너뛰고 상품 목록을 비웁니다.
+            if (!pickValue) {
                 setLoading(false);
+                setProducts([]); 
                 return;
             }
 
             setLoading(true);
-            setError(null); // 새로운 fetch 시작 전 에러 초기화
+            setError(null); // 새로운 데이터 로딩 시작 전에 에러 상태를 초기화합니다.
 
             try {
-                // pickValue를 인자로 전달하여 API 호출
-                const result = await getProductsByPickApi(pickValue); 
-                
-                if (result.success) {
-                    setProducts(result.data);
+            const result = await getProductsByPickApi(pickValue);
+
+
+            if (result.success) {
+                const fetchedProducts = Array.isArray(result.data) ? result.data.map(product => ({
+                    ...product,
+                    memo: product.memo || '', // 이 로직이 제대로 작동하는지 확인
+                    small_photo: product.small_photo || '/images/default_product.png'
+                })) : [];
+
+               
+                console.log(`[CardBundle Debug 1] Processed fetchedProducts (after memo handling):`, fetchedProducts);
+                setProducts(fetchedProducts);
                 } else {
-                    // 서버에서 메시지를 제대로 받지 못하거나, 기본 메시지 사용
-                    throw new Error(result.message || `${pickValue} 상품 데이터 로딩 실패`);
+                    // API 호출은 성공했으나, 서버 응답이 success: false인 경우
+                    throw new Error(result.message || `${pickValue} 상품 데이터를 불러오지 못했습니다.`);
                 }
             } catch (err) {
-                setError(err.message);
+                // 네트워크 오류 또는 예상치 못한 예외가 발생한 경우
+                console.error(`상품 데이터 로딩 중 오류 발생 (${pickValue}):`, err); // 개발자용 상세 에러 로그
+                setError(`상품 데이터를 불러오는 데 실패했습니다: ${err.message}`); // 사용자에게 보여줄 메시지
             } finally {
                 setLoading(false);
             }
         };
 
         fetchProducts();
-    }, [pickValue]); // pickValue가 변경될 때마다 이 Effect가 다시 실행되도록 추가
+    }, [pickValue]); // pickValue 값이 변경될 때마다 이 Effect가 다시 실행됩니다.
 
     if (loading) {
-        return <div className="p-4 text-center">상품을 불러오는 중...</div>;
+        return <div className="p-4 text-center">상품을 불러오는 중입니다...</div>;
     }
 
     if (error) {
         return <div className="p-4 text-center text-red-500">오류: {error}</div>;
     }
 
+    // 로딩도 아니고 에러도 없는데 상품이 하나도 없을 경우 메시지를 표시합니다.
+    if (products.length === 0) {
+        return <div className="p-4 text-center">등록된 상품이 없습니다.</div>;
+    }
+
     return (
         <div className="p-4 flex flex-wrap justify-center gap-10">
-            {products.length > 0 ? (
-                products.map(product => (
-                    <ProductCard 
-                        key={product.product_id}
-                        productId={product.product_id} 
-                        imageUrl={product.small_photo || '/images/default_product.png'}
-                        name={product.name}
-                        price={product.price}
-                    />
-                ))
-            ) : (
-                <div className="p-4 text-center">등록된 상품이 없습니다.</div>
-            )}
+            {products.map(product => (
+                <ProductCard 
+                    key={product.product_id}
+                    productId={product.product_id}
+                    imageUrl={product.small_photo} // 이미 위에서 기본값 처리됨
+                    name={product.name}
+                    price={product.price}
+                    hashtags={product.memo} // 이제 memo는 항상 문자열(빈 문자열 포함)일 것입니다.
+                    likes={0} // 'likes' 필드가 백엔드 데이터에 없다면 여기에 기본값을 유지합니다.
+                />
+            ))}
         </div>
     );
 };

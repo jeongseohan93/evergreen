@@ -18,15 +18,19 @@ exports.getProductsByPathVariable = async (req, res) => {
             });
         }
 
+       
+
         // 3. 추출된 pickValue를 사용하여 상품 필터링
         const products = await Product.findAll({
             where: {
                 pick: pickValue // 'best' 대신 URL에서 추출한 pickValue 사용
             },
-            order: [['updated_at', 'DESC']] // 최신 업데이트 순 정렬 유지
+            order: [['updated_at', 'DESC']], // 최신 업데이트 순 정렬 유지
+            attributes: ['product_id', 'name', 'price', 'small_photo', 'brand', 'model_name', 'sub2_category_name', 'memo'] 
         });
-
-        // 4. 성공 응답 반환
+         console.log(products);
+        
+        // 4. 성공 응답 반환 
         res.status(200).json({
             success: true,
             data: products
@@ -135,7 +139,7 @@ exports.searchProducts = async (req, res) => {
             limit: itemsPerPage,        
             offset: offset,             
             order: [['created_at', 'DESC']], 
-            attributes: ['product_id', 'name', 'price', 'small_photo', 'brand', 'model_name', 'sub2_category_name'] 
+            attributes: ['product_id', 'name', 'price', 'small_photo', 'brand', 'model_name', 'sub2_category_name', 'memo'] 
         });
 
         console.log('상품 조회 성공. 총 개수:', count);

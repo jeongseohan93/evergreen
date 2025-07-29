@@ -104,6 +104,7 @@ const ProductDisplayBox = ({ activeCategory }) => {
                     imageUrl={product.small_photo || '/images/default_product.png'}
                     name={product.name}
                     price={product.price}
+                    hashtags={product.memo}
                     // 너비 클래스 조정: 한 줄에 4개를 명확히 목표
                     // 기본 (모바일): 1개
                     // sm: 2개

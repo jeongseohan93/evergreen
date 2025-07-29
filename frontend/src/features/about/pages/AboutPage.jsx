@@ -1,7 +1,7 @@
 import React from 'react';
 import { Header, Footer, SubHeader} from '@/app';
 import MenuBar from '@/shared/components/layouts/MenuBar/MenuBar';
-import EvergreenLogo from '../../../assets/image/everlogo.png';
+import EvergreenLogo from '../../../assets/image/logo.png';
 import { PageHeader } from '@/shared';
 
 const AboutPage = () => {

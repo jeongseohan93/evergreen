@@ -21,7 +21,8 @@ const SearchPage = () => {
     const [searchTermInInput, setSearchTermInInput] = useState(''); 
     const [searchResults, setSearchResults] = useState([]); 
     const [totalResults, setTotalResults] = useState(0); 
-    const [currentPage, setCurrentPage] = useState(1); 
+    const [currentPage, setCurrentPage] = useState(1);
+    const [totalPages, setTotalPages] = useState(1); 
     const itemsPerPage = 12;
 
     const [loading, setLoading] = useState(false);
@@ -48,16 +49,20 @@ const SearchPage = () => {
                     if (response.success) {
                         setSearchResults(response.products);
                         setTotalResults(response.totalCount);
+                        setCurrentPage(response.currentPage);
+                        setTotalPages(response.totalPages); 
                     } else {
                         setError(response.message || '검색 결과를 불러오는데 실패했습니다.');
                         setSearchResults([]);
                         setTotalResults(0);
+                        setTotalPages(1);
                     }
                 } catch (err) {
                     console.error("상품 검색 오류:", err);
                     setError(err.response?.data?.message || '상품 검색 중 서버 오류가 발생했습니다.');
                     setSearchResults([]);
                     setTotalResults(0);
+                    setTotalPages(1);
                 } finally {
                     setLoading(false);
                 }
@@ -108,7 +113,7 @@ const SearchPage = () => {
                                         name={product.name}
                                         price={product.price}
                                         // ⭐️ hashtags는 Product 모델의 brand 필드를 배열로 만들어 사용 (없으면 빈 배열)
-                                        hashtags={product.brand ? [product.brand] : []} 
+                                        hashtags={product.memo} 
                                         likes={0} // 좋아요 데이터가 없으므로 0으로 설정 (또는 pick 필드를 사용)
                                     />
                                 ))}
@@ -128,6 +133,7 @@ const SearchPage = () => {
                             currentPage={currentPage}
                             totalItems={totalResults}
                             itemsPerPage={itemsPerPage}
+                            totalPages={totalPages} 
                             onPageChange={handlePageChange}
                         />
                     </div>

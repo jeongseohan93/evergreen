@@ -14,38 +14,31 @@ const fs = require('fs'); // fs 모듈 추가
 // 이미지 저장 설정
 const storage = multer.diskStorage({
     destination: function (req, file, cb) {
-        // ⭐ 여기가 중요! 서버의 실제 파일 시스템 경로를 지정해야 해.
-        // 보통 서버 파일이 있는 위치를 기준으로 '../uploads'나 './uploads' (현재 디렉토리 기준)
-        // 아니면 path.join(process.cwd(), 'uploads')를 사용해서 프로젝트 루트에 명시적으로 지정
-        // 지금은 'uploads/'로 되어 있는데, 서버가 실행되는 위치 기준으로 'uploads' 폴더가 없으면 에러남.
-        // 서버가 실행되는 파일의 위치를 기준으로 path.join(__dirname, 'uploads') 또는
-        // path.join(__dirname, '..', 'uploads') (만약 이 파일이 routes 폴더 안에 있다면)
-        // 으로 바꾸는 걸 추천.
-        // 또는 가장 확실한 방법: process.cwd()는 터미널에서 node 명령을 실행한 디렉토리.
         const uploadDir = path.join(process.cwd(), 'uploads');
-        console.log('파일 저장 시도 경로 (백엔드):', uploadDir); // ⭐ 이 로그를 추가해봐! ⭐
+        console.log('파일 저장 시도 경로 (백엔드):', uploadDir);
 
-        // 혹시 'uploads' 폴더가 없다면 자동으로 생성하는 로직 (선택 사항)
         if (!fs.existsSync(uploadDir)) {
-            fs.mkdirSync(uploadDir, { recursive: true }); // recursive: true는 상위 폴더도 함께 생성
+            fs.mkdirSync(uploadDir, { recursive: true });
         }
 
         cb(null, uploadDir);
     },
     filename: function (req, file, cb) {
-        // ⭐ 이 부분이 핵심! 파일 이름 생성 로직 수정 ⭐
-        const originalname = file.originalname;
-        const extension = path.extname(originalname); // .png, .jpg 등 확장자
-        const basename = path.basename(originalname, extension); // 확장자를 제외한 파일 이름
+        // ⭐⭐ 이 부분이 핵심 수정입니다 ⭐⭐
+        // 1. file.originalname을 Buffer로 읽고 UTF-8로 다시 인코딩 시도
+        //    일부 브라우저는 filename을 latin1 (ISO-8859-1)로 인코딩하여 보낼 수 있기 때문에 필요합니다.
+        const decodedOriginalname = Buffer.from(file.originalname, 'latin1').toString('utf8');
+
+        const extension = path.extname(decodedOriginalname); // .png, .jpg 등 확장자
+        const basename = path.basename(decodedOriginalname, extension); // 확장자를 제외한 파일 이름 (한글 포함)
 
         // 파일명 중복을 피하기 위해 타임스탬프와 랜덤 문자열을 조합
         const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
 
-        // 최종 파일 이름: 원본 이름_타임스탬프.확장자 또는 타임스탬프.확장자
+        // 최종 파일 이름: 원본 이름_타임스탬프.확장자
         const newFileName = `${basename}-${uniqueSuffix}${extension}`;
-        // 또는 간단히: const newFileName = `${Date.now()}-${uniqueSuffix}${extension}`; // 이렇게 해도 됨
 
-        console.log('생성될 파일 이름 (백엔드):', newFileName); // ⭐ 이 로그도 추가해봐! ⭐
+        console.log('생성될 파일 이름 (백엔드):', newFileName);
         cb(null, newFileName);
     }
 });
@@ -139,11 +132,14 @@ exports.productAll = async (req, res) => {
             products = await Product.findAll({
                 where: {
                     category_id: parsedCategoryId // 파싱된 categoryId 사용
-                }
+                },
+                order: [['product_id', 'DESC']] 
             });
         } else {
             // categoryId가 없으면 모든 상품 조회
-            products = await Product.findAll();
+            products = await Product.findAll({
+                order: [['product_id', 'DESC']] 
+            });
         }
             
         // 성공적인 처리라는 의미(200)를 클라이언트에게 알리는 역할

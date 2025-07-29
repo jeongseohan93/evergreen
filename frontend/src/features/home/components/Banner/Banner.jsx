@@ -43,7 +43,7 @@ const Banner = () => {
     if (banners.length > 0) {
       const interval = setInterval(() => {
         setCurrentSlide((prev) => (prev + 1) % banners.length);
-      }, 1000); // 1초마다 변경
+      }, 10000); // 10초마다 변경
       return () => clearInterval(interval);
     }
   }, [banners.length]); // banners.length가 변경될 때마다 useEffect 재실행 (자동 슬라이드 활성화 위함)
@@ -72,7 +72,7 @@ const Banner = () => {
 
   return (
     // min-h-[400px] (최소 높이) 또는 h-[400px] (고정 높이) 추가
-    <div className="relative w-full overflow-hidden rounded-lg shadow-lg min-h-[400px]"> 
+    <div className="relative w-full overflow-hidden rounded-lg shadow-lg min-h-[450px]"> 
       {/* 배너 이미지 렌더링 */}
       {banners.map((banner, index) => (
         <div

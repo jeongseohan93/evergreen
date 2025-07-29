@@ -23,7 +23,8 @@ const CategorySearchPage = () => {
 
     const [searchResults, setSearchResults] = useState([]); 
     const [totalResults, setTotalResults] = useState(0); 
-    const [currentPage, setCurrentPage] = useState(1);      
+    const [currentPage, setCurrentPage] = useState(1);
+    const [totalPages, setTotalPages] = useState(1);      
     const itemsPerPage = 12; 
 
     const [loading, setLoading] = useState(false);
@@ -58,17 +59,20 @@ const CategorySearchPage = () => {
                     if (response.success) {
                         setSearchResults(response.products);
                         setTotalResults(response.totalCount);
-                        setCurrentPage(response.currentPage); 
+                        setCurrentPage(response.currentPage);
+                        setTotalPages(response.totalPages); 
                     } else {
                         setError(response.message || '검색 결과를 불러오는데 실패했습니다.');
                         setSearchResults([]);
                         setTotalResults(0);
+                        setTotalPages(1); 
                     }
                 } catch (err) { 
                     console.error("카테고리 상품 검색 오류:", err);
                     setError(err.response?.data?.message || '카테고리 상품 검색 중 서버 오류가 발생했습니다.');
                     setSearchResults([]);
                     setTotalResults(0);
+                    setTotalPages(1);
                 } finally {
                     setLoading(false);
                 }
@@ -178,7 +182,7 @@ const CategorySearchPage = () => {
                                         imageUrl={product.small_photo} 
                                         name={product.name}
                                         price={product.price}
-                                        hashtags={product.brand ? [product.brand] : []} 
+                                        hashtags={product.memo} 
                                         likes={0} 
                                     />
                                 ))}
@@ -197,6 +201,7 @@ const CategorySearchPage = () => {
                             currentPage={currentPage}
                             totalItems={totalResults}
                             itemsPerPage={itemsPerPage}
+                            totalPages={totalPages} 
                             onPageChange={handlePageChange}
                         />
                     </div>
