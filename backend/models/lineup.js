@@ -19,6 +19,10 @@ class Lineup extends Model {
           type: DataTypes.STRING(100),
           allowNull: false,
         },
+        /* parent_id: {
+          type: DataTypes.INTEGER,
+          allowNull: true,
+        }, */
       },
       {
         sequelize,

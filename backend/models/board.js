@@ -34,14 +34,6 @@ class Board extends Model {
       reply: {
         type: DataTypes.TEXT,
       },
-      like_count: {
-        type: DataTypes.INTEGER,
-        defaultValue: 0,
-      },
-      hate_count: {
-        type: DataTypes.INTEGER,
-        defaultValue: 0,
-      },
       content: {
         type: DataTypes.JSON,
       },

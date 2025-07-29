@@ -22,10 +22,6 @@ class Report extends Model {
         type: DataTypes.JSON, //JSON 형식: 사진과 글을 번갈아가면서 순서대로 저장
         allowNull: false,
       },
-      photo: {
-        type: DataTypes.STRING(255),
-        allowNull: true
-      },
       created_at: {
         type: DataTypes.DATE,
         allowNull: false,
