@@ -6,7 +6,7 @@ const { isNotLoggedIn, isLoggedIn } = require('../middlewares/index'); // jwt토
 const { idcheckr, signup, login, logout, findId, sendVerificationCode, resetPasswordWithCode} = require('../controllers/authController'); // 로그인 요청 처리 컨트롤러
 
 const { isjwt } = require('../utils/isjwt'); // JWT 토큰 생성 및 검증 유틸리티
-const { sendToken } = require('../controllers/sendController');
+const { sendToken, meToken } = require('../controllers/sendController');
 const jwt  =require('jsonwebtoken');
 const router = express.Router(); // 라우터 인스턴스 생성 (각 요청 경로를 모듈화하여 관리하기 위함)
 const { User } = require('../models');
@@ -48,11 +48,13 @@ router.post('/login', isNotLoggedIn, login, isjwt, sendToken);
 router.post('/me', async (req, res) => { // async 추가
     try {
       const token = req.cookies.access_token;
+
       if (!token) {
         return res.status(200).json({ isLoggedIn: false, user: null, role: null });
       }
   
       const decoded = jwt.verify(token, process.env.JWT_SECRET);
+
 
       // 토큰에 저장된 정보로 사용자 데이터를 DB에서 조회
       const user = await User.findOne({ 
@@ -77,6 +79,7 @@ router.post('/me', async (req, res) => { // async 추가
        
       });
 
+
     } catch (err) {
       // 토큰이 유효하지 않은 경우 (만료, 위조 등)
       console.error("JWT 검증 실패:", err.message);
@@ -98,6 +101,9 @@ router.post('/findid', findId);
 router.post('/checkemailsent', sendVerificationCode);
 
 router.post('/reset-password', resetPasswordWithCode);
+
+router.get('/me', meToken);
+
 
 module.exports = router; // 라우터 객체를 외부 모듈에서 사용할 수 있도록 내보냄 
 

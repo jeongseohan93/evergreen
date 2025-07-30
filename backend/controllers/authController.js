@@ -123,6 +123,7 @@ exports.login = (req, res, next) => {
     req.user = user;
     next(); // 다음 미들웨어로 이동
   })(req, res, next); // passport.authenticate는 미들웨어가 아닌 함수이므로 즉시 실행(괄호 위치 매우 중요)
+
 };
 
 
