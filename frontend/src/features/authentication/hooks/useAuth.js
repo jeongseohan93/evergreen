@@ -1,6 +1,6 @@
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
-import { loginAsync, selectIsLoggedIn, selectUser, selectRole, selectStatus, selectError, logoutAsync } from "../authSlice";
+import { loginAsync, selectIsLoggedIn, selectUser, selectRole, selectStatus, selectError } from "../authSlice";
 
 export const useAuth = () => {
     const dispatch = useDispatch();
@@ -11,7 +11,9 @@ export const useAuth = () => {
     const role = useSelector(selectRole);
     const status = useSelector(selectStatus);
     const error = useSelector(selectError);
-
+ console.log("[useAuth Hook] user object from Redux:", user);
+    console.log("[useAuth Hook] user_uuid from Redux user object:", user?.user_uuid);
+     
     const handleLogin = async (loginInfo) => {
         if (status === "loading") return;
     
@@ -24,16 +26,18 @@ export const useAuth = () => {
                 navigate("/");
             }
         } else if (loginAsync.rejected.match(resultAction)) {
+            const errorMsg = resultAction?.payload?.message || "로그인 실패";
+            alert(errorMsg);
             console.error("로그인 실패");
+        }
     }
 
-}
-return {
-    isLoggedIn,
-    user,
-    role,
-    status,
-    error,
-    login: handleLogin,
-};
+    return {
+        isLoggedIn,
+        user,
+        role,
+        status,
+        error,
+        login: handleLogin,
+    };
 }

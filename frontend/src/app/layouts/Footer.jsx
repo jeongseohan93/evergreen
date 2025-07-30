@@ -1,6 +1,6 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { footerLinks, footerCommunity } from '@/shared';
+import { footerLinks, footerCommunity, footerBoard } from '@/shared';
 
 function Footer() {
   return (

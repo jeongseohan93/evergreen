@@ -1,22 +1,29 @@
-// 배송 현황, 배송 완료 여부, 배송 취소, 택배 추적
+// 배송 현황, 배송 완료 여부, 배송 취소
 const Order = require('../../models/order');
 const OrderItem = require('../../models/orderItem');
 const User = require('../../models/user');
 const Product = require('../../models/product');
-const axios = require('axios');
+// const axios = require('axios'); // 삭제
 
 // 모든 주문의 배송 현황 조회
 exports.getAllDeliveries = async (req, res) => {
     try {
         // 먼저 기본 orders 데이터만 가져오기
         const orders = await Order.findAll({
-            order: [['created_at', 'DESC']]
+            order: [['created_at', 'DESC']],
+            include: [{
+                model: User,
+                attributes: ['name', 'phone', 'email'],
+            }],
         });
 
         console.log('Found orders:', orders.length); // 디버깅용
 
+        // User가 존재하는 주문만 필터링
+        const filteredOrders = orders.filter(order => order.User);
+
         // 지연 배송 판단 로직 추가
-        const ordersWithDelayInfo = orders.map(order => {
+        const ordersWithDelayInfo = filteredOrders.map(order => {
             const orderDate = new Date(order.created_at);
             const today = new Date();
             const daysDiff = Math.floor((today - orderDate) / (1000 * 60 * 60 * 24));
@@ -94,71 +101,6 @@ exports.updateDeliveryStatus = async (req, res) => {
             success: false,
             message: '배송 상태 업데이트 중 오류가 발생했습니다.'
         });
-    }
-};
-
-// 택배 추적 (무료 API 사용)
-exports.trackParcel = async (req, res) => {
-    const { tracking_number, carrier } = req.query;
-
-    if (!tracking_number) {
-        return res.status(400).json({
-            success: false,
-            message: '운송장 번호는 필수입니다.'
-        });
-    }
-
-    try {
-        // TrackingMore API 사용 (무료 티어)
-        const response = await axios.get(`https://api.trackingmore.com/v2/trackings/realtime`, {
-            params: {
-                tracking_number: tracking_number,
-                carrier_code: carrier || 'korea-post' // 기본값으로 우체국
-            },
-            headers: {
-                'Trackingmore-Api-Key': process.env.TRACKINGMORE_API_KEY || 'test_api_key'
-            }
-        });
-
-        if (response.data && response.data.data) {
-            res.status(200).json({
-                success: true,
-                data: response.data.data
-            });
-        } else {
-            res.status(404).json({
-                success: false,
-                message: '택배 추적 정보를 찾을 수 없습니다.'
-            });
-        }
-    } catch (error) {
-        console.error('택배 추적 오류:', error);
-        
-        // API 키가 없거나 무료 티어 초과 시 모의 데이터 반환
-        if (error.response && error.response.status === 401) {
-            res.status(200).json({
-                success: true,
-                data: {
-                    tracking_number: tracking_number,
-                    carrier: carrier || 'korea-post',
-                    status: 'in_transit',
-                    events: [
-                        {
-                            time: new Date().toISOString(),
-                            location: '서울특별시',
-                            status: '배송 중',
-                            description: '배송이 진행 중입니다.'
-                        }
-                    ]
-                },
-                message: '모의 데이터입니다. 실제 API 키를 설정하세요.'
-            });
-        } else {
-            res.status(500).json({
-                success: false,
-                message: '택배 추적 중 오류가 발생했습니다.'
-            });
-        }
     }
 };
 
@@ -247,3 +189,53 @@ exports.cancelDelivery = async (req, res) => {
         });
     }
 };
+
+// 주문(배송) 정보 전체 수정
+exports.updateDeliveryInfo = async (req, res) => {
+    const { id } = req.params;
+    const { total_amount, tracking_number, delivery_company, status } = req.body;
+
+    if (!id) {
+        return res.status(400).json({
+            success: false,
+            message: '주문 ID는 필수입니다.'
+        });
+    }
+
+    try {
+        const order = await Order.findByPk(id);
+        if (!order) {
+            return res.status(404).json({
+                success: false,
+                message: '해당 주문을 찾을 수 없습니다.'
+            });
+        }
+
+        // 값이 있으면 수정
+        if (total_amount !== undefined) order.total_amount = total_amount;
+        if (tracking_number !== undefined) order.tracking_number = tracking_number;
+        if (delivery_company !== undefined) order.delivery_company = delivery_company;
+        if (status !== undefined) order.status = status;
+
+        await order.save();
+
+        res.status(200).json({
+            success: true,
+            message: '배송 정보가 성공적으로 수정되었습니다.',
+            data: {
+                order_id: order.order_id,
+                total_amount: order.total_amount,
+                tracking_number: order.tracking_number,
+                delivery_company: order.delivery_company,
+                status: order.status
+            }
+        });
+    } catch (error) {
+        console.error('배송 정보 수정 오류:', error);
+        res.status(500).json({
+            success: false,
+            message: '배송 정보 수정 중 오류가 발생했습니다.'
+        });
+    }
+};
+

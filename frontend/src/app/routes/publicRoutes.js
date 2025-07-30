@@ -1,30 +1,38 @@
 // src/app/routes/publicRoutes.js
 import LoginPage from '@/features/authentication/pages/LoginPage';
-import RegisterPage from '@/features/authentication/pages/RegisterPage' // 회원가입 페이지가 있다면
 import FindIdPage from '@/features/authentication/pages/FindIdPage';
+import FindIdResultPage from '@/features/authentication/pages/FindIdResultPage';
 import FindPasswordPage from '@/features/authentication/pages/FindPasswordPage';
-
+import SignPage from '@/features/authentication/pages/SignPage';
+import SignAgreePage from '@/features/authentication/pages/SignAgreePage';
 import PrivacyPolicyPage from '@/features/policies/pages/PrivacyPolicyPage';
 import HelpPage from '@/features/policies/pages/HelpPage';
 import TermsPage from '@/features/policies/pages/TermsPage';
-
 import AboutPage from "@/features/about/pages/AboutPage";
-
-import NoticeListPage from '@/features/community/pages/notice/NoticeListPage';
-import EventPage from '@/features/community/pages/event/EventPage';
-import SupportListPage from '@/features/community/pages/support/SupportListPage'; 
-import ReviewListPage from '@/features/community/pages/review/ReviewListPage';
-
 import SearchPage from '@/features/product/pages/SearchPage';
-
-
-
+import ProductDetailPage from '@/features/product/pages/ProductDetailPage';
+import CategorySearchPage from '@/features/product/pages/CategorySearchPage';
+import NoticeListPage from '@/features/community/pages/NoticeListPage'; //공지사항 목록
+import ReviewListPage from '@/features/community/pages/ReviewListPage'; //리뷰(사용후기) 목록
+import FreeListPage from '@/features/community/pages/FreeListPage'; //자유게시판 목록
+import QnaListPage from '@/features/community/pages/QnaListPage'; //질문게시판 목록
+import ReportListPage from '@/features/community/pages/ReportListPage'; //조행기게시판 목록
+import BoardPlaceholderPage from '@/features/board/pages/BoardPlaceholderPage';
+import {CheckoutPage} from '@/features/order/pages/Checkout';
+import {FailPage} from '@/features/order/pages/Fail';
+import {SuccessPage} from '@/features/order/pages/Success';
 
 const publicRoutes = [
   { path: '/login', element: <LoginPage /> },
-  { path: '/register', element: <RegisterPage />},
+  { path: '/signagree', element: <SignAgreePage />},
+  { path: '/signup', element: <SignPage/>},
   { path: '/findid', element: <FindIdPage /> },
+  { path: "/findid/result", element: <FindIdResultPage />}, 
   { path: '/findpassword', element: <FindPasswordPage /> },
+   { path: '/order/toss', element: <CheckoutPage /> },
+  { path: '/toss/pay/fail', element: <FailPage /> },
+  { path: '/toss/success', element: <SuccessPage /> },
+
 
   {
     path: '/about',
@@ -42,17 +50,37 @@ const publicRoutes = [
     ],
   },
   
+
   { path: '/search', element: <SearchPage /> },
+  { path: "/products/:productId", element: <ProductDetailPage /> },
 
   {
-    path: '/community',
+    path: '/board',
     children: [
       { path: 'notice', element: <NoticeListPage /> },
       { path: 'review', element: <ReviewListPage /> },
-      { path: 'support', element: <SupportListPage /> },
-      { path: 'event', element: <EventPage />},
+      { path: 'free', element: <FreeListPage /> },
+      { path: 'qna', element: <QnaListPage />},
+      { path: 'report', element: <ReportListPage />}, // 조행기게시판: /board/report
     ],
   },
+
+
+  { path: '/search', element: <SearchPage /> },
+  { path: "/products/:productId", element: <ProductDetailPage /> },
+
+  {
+    path: '/board',
+    children: [
+      { path: 'notice', element: <BoardPlaceholderPage title="공지사항" /> },
+      { path: 'qna', element: <BoardPlaceholderPage title="Q&A" /> },
+      { path: 'review', element: <BoardPlaceholderPage title="리뷰" /> },
+      { path: 'free', element: <BoardPlaceholderPage title="자유게시판" /> },
+      { path: 'trip', element: <BoardPlaceholderPage title="조행기게시판" /> },
+    ],
+  },
+
+  {path: '/categorysearch', element: <CategorySearchPage />},
 
 ];
 

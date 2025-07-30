@@ -1,48 +1,158 @@
-// 상품 현황, 재고 변경
-// 상품 추가, 상품 수정, 상품 삭제
-// 일일 매출, 월간 매출, 연간 매출
-
-
-
 // models에서 product 클래스 호출
 const Product = require('../../models/product');
 const Category = require('../../models/category');
+const LineUp = require('../../models/lineup');
 // Sequelize에서 제공하는 연산자
 const {Op} = require('sequelize');
 
+
+// --- 이미지 추가를 위해 새로 추가되는 부분 시작 ---------------------------------------------
+const multer = require('multer');
+const path = require('path');
+const fs = require('fs'); // fs 모듈 추가
+
+// 이미지 저장 설정
+const storage = multer.diskStorage({
+    destination: function (req, file, cb) {
+        const uploadDir = path.join(process.cwd(), 'uploads');
+        console.log('파일 저장 시도 경로 (백엔드):', uploadDir);
+
+        if (!fs.existsSync(uploadDir)) {
+            fs.mkdirSync(uploadDir, { recursive: true });
+        }
+
+        cb(null, uploadDir);
+    },
+    filename: function (req, file, cb) {
+        // ⭐⭐ 이 부분이 핵심 수정입니다 ⭐⭐
+        // 1. file.originalname을 Buffer로 읽고 UTF-8로 다시 인코딩 시도
+        //    일부 브라우저는 filename을 latin1 (ISO-8859-1)로 인코딩하여 보낼 수 있기 때문에 필요합니다.
+        const decodedOriginalname = Buffer.from(file.originalname, 'latin1').toString('utf8');
+
+        const extension = path.extname(decodedOriginalname); // .png, .jpg 등 확장자
+        const basename = path.basename(decodedOriginalname, extension); // 확장자를 제외한 파일 이름 (한글 포함)
+
+        // 파일명 중복을 피하기 위해 타임스탬프와 랜덤 문자열을 조합
+        const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
+
+        // 최종 파일 이름: 원본 이름_타임스탬프.확장자
+        const newFileName = `${basename}-${uniqueSuffix}${extension}`;
+
+        console.log('생성될 파일 이름 (백엔드):', newFileName);
+        cb(null, newFileName);
+    }
+});
+
+// 파일 필터 설정 (선택 사항): 이미지 파일만 허용
+const fileFilter = (req, file, cb) => {
+    // 파일의 MIME 타입이 'image/'로 시작하는지 확인
+    if (file.mimetype.startsWith('image/')) {
+        cb(null, true); // 허용
+    } else {
+        // 이미지 파일이 아니면 에러 반환
+        cb(new Error('이미지 파일만 업로드할 수 있습니다.'), false);
+    }
+};
+
+// multer 업로드 미들웨어 생성
+// storage 설정과 fileFilter를 적용
+const upload = multer({
+    storage: storage,
+    fileFilter: fileFilter,
+    // 파일 크기 제한 (선택 사항): 5MB로 제한
+    limits: {
+        fileSize: 5 * 1024 * 1024 // 5 MB
+    }
+});
+
+// 상품 이미지 업로드 API
+// 'productImage'는 프론트엔드에서 FormData에 추가할 필드 이름과 동일해야 해.
+exports.uploadProductImage = (req, res) => {
+    // upload.single('productImage') 미들웨어를 실행
+    upload.single('productImage')(req, res, function (err) {
+        if (err instanceof multer.MulterError) {
+            // Multer 에러 발생 시 (예: 파일 크기 초과, 잘못된 필드 이름 등)
+            return res.status(400).json({
+                success: false,
+                message: `파일 업로드 오류: ${err.message}`
+            });
+        } else if (err) {
+            // 그 외 알 수 없는 에러 발생 시
+            return res.status(500).json({
+                success: false,
+                message: `서버 오류: ${err.message}`
+            });
+        }
+
+        // 파일이 업로드되지 않았을 경우
+        if (!req.file) {
+            return res.status(400).json({
+                success: false,
+                message: '이미지 파일을 선택해주세요.'
+            });
+        }
+
+        // 파일 업로드 성공 시
+        // 클라이언트에서 접근할 수 있는 이미지 URL을 생성
+        // 예: /uploads/1678888888888-image.jpg
+        const imageUrl = `/uploads/${req.file.filename}`;
+
+        res.status(200).json({
+            success: true,
+            message: '이미지 업로드 성공!',
+            imageUrl: imageUrl, // 업로드된 이미지의 URL 반환
+            fileName: req.file.filename // 파일명도 함께 반환 (필요시)
+        });
+    });
+};
+// --- 새로 추가되는 부분 끝 ------------------------------------------------------------------
 
 //------------------------------상품 현황------------------------------------------------
 // product는 user 로그인시에도 재사용 가능성있음.
 // 모든 상품 조회
 exports.productAll = async (req, res) => {
+    // URL 쿼리에서 categoryId를 가져옵니다.
+    const categoryId = req.query.categoryId; 
 
-    try{
-               // product 전체 조회
-            const products = await Product.findAll();
+    try {
+        let products;
+        
+        // categoryId가 존재하면 해당 카테고리로 필터링
+        if (categoryId) {
+            // categoryId가 숫자인지 확인 (선택 사항, 프론트에서 항상 숫자로 보낸다면 생략 가능)
+            const parsedCategoryId = parseInt(categoryId, 10);
+            if (isNaN(parsedCategoryId)) {
+                return res.status(400).json({
+                    success: false,
+                    message: '유효하지 않은 카테고리 ID입니다.'
+                });
+            }
+
+            // 특정 category_id에 해당하는 상품만 조회
+            products = await Product.findAll({
+                where: {
+                    category_id: parsedCategoryId // 파싱된 categoryId 사용
+                },
+                order: [['product_id', 'DESC']] 
+            });
+        } else {
+            // categoryId가 없으면 모든 상품 조회
+            products = await Product.findAll({
+                order: [['product_id', 'DESC']] 
+            });
+        }
             
-                // 성공적인 처리라는 의미(200)를 클라이언트에게 알리는 역할
-            res.status(200).json({
-                // success를 명시하여 프론트에서 if(success)식으로 사용가능함.
-                // 프론트의 일관성 유지를 위해 필요
-
-                                // 프론트에서의 예시
-                                /* const res = await fetch('/api/products');
-                                const result = await res.json();
-
-                            if (result.success) {
-                             renderProductList(result.data);
-                                } else {
-                                     showError(result.message);
-                                        } */
-                success : true,
-                data : products
-            });
+        // 성공적인 처리라는 의미(200)를 클라이언트에게 알리는 역할
+        res.status(200).json({
+            success: true,
+            data: products
+        });
     } catch (error) {
-            console.error('상품 조회 오류' , error);
-            res.status(500).json({
-                success : false,
-                message : '상품을 불러오는 도중 오류가 발생했습니다.'
-            });
+        console.error('상품 조회 오류', error);
+        res.status(500).json({
+            success: false,
+            message: '상품을 불러오는 도중 오류가 발생했습니다.'
+        });
     }
 };
 
@@ -58,16 +168,18 @@ if(!keyword){
     });
 }
 try {
-                                // 검색결과가 다수일 수도 있기 때문에 findAll 사용함
     const result = await Product.findAll({
         where : {
-            name : {
-                    // Sequelize에서 제공하는 Op 연산자를 사용함.
-                    // Op.like는 부분일치하는 경우
-                    [Op.like] : `%${keyword}%`
+            [Op.or]: [ // OR 연산자를 사용하여 여러 필드 검색
+                { name: { [Op.like]: `%${keyword}%` } },
+                { brand: { [Op.like]: `%${keyword}%` } }, // 브랜드 검색 추가
+                { origin: { [Op.like]: `%${keyword}%` } }, // 원산지 검색 추가
+                { model_name: { [Op.like]: `%${keyword}%` } }, // 모델명 검색 추가
+                // ⭐⭐ 세부 카테고리 이름 검색 추가 ⭐⭐
+                { sub2_category_name: { [Op.like]: `%${keyword}%` } }
+            ]
         }
-    }
-});
+    });
     res.status(200).json({
         success : true,
         data : result,
@@ -83,16 +195,172 @@ try {
 //------------------------------상품 현황------------------------------------------------
 
 
+//---------------------------------상품 수정---------------------------------------------
+exports.productMod = async (req, res) => {
+  
+    const productId = parseInt(req.params.productId);
+    // ⭐⭐ sub2_category_name, youtube_url 필드 추가 ⭐⭐
+    const { name, price, category_id, memo, stock, small_photo, lineup_id, large_photo, brand, pick, origin, model_name, sub2_category_name, youtube_url } = req.body; 
+
+    if (isNaN(productId)) {
+        return res.status(400).json({ success: false, message: '유효하지 않은 상품 ID입니다.' });
+    }
+
+    // 필수 입력 항목에 brand, origin 추가
+    if (!name || !price || !category_id || !brand || !origin) {
+        return res.status(400).json({
+            success: false,
+            message: '상품명, 가격, 카테고리, 브랜드, 원산지는 필수 입력 항목입니다.'
+        });
+    }
+
+    if (isNaN(price) || price <= 0) {
+        return res.status(400).json({
+            success: false,
+            message: '가격은 0보다 큰 숫자여야 합니다.'
+        });
+    }
+
+    if (stock !== undefined && (isNaN(stock) || stock < 0)) {
+        return res.status(400).json({
+            success: false,
+            message: '재고는 0 이상의 숫자여야 합니다.'
+        });
+    }
+
+    if (brand !== undefined && (typeof brand !== 'string' || (brand && brand.length > 100))) {
+        return res.status(400).json({
+            success: false,
+            message: '브랜드명은 100자 이내의 문자열이어야 합니다.'
+        });
+    }
+
+    // origin 유효성 검사 추가 (필수 입력)
+    if (origin !== undefined && (typeof origin !== 'string' || !origin.trim() || origin.length > 100)) {
+        return res.status(400).json({
+            success: false,
+            message: '원산지는 100자 이내의 필수 문자열이어야 합니다.'
+        });
+    }
+
+    // model_name 유효성 검사 추가 (선택 사항)
+    if (model_name !== undefined && (typeof model_name !== 'string' || (model_name && model_name.length > 100))) {
+        return res.status(400).json({
+            success: false,
+            message: '모델명은 100자 이내의 문자열이어야 합니다.'
+        });
+    }
+
+    if (sub2_category_name != null) { 
+    
+    if (typeof sub2_category_name !== 'string') { 
+        return res.status(400).json({
+            success: false,
+            message: '세부 카테고리 이름은 문자열 형식이어야 합니다.'
+        });
+    }
+    
+    if (sub2_category_name.length > 100) { 
+        return res.status(400).json({
+            success: false,
+            message: '세부 카테고리 이름은 100자 이내여야 합니다.'
+        });
+    }
+}
+
+    // ⭐⭐ youtube_url 유효성 검사 추가 (선택 사항) ⭐⭐
+    if (youtube_url !== null && youtube_url !== undefined && (typeof youtube_url !== 'string' || (youtube_url.length > 500))) {
+    return res.status(400).json({
+        success: false,
+        message: '유튜브 URL은 500자 이내의 문자열이어야 합니다.'
+    });
+}
+
+    const validPickValues = [
+        'nothing',
+        'evergreen-recommend',
+        'reel-recommend',
+        'popular-products',
+        'hard-bait',
+        'soft-bait',
+        'tackle-bag-small-items',
+        'new-products',
+        'restocked-products',
+        'general-recommend',
+    ];
+    const finalPick = validPickValues.includes(pick) ? pick : 'nothing';
+
+    try {
+        const product = await Product.findByPk(productId);
+
+        if (!product) {
+            return res.status(404).json({
+                success: false,
+                message: '해당 상품을 찾을 수 없습니다.'
+            });
+        }
+
+        const [updatedRowsCount] = await Product.update(
+            {
+                name,
+                price: parseInt(price),
+                category_id: parseInt(category_id),
+                lineup_id: parseInt(lineup_id),
+                memo: memo || null,
+                stock: stock ? parseInt(stock) : 0,
+                small_photo: small_photo || null,
+                large_photo: large_photo || null,
+                brand: brand || null,
+                origin: origin || null, // origin 필드 업데이트
+                model_name: model_name || null, // model_name 필드 업데이트
+                // ⭐⭐ sub2_category_name, youtube_url 필드 업데이트 ⭐⭐
+                sub2_category_name: sub2_category_name || null,
+                youtube_url: youtube_url || null,
+                pick: finalPick
+            },
+            {
+                where: { product_id: productId }
+            }
+        );
+
+        if (updatedRowsCount === 0) {
+            const updatedProduct = await Product.findByPk(productId);
+            return res.status(200).json({
+                success: true,
+                message: '상품 정보가 변경되지 않았습니다 (기존과 동일).',
+                data: updatedProduct
+            });
+        }
+
+        const updatedProduct = await Product.findByPk(productId);
+
+        res.status(200).json({
+            success: true,
+            message: '상품이 성공적으로 수정되었습니다.',
+            data: updatedProduct
+        });
+
+    } catch (error) {
+        console.error('상품 수정 오류:', error);
+        res.status(500).json({
+            success: false,
+            message: '상품 수정 중 오류가 발생했습니다.'
+        });
+    }
+};
+//---------------------------------상품 수정---------------------------------------------
 
 
-
+///////////
+///////////
+////////
+//////////리팩토링할때 이거 날리자.
 //------------------------------재고 변경------------------------------------------------
 
 exports.productStock = async (req,res) => {
 
 
     const { product_id , stock } = req.body;
-    // product와 stock의 data가 모두 들어오지 않았을 경우 차후 로직에서 문제가 생길 수 있어서 이 로직이 필요함.
     if(product_id === undefined || stock === undefined){
         return res.status(400).json({
             success : false,
@@ -102,10 +370,6 @@ exports.productStock = async (req,res) => {
 
 
     try {
-        // 해당 상품이 존재하는지 찾기
-                                    // findByPk는 테이블에서 product_id가 req.body.product_id랑 일치하는 '한 행'을 찾아준다.
-                                    // PK로 단일 조회할때에는 findOne보다 더 간결하고 직관적임
-                                    // Sequelize가 모델 정의시 primaryKey를 알고 있을때 사용 가능한 특수 메서드.
         const product = await Product.findByPk(product_id);
         if(!product){
             return res.status(404).json({
@@ -114,12 +378,9 @@ exports.productStock = async (req,res) => {
                 message : '해당 상품을 찾을 수 없습니다.'
             });
         }
-        // 재고 값 업데이트
         product.stock = stock;
         await product.save();
         res.status(200).json({
-            // success와 message의 경우 응답의 "상태 정보"에 해당되기 때문에 단일 값으로 충분하며, 
-            // data는 실제 비즈니스 데이터를 담기위한 공간이라 보통 객체나 배열로 더 복잡한 정보를 담음.
             success : true,
             message : '재고가 정상적으로 수정되었습니다.',
             data : {
@@ -139,17 +400,17 @@ exports.productStock = async (req,res) => {
 
 //------------------------------상품 추가------------------------------------------------
 exports.productAdd = async (req, res) => {
-    const { name, price, category_id, memo, stock, small_photo, large_photo } = req.body;
+    // ⭐⭐ sub2_category_name, youtube_url 필드 추가 ⭐⭐
+    const { name, price, category_id, memo, stock, small_photo, lineup_id ,large_photo, brand, origin, model_name, sub2_category_name, youtube_url } = req.body;
     
-    // 필수 필드 검증
-    if (!name || !price || !category_id) {
+    // 필수 입력 항목에 brand, origin 추가
+    if (!name || !price || !category_id || !brand || !origin) {
         return res.status(400).json({
             success: false,
-            message: '상품명, 가격, 카테고리는 필수 입력 항목입니다.'
+            message: '상품명, 가격, 카테고리, 브랜드, 원산지는 필수 입력 항목입니다.'
         });
     }
     
-    // 가격이 숫자인지 확인
     if (isNaN(price) || price <= 0) {
         return res.status(400).json({
             success: false,
@@ -157,24 +418,78 @@ exports.productAdd = async (req, res) => {
         });
     }
     
-    // 재고가 숫자인지 확인 (재고가 제공된 경우)
     if (stock !== undefined && (isNaN(stock) || stock < 0)) {
         return res.status(400).json({
             success: false,
             message: '재고는 0 이상의 숫자여야 합니다.'
         });
     }
+
+    if (brand !== undefined && typeof brand !== 'string' || (brand && brand.length > 100)) {
+        return res.status(400).json({
+            success: false,
+            message: '브랜드명은 100자 이내의 문자열이어야 합니다.'
+        });
+    }
+
+    // origin 유효성 검사 추가 (필수 입력)
+    if (origin !== undefined && (typeof origin !== 'string' || !origin.trim() || origin.length > 100)) {
+        return res.status(400).json({
+            success: false,
+            message: '원산지는 100자 이내의 필수 문자열이어야 합니다.'
+        });
+    }
+
+    // model_name 유효성 검사 추가 (선택 사항)
+    if (model_name !== undefined && (typeof model_name !== 'string' || (model_name && model_name.length > 100))) {
+        return res.status(400).json({
+            success: false,
+            message: '모델명은 100자 이내의 문자열이어야 합니다.'
+        });
+    }
+
+    
+    if (sub2_category_name != null) { 
+    
+    if (typeof sub2_category_name !== 'string') { 
+        return res.status(400).json({
+            success: false,
+            message: '세부 카테고리 이름은 문자열 형식이어야 합니다.'
+        });
+    }
+    
+    if (sub2_category_name.length > 100) { 
+        return res.status(400).json({
+            success: false,
+            message: '세부 카테고리 이름은 100자 이내여야 합니다.'
+        });
+    }
+}
+
+    // ⭐⭐ youtube_url 유효성 검사 추가 (선택 사항) ⭐⭐
+    if (youtube_url !== null && youtube_url !== undefined && (typeof youtube_url !== 'string' || (youtube_url.length > 500))) {
+    return res.status(400).json({
+        success: false,
+        message: '유튜브 URL은 500자 이내의 문자열이어야 합니다.'
+    });
+}
     
     try {
-        // 새 상품 생성
         const newProduct = await Product.create({
             name,
             price: parseInt(price),
             category_id: parseInt(category_id),
+            lineup_id: parseInt(lineup_id),
             memo: memo || null,
             stock: stock ? parseInt(stock) : 0,
             small_photo: small_photo || null,
-            large_photo: large_photo || null
+            large_photo: large_photo || null,
+            brand: brand || null,
+            origin: origin || null, // origin 필드 추가
+            model_name: model_name || null, // model_name 필드 추가
+            // ⭐⭐ sub2_category_name, youtube_url 필드 추가 ⭐⭐
+            sub2_category_name: sub2_category_name || null,
+            youtube_url: youtube_url || null
         });
         
         res.status(201).json({
@@ -188,7 +503,7 @@ exports.productAdd = async (req, res) => {
             success: false,
             message: '상품 추가 중 오류가 발생했습니다.'
         });
-    }
+    };
 };
 //------------------------------상품 추가------------------------------------------------
 
@@ -204,7 +519,7 @@ exports.getCategories = async (req, res) => {
             data: categories
         });
     } catch (error) {
-        console.error('카테고리 조회 오류:', error);
+        console.error('카테고리 조회 오류:', error); 
         res.status(500).json({
             success: false,
             message: '카테고리를 불러오는 도중 오류가 발생했습니다.'
@@ -217,7 +532,6 @@ exports.getCategories = async (req, res) => {
 exports.addCategory = async (req, res) => {
     const { name } = req.body;
     
-    // 필수 필드 검증
     if (!name || !name.trim()) {
         return res.status(400).json({
             success: false,
@@ -226,7 +540,6 @@ exports.addCategory = async (req, res) => {
     }
     
     try {
-        // 중복 카테고리명 확인
         const existingCategory = await Category.findOne({
             where: { name: name.trim() }
         });
@@ -238,7 +551,6 @@ exports.addCategory = async (req, res) => {
             });
         }
         
-        // 새 카테고리 생성
         const newCategory = await Category.create({
             name: name.trim()
         });
@@ -270,7 +582,6 @@ exports.deleteCategory = async (req, res) => {
     }
     
     try {
-        // 카테고리 존재 확인
         const category = await Category.findByPk(category_id);
         if (!category) {
             return res.status(404).json({
@@ -279,7 +590,6 @@ exports.deleteCategory = async (req, res) => {
             });
         }
         
-        // 해당 카테고리에 속한 상품이 있는지 확인
         const productsInCategory = await Product.count({
             where: { category_id: parseInt(category_id) }
         });
@@ -291,7 +601,6 @@ exports.deleteCategory = async (req, res) => {
             });
         }
         
-        // 카테고리 삭제
         await category.destroy();
         
         res.status(200).json({
@@ -307,3 +616,143 @@ exports.deleteCategory = async (req, res) => {
     }
 };
 //------------------------------카테고리 삭제------------------------------------------------
+
+
+//------------------------------카테고리 수정 (새로 추가)------------------------------------------------
+exports.updateCategory = async (req, res) => {
+    const { category_id } = req.params;
+    const { name } = req.body;
+
+    if (!category_id || isNaN(category_id)) {
+        return res.status(400).json({
+            success: false,
+            message: '유효한 카테고리 ID가 필요합니다.'
+        });
+    }
+    if (!name || !name.trim()) {
+        return res.status(400).json({
+            success: false,
+            message: '새 카테고리명은 필수 입력 항목입니다.'
+        });
+    }
+
+    try {
+        const [updatedRowsCount] = await Category.update(
+            { name: name.trim() },
+            { where: { category_id: parseInt(category_id) } }
+        );
+
+        if (updatedRowsCount === 0) {
+            const existingCategory = await Category.findByPk(category_id);
+            if (!existingCategory) {
+                return res.status(404).json({
+                    success: false,
+                    message: '해당 카테고리를 찾을 수 없습니다.'
+                });
+            } else {
+                return res.status(200).json({
+                    success: true,
+                    message: '카테고리 이름이 변경되지 않았습니다 (기존과 동일).',
+                    data: existingCategory
+                });
+            }
+        }
+        
+        const updatedCategory = await Category.findByPk(category_id);
+
+        res.status(200).json({
+            success: true,
+            message: '카테고리 이름이 성공적으로 수정되었습니다.',
+            data: updatedCategory
+        });
+
+    } catch (error) {
+        console.error('카테고리 수정 오류:', error);
+        if (error.name === 'SequelizeUniqueConstraintError') {
+            return res.status(400).json({
+                success: false,
+                message: '이미 존재하는 카테고리명입니다.'
+            });
+        }
+        res.status(500).json({
+            success: false,
+            message: '카테고리 수정 중 오류가 발생했습니다.'
+        });
+    }
+};
+//------------------------------카테고리 수정------------------------------------------------
+
+//--------------------------------------상품 삭제-------------------------------------------
+
+exports.productDelete = async (req, res) => {
+    const productId = parseInt(req.params.productId); // URL 파라미터에서 상품 ID 가져오기
+
+    // 상품 ID가 유효한 숫자인지 확인
+    if (isNaN(productId)) {
+        return res.status(400).json({
+            success: false,
+            message: '유효하지 않은 상품 ID입니다.'
+        });
+    }
+
+    try {
+        // 1. 해당 ID의 상품이 존재하는지 확인 (선택 사항이지만 안전을 위해 권장)
+        const product = await Product.findByPk(productId);
+        if (!product) {
+            return res.status(404).json({
+                success: false,
+                message: '해당 상품을 찾을 수 없습니다.'
+            });
+        }
+
+        // 2. 데이터베이스에서 상품 삭제
+        // Sequelize의 destroy 메서드를 사용하여 해당 product_id를 가진 레코드를 삭제
+        const deletedRows = await Product.destroy({
+            where: { product_id: productId }
+        });
+
+        // deletedRows는 삭제된 레코드의 수를 반환
+        if (deletedRows === 0) {
+            // 상품이 존재했지만 어떤 이유로 삭제되지 않았을 경우 (매우 드물게 발생)
+            return res.status(404).json({
+                success: false,
+                message: '상품을 삭제할 수 없습니다. 다시 시도해주세요.'
+            });
+        }
+
+        // 3. 성공 응답 전송
+        res.status(200).json({
+            success: true,
+            message: '상품이 성공적으로 삭제되었습니다.'
+        });
+
+    } catch (error) {
+        console.error('상품 삭제 중 오류 발생:', error); // 에러 로깅
+        res.status(500).json({
+            success: false,
+            message: '상품 삭제 중 서버 오류가 발생했습니다.',
+            error: error.message // 개발 단계에서 디버깅을 위해 에러 메시지 포함
+        });
+    }
+};
+//--------------------------------------상품 삭제-------------------------------------------
+
+
+exports.lineupAll = async (req, res) => {
+    try {
+        const lineup = await LineUp.findAll({
+            order: [['lineup_id', 'ASC']]
+        });
+        
+        res.status(200).json({
+            success: true,
+            data: lineup
+        });
+    } catch (error) {
+        console.error('라인업 조회 오류:', error); 
+        res.status(500).json({
+            success: false,
+            message: '라인업을 불러오는 도중 오류가 발생했습니다.'
+        });
+    }
+}

@@ -6,7 +6,8 @@
 // - 200 OK 상태와 함께 { message, token } 형태로 반환
 // ===============================
 exports.sendToken = (req, res) => {
-  const role = req.role
+  const role = req.role;
+  const user_uuid = req.user_uuid;
   console.log(role);
   res.cookie("access_token", req.token, {
     httpOnly: true, //JS에서 접근불가 (XSS 방지)
@@ -18,6 +19,7 @@ exports.sendToken = (req, res) => {
   res.status(200).json({
     success : true,
     role : role,
+    user_uuid : user_uuid,
     message: '로그인 성공',
   });
 };

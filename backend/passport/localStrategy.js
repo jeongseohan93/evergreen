@@ -25,10 +25,16 @@ module.exports = () => {
           // 이메일로 사용자 조회 (필요한 필드만 select)
           const exUser = await User.findOne({
             where: { email },
-            attributes: ['email', 'name', 'role', 'password'],
+            paranoid: false,
+            attributes: ['user_uuid','email', 'name', 'role', 'password', 'deletedAt'],
           });
 
           if (exUser) {
+            // 제명된 회원 체크
+            if (exUser.deletedAt !== null) {
+              // 제명된 회원 → 인증 실패, 메시지 전달
+              return done(null, false, { message: '제명된 회원입니다. 로그인할 수 없습니다.' });
+            }
             // 입력 비밀번호와 해시된 비밀번호 비교
             const result = await bcrypt.compare(password, exUser.password);
 

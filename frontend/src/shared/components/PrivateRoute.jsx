@@ -19,6 +19,7 @@ const PrivateRoute = ({ children, role: allowedRoles = [] }) => {
   }
 
   // 2. 로그인 안 돼 있음 → /login
+
   if (!isLoggedIn) {
     return <Navigate to="/login" state={{ from: location }} replace />;
   }
@@ -34,7 +35,8 @@ const PrivateRoute = ({ children, role: allowedRoles = [] }) => {
     return <Navigate to="/403" replace />;
   }
 
-  return children;
+  return children;  
+
 };
 
 export default PrivateRoute;

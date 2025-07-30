@@ -59,6 +59,13 @@ class OrderItem extends Model {
       targetKey: 'user_uuid',
       onDelete: 'CASCADE',
     });
+
+    // === 아래 코드 추가 ===
+    db.OrderItem.belongsTo(db.Product, {
+      foreignKey: 'product_id',
+      targetKey: 'product_id',
+      onDelete: 'CASCADE',
+    });
   }
 }
 

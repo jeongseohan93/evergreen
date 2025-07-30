@@ -1,17 +1,3 @@
-
-// Product models를 위한 준비
-
-// Product에는 category_id, lineup_id를 외래키로 둘 예정이나 
-// 작업의 용이성을 위해 차후 외래키 설정을 하는것으로 하겠다.
-
-// 외래키 제외 컬럼
-// name VARCHAR(100) NOT NULL - 상품명
-// price INT NOT NULL - 가격
-// memo TEXT - 간단 설명 (ex. 프리리그 전용 로드! )
-// small_photo VARCHAR(255) - List에서 보여줄 이미지
-// large_photo VARCHAR(255) - 상세 이미지
-// stock INT DEFAULT 0 - 재고량
-
 const { Model, DataTypes } = require('sequelize');
 
 class Product extends Model {
@@ -22,15 +8,15 @@ class Product extends Model {
         primaryKey: true,
         autoIncrement: true,
       },
-      category_id: {
+      category_id: { // 2단계 카테고리 ID
         type: DataTypes.INTEGER,
         allowNull: false,
       },
-      lineup_id: {
+      lineup_id: { // 1단계 카테고리 ID
         type: DataTypes.INTEGER,
         allowNull: true,
       },
-      name: {
+      name: { // 상품명
         type: DataTypes.STRING(100),
         allowNull: false,
       },
@@ -40,6 +26,20 @@ class Product extends Model {
       },
       memo: {
         type: DataTypes.TEXT,
+        allowNull: true,
+      },
+      origin: {
+        type: DataTypes.STRING(100), // 예: '대한민국', '중국', '일본' 등
+        allowNull: true,
+      },
+      model_name: { // ⭐️ 기존 모델명 컬럼 (3단계 카테고리 아님)
+        type: DataTypes.STRING(100), 
+        allowNull: true,
+      },
+      // ⭐️ 3단계 카테고리 이름을 저장할 새로운 컬럼 추가
+      sub2_category_name: { 
+        type: DataTypes.STRING(100), 
+        allowNull: true, // 3단계 카테고리가 없는 상품도 있을 수 있으므로
       },
       small_photo: {
         type: DataTypes.STRING(255),
@@ -47,9 +47,32 @@ class Product extends Model {
       large_photo: {
         type: DataTypes.STRING(255),
       },
+      // ⭐️ 유튜브 링크를 저장할 youtube_url 컬럼 추가
+      youtube_url: {
+        type: DataTypes.STRING(500), // 유튜브 임베드 URL을 저장할 예정
+        allowNull: true, // 유튜브 링크가 없는 상품도 있을 수 있으므로
+      },
       stock: {
         type: DataTypes.INTEGER,
         defaultValue: 0,
+      },
+      brand: {
+        type: DataTypes.STRING(100),
+      },
+      pick: {
+        type: DataTypes.ENUM(
+          'nothing',
+          'evergreen-recommend',
+          'reel-recommend',
+          'popular-products',
+          'hard-bait',
+          'soft-bait',
+          'tackle-bag-small-items',
+          'new-products',
+          'restocked-products',
+          'general-recommend'
+        ),
+        defaultValue: 'nothing',
       },
       created_at: {
         type: DataTypes.DATE,
@@ -63,28 +86,19 @@ class Product extends Model {
       sequelize,
       modelName: 'Product',
       tableName: 'products',
-      timestamps: false, // 직접 created_at, updated_at 필드를 쓸 경우 false로
-      underscored: false, // created_at → createdAt 매핑 피하려면 true
+      timestamps: false, 
+      underscored: false, 
     });
   }
-
-  /* static associate(db) {
-    // 1. products.category_id → categories.product_id
-    db.Product.belongsTo(db.Category, {
-      foreignKey: 'category_id',
-      //카테고리의 삭제 => 그 카테고리에 속한 모든 상품 삭제
-      onDelete: 'CASCADE', 
+  // Board와의 관계 추가
+  static associate(db) {
+    db.Product.hasMany(db.Board, {
+      foreignKey: 'product_id',
+      sourceKey: 'product_id',
+      as: 'Boards',
+      onDelete: 'CASCADE',
     });
-
-    // 2. products.lineup_id → lineups.lineup_id
-    db.Product.belongsTo(db.Lineup, {
-      foreignKey: 'lineup_id',
-      //라인업의 삭제 => 그걸 참조하던 상품의 lineup_id를 Null로 설정(상품은 유지)
-      onDelete: 'SET NULL', 
-    });
-  }  */
+  }
 }
 
-//내보내는 방식도 여러가지 있음. 이 방식으로 일단 index.js에서 오류가 없으니 사용.
 module.exports = Product;
-

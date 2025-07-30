@@ -8,19 +8,20 @@ const jwt = require('jsonwebtoken');
 // - 만료시간(expiresIn)은 1시간으로 설정
 // - 생성된 토큰을 req.token에 저장하여 다음 미들웨어에서 사용 가능하게 함
 // =============================
-exports.isjwt = ( req, res, next ) => {
-    
-    const { email, nick, role } = req.authData; // 앞선 미들웨어에서 저장된 사용자 정보 추출
-    
-    // JWT의 payload(내용)로 이메일, 닉네임, 역할을 포함
-    const payload = {email, nick, role};
+exports.isjwt = (req, res, next) => {
+  // ✅ 이전 미들웨어에서 req.user로 넘겨준 정보를 사용합니다.
+  const { user_uuid, email, nick, role } = req.user;
+  
+  const payload = { user_uuid, email, nick, role };
 
-    // JWT 토큰 생성 (시크릿 키 및 만료 시간 포함)
-    req.token = jwt.sign(
+  req.token = jwt.sign(
     payload,
-    process.env.JWT_SECRET, // 시크릿 키 (.env 파일에서 관리)
-    { expiresIn: '1h'} // 토큰 유효기간: 1시간
-    );
-    req.role = role;
-    next(); // 다음 미들웨어로 흐름 이동
-}
+    process.env.JWT_SECRET,
+    { expiresIn: '1h' }
+  );
+
+  req.role = role;
+  req.user_uuid = user_uuid;
+  
+  next();
+};
