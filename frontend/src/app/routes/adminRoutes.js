@@ -13,7 +13,6 @@ import ReportWrite from '@/features/admin/pages/reportPage/ReportWrite.jsx';
 import ReportDetail from '@/features/admin/pages/reportPage/ReportDetail.jsx';
 import ReportEdit from '@/features/admin/pages/reportPage/ReportEdit.jsx';
 
-
 const adminRoutes = [
   {
     path: '/admin',

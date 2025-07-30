@@ -41,7 +41,7 @@ import { useDispatch } from 'react-redux';
 const AdminDashboardPage = () => (
   <div className="bg-white p-6 rounded-lg shadow-md min-h-[400px]">
      <div style={{ display: 'flex', alignItems: 'center', gap: '20px' }}>
-      <div> <img src={Logo} alt="에버그린" className="sh" /></div> 
+     
  
     </div>
      <DashBoardPage />
