@@ -79,12 +79,6 @@ class User extends Sequelize.Model {
                 // 인덱스 정의 (유니크/검색 최적화)
                 indexes: [
                     {
-                        name: "PRIMARY",
-                        unique: true,
-                        using: "BTREE",
-                        fields: [{ name: "user_uuid" }]
-                    },
-                    {
                         // email 필드에 unique: true를 직접 설정해도 되지만,
                         // 인덱스를 통해 명시적으로 유니크 제약조건을 걸 수 있습니다.
                         name: "email",
