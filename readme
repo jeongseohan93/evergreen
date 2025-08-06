@@ -5,9 +5,6 @@ React 기반 프론트엔드와 연동되며,
 
 📁 프로젝트 구조
 📦 Backend (/)
-bash
-복사
-편집
 ├── server.js                 # 서버 시작점
 ├── controllers/            # 라우터에 연결되는 비즈니스 로직 처리
 ├── middlewares/         # 에러 처리, 인증 등 커스텀 미들웨어
@@ -19,9 +16,6 @@ bash
 ├── .env                     # 환경변수 
 └── .gitignore             # 민감 파일 제외
 📦 Frontend (React 기반)
-csharp
-복사
-편집
 frontend/
 ├── public/                  # 정책 관련 텍스트 파일 등 정적 자산
 ├── src/
