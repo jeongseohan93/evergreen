@@ -1,96 +1,101 @@
-# 🎣 NodeBird Backend (낚시 용품 쇼핑몰)
+🎣 Evergreenfish Backend (낚시 용품 전문 쇼핑몰 서버)
+낚시 용품 전문 쇼핑몰의 백엔드 서버입니다.
+React 기반 프론트엔드와 연동되며,
+회원 인증, 상품 검색, 이미지 업로드, JWT 보안 등을 지원합니다.
 
-> **EvergreenFish**와 **당근마켓(웹 버전)**을 참고하여 제작된  
-> **낚시 용품 전문 쇼핑몰의 백엔드 서버**입니다.  
-> React 기반 프론트엔드와 연동되며,  
-> 회원 인증, 상품 검색, JWT 로그인, 추후 WebSocket 기능 등을 제공합니다.
-
----
-
-## 📁 프로젝트 구조
-
-backend/
-├── config/ # DB 및 환경 설정
-├── controllers/ # 요청 처리 로직
-├── middlewares/ # 인증, 오류 등 공통 미들웨어
-├── models/ # Sequelize 모델 정의
-├── passport/ # Passport 인증 전략 구성 (local, kakao)
-├── routes/ # API 라우터 (auth, search 등)
-├── utils/ # 유틸 함수 (토큰, 응답 포맷 등)
-├── server.js # Express 앱 진입점
-
-
----
-
-## 🚀 시작하기
-
-### 1. 의존성 설치
-
-```bash
+📁 프로젝트 구조
+📦 Backend (/)
+bash
+복사
+편집
+├── server.js                 # 서버 시작점
+├── controllers/            # 라우터에 연결되는 비즈니스 로직 처리
+├── middlewares/         # 에러 처리, 인증 등 커스텀 미들웨어
+├── models/                # Sequelize 모델 정의
+├── passport/              # Passport 전략 (로컬)
+├── routes/                  # API 라우터 정의
+├── uploads/               # 이미지 업로드 저장 폴더
+├── config/                 # DB, 환경 설정
+├── .env                     # 환경변수 
+└── .gitignore             # 민감 파일 제외
+📦 Frontend (React 기반)
+csharp
+복사
+편집
+frontend/
+├── public/                  # 정책 관련 텍스트 파일 등 정적 자산
+├── src/
+│   ├── App.jsx              # 전체 앱 엔트리포인트
+│   ├── app/                 # 전체 앱 레이아웃 및 라우팅
+│   │   ├── layouts/         # Header, Footer 등 공통 레이아웃
+│   │   └── routes/          # 페이지별 라우터 설정
+│   ├── assets/              # 이미지, 폰트 등 에셋
+│   ├── feature/             # 도메인별 페이지, 훅, redux slice
+│   └── shared/              # 공통 컴포넌트 (도메인 무관)
+🚀 시작하기
+1. 백엔드 의존성 설치
 npm install
-PORT=8002
-DB_HOST=localhost
-DB_USER=root
-DB_PASSWORD=yourpassword
-DB_NAME=evergreenfist
-JWT_SECRET=your_jwt_secret
-NODE_ENV=development
 
+2. .env 파일 생성
 
-서버 실행 (개발용)
+PORT=3005
+JWT_SECRET=a6c03907f23be806545179e418fff2e8a64114ab750ccbc388721c4aaa98bee3
+TOSS_SECRET_KEY=test_gsk_docs_OaPz8L5KdmQXkzRz3y47BMw6
+
+3. 서버 실행 (개발용)
+
 npm start
-
 
 ⚙️ 사용된 주요 라이브러리
 패키지	설명
 express	Node.js 웹 프레임워크
-sequelize	MySQL 연동 ORM
+sequelize	MySQL ORM
 mysql2	MySQL 드라이버
-passport / passport-local / passport-kakao	사용자 인증 처리 (로컬, 카카오)
-jsonwebtoken	JWT 발급 및 인증
-redis	세션/토큰 블랙리스트 등 상태 관리
-bcrypt	비밀번호 해시 암호화
+passport	인증 미들웨어 (Local, Kakao 전략 포함)
+jsonwebtoken	JWT 발급 및 검증
+redis	세션, 블랙리스트 관리
+bcrypt	비밀번호 해싱 처리
 dotenv	환경변수 로드
 morgan	요청 로그 출력
 cors	CORS 정책 설정
 uuid	고유 식별자 생성
-nodemon	코드 변경 시 자동 재시작 (개발용)
-ws (예정)	실시간 WebSocket 알림 기능 도입 예정
-jest (예정)	단위 테스트 프레임워크 도입 예정
-
-"scripts": {
-  "start": "nodemon server.js",
-  "test": "echo \"Error: no test specified\" && exit 1"
-}
-
+multer	이미지 업로드 처리
+nodemailer	이메일 전송 (선택적 기능)
+nodemon (개발용)	자동 재시작 도구
 
 📌 주요 API
 메서드	경로	설명
-POST	/auth/join	사용자 회원가입
-POST	/auth/login	사용자 로그인 및 JWT 발급
-GET	/api/search	키워드 검색 API (상품, 낚시 장비 등)
+POST	/auth/login	 사용자 로그인 (JWT 발급)
+POST	/auth/logout 사용자 로그아웃 (발급된 JWT, redis에 블랙 리스트 지정)
 
-
-🧪 테스트 계획 (예정)
-Jest 기반의 단위 테스트 도입
-
-컨트롤러, 인증 미들웨어, 유틸 함수 단위로 테스트 작성 예정
-
+GET	/admin/summary	 관리자 페이지의 초기 화면 
+GET  /products/pick      메인 화면 상품 검색 방식
 
 🔐 보안 및 배포 참고사항
-.env는 반드시 .gitignore에 추가하여 Git에 올리지 않도록 합니다.
+.env 파일은 반드시 .gitignore에 추가해 Git에 업로드되지 않도록 합니다.
 
-배포 시 NODE_ENV=production, HTTPS, CORS 도메인 설정 등을 추가 고려해야 합니다.
+배포 시에는 다음을 추가로 고려하세요:
 
-WebSocket 보안 정책도 별도로 설정 예정입니다.
+NODE_ENV=production
 
+CORS 도메인 화이트리스트 지정
+
+서버 리소스 감시 및 에러 로깅 도입 (ex. PM2, Sentry)
 
 🧭 레퍼런스
-EvergreenFish – 제품 카테고리, 낚시 특화 UX 구조 참고
+기획 초기: 당근마켓 웹 버전
 
-당근마켓(웹) – 간결한 UI, 로그인 플로우, 지역 기반 접근 등 참고
+중반 이후: 실제 낚시 쇼핑몰 egfishing.kr 참고
+
+카테고리 구조
+
+상품 관리 흐름
+
+관리자 페이지 UX
+
+egfishing.kr 운영자의 허락을 받고 비상업적 학습 용도로만 참고하였으며,
+본 프로젝트의 무단 배포 및 상업적 이용은 금지합니다.
 
 📄 라이선스
-
-
-
+본 프로젝트는 개인 학습 및 포트폴리오 용도로만 사용되며,
+외부 배포 및 상업적 사용은 금지합니다.
